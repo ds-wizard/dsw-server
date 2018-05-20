@@ -45,6 +45,7 @@ library:
   - monad-logger
   - mongoDB
   - network
+  - pandoc
   - persistent
   - persistent-template
   - persistent-mongoDB
