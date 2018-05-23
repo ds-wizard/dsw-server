@@ -61,7 +61,7 @@ answerItem2html :: FilledAnswerItem -> H.Html
 answerItem2html answerItem = H.div ! A.class_ "answer answer-item" $ do
   H.div ! A.class_ "item" $ do
     H.span ! A.class_ "title" $ H.toHtml . _filledAnswerItemTitle $ answerItem
-    H.span ! A.class_ "value" $ H.toHtml "" -- TODO: missing value
+    H.span ! A.class_ "value" $ H.toHtml . _filledAnswerItemValue $ answerItem
   H.div ! A.class_ "followups" $
     mapM_ question2html (_filledAnswerItemQuestions answerItem)
 
