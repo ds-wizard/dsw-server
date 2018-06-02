@@ -27,6 +27,7 @@ library:
   - base
   - aeson
   - blaze-html
+  - clay
   - bson
   - bson-generic
   - bytestring
@@ -45,7 +46,7 @@ library:
   - monad-logger
   - mongoDB
   - network
-  - pandoc
+  - pandoc >= 2.2.1
   - persistent
   - persistent-template
   - persistent-mongoDB

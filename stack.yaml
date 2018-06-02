@@ -41,6 +41,18 @@ packages:
 # (e.g., acme-missiles-0.3)
 extra-deps:
   - vendor/bson-generic
+  - pandoc-2.2.1
+  - cmark-gfm-0.1.3
+  - doctemplates-0.2.2.1
+  - hslua-0.9.5.2
+  - hslua-module-text-0.1.2.1
+  - pandoc-types-1.17.4.2
+  - skylighting-0.7.1
+  - tagsoup-0.14.6
+  - texmath-0.11.0.1
+  - ansi-terminal-0.8.0.4
+  - skylighting-core-0.7.1
+
 
 # Override default flag values for local packages and extra-deps
 flags: {}

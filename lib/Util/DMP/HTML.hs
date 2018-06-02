@@ -7,6 +7,7 @@ import Text.Blaze.Html.Renderer.Pretty (renderHtml)
 
 import Model.KnowledgeModel.KnowledgeModel
 import Model.FilledKnowledgeModel.FilledKnowledgeModel
+import Util.DMP.CSS (dmpCSS)
 
 
 dmp2html :: FilledKnowledgeModel -> String
@@ -14,8 +15,9 @@ dmp2html = renderHtml . fkm2html
 
 fkm2html :: FilledKnowledgeModel -> H.Html
 fkm2html km = html $ do
-    H.head $
+    H.head $ do
         H.title "DSW Data Management Plan"
+        H.style . H.toHtml $ dmpCSS
     H.body $ do
         H.h1 . H.toHtml . _filledKnowledgeModelName $ km
         mapM_ chapter2html (_filledKnowledgeModelChapters km)
