@@ -39,6 +39,7 @@ question2html question = html $
       experts2html .  _filledQuestionExperts $ question
       references2html . _filledQuestionReferences $ question
 
+-- TODO: instead of fromJust check if is answered or not and tell something if not
 qanswer2html :: FilledQuestion -> H.Html
 qanswer2html question = case _filledQuestionQType question of
   QuestionTypeOptions -> answer2html . fromJust . _filledQuestionAnswerOption $ question
