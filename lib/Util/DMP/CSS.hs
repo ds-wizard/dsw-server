@@ -6,7 +6,6 @@ import Clay
 import Prelude hiding (div, span)
 
 -- | CSS style for generate HTML DMP
--- TODO: finish the style this is just dummy
 dmpCSS = renderWith pretty [] $ do
   body ? margin (em 0.2) (em 0.2) (em 0.2) (em 0.2)
   headerCSS
@@ -45,7 +44,7 @@ mainCSS = do
   section # ".chapter" ?
     borderBottom solid (px 2) (rgb 204 204 204)
   div # ".question" ? do
-    borderLeft solid (px 2) orangered
+    borderLeft solid (px 2) orange
     padding (em 0) (em 0.2) (em 0) (em 0.2)
     margin (em 0.1) (em 0) (em 0.5) (em 0.2)
   li # ".expert" |> span # ".email" ? before &
@@ -54,13 +53,17 @@ mainCSS = do
     content (stringContent "]")
   li # ".reference-dmpbook" |> span # ".dmpbook-chapter" ? before &
     content (stringContent "DMP Book chapter: ")
-  div # ".answer-option" |> div # ".label" ? before &
-    content (stringContent " » ")
-  div # ".answer-items" |> div # ".answer-item" ? before &
-    content (stringContent " » ")
-  div # ".answer-simple" |> div # ".answer-string" ? before &
-    content (stringContent " » ")
+  div # ".answer-block" |> star # ".answer" ? do
+    fontWeight bold
+    fontStyle italic
+  div # ".answer-block" |> star # ".answer" ? before &
+    content (stringContent " \2714  ")
   div # ".answer-option" |> p # ".advice" ? before &
-    content (stringContent " ⓘ ")
+    content (stringContent " \9432  ")
   div # ".answer-items" |> div # ".answer-item" |> span # ".title" ?
     display none
+  p # ".no-answer" ? do
+    fontWeight bold
+    color red
+  p # ".no-answer" ? before &
+    content (stringContent " \2718  ")

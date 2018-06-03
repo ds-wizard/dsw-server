@@ -75,20 +75,20 @@ qanswer2html question
     simpleAnswer = _filledQuestionAnswerValue question
 
 notAnsweredHtml :: H.Html
-notAnsweredHtml = H.div ! A.class_ "answer not-answered" $ do
+notAnsweredHtml = H.div ! A.class_ "answer-block not-answered" $ do
   H.h4 . H.toHtml $ "Answer"
-  H.p . H.toHtml $ textNotAnswered
+  H.p ! A.class_ "no-answer" $ H.toHtml textNotAnswered
 
 answerSimple2html :: String -> H.Html
-answerSimple2html answer = H.div ! A.class_ "answer answer-simple" $ do
+answerSimple2html answer = H.div ! A.class_ "answer-block answer-simple" $ do
   H.h4 . H.toHtml $ "Answer"
-  H.p ! A.class_ "answer-string" $ H.toHtml answer
+  H.p ! A.class_ "answer" $ H.toHtml answer
 
 answerOption2html :: FilledAnswer -> H.Html
-answerOption2html answer = H.div ! A.class_ "answer answer-option"
+answerOption2html answer = H.div ! A.class_ "answer-block answer-option"
                                  ! A.id (stringValue . show . _filledAnswerUuid $ answer) $ do
   H.h4 . H.toHtml $ "Answer"
-  H.div ! A.class_ "label" $ H.toHtml . _filledAnswerLabel $ answer
+  H.div ! A.class_ "answer label" $ H.toHtml . _filledAnswerLabel $ answer
   case _filledAnswerAdvice answer of
     Just advice -> H.p ! A.class_ "advice" $ H.toHtml advice
     Nothing     -> H.toHtml ""
@@ -96,13 +96,13 @@ answerOption2html answer = H.div ! A.class_ "answer answer-option"
     mapM_ question2html (_filledAnswerFollowUps answer)
 
 answerItems2html :: [FilledAnswerItem] -> H.Html
-answerItems2html answerItems = H.div ! A.class_ "answer answer-items" $ do
+answerItems2html answerItems = H.div ! A.class_ "answer-block answer-items" $ do
   H.h4 . H.toHtml $ "Answers"
   mapM_ answerItem2html answerItems
 
 answerItem2html :: FilledAnswerItem -> H.Html
-answerItem2html answerItem = H.div ! A.class_ "answer answer-item" $ do
-  H.div ! A.class_ "item" $ do
+answerItem2html answerItem = H.div ! A.class_ "answer-block answer-item" $ do
+  H.div ! A.class_ "answer item" $ do
     H.span ! A.class_ "title" $ H.toHtml . _filledAnswerItemTitle $ answerItem
     H.span ! A.class_ "value" $ H.toHtml . _filledAnswerItemValue $ answerItem
   H.div ! A.class_ "followups" $
