@@ -58,7 +58,7 @@ mainCSS = do
     content (stringContent " » ")
   div # ".answer-items" |> div # ".answer-item" ? before &
     content (stringContent " » ")
-  div # ".answer-simple" ? before &
+  div # ".answer-simple" |> div # ".answer-string" ? before &
     content (stringContent " » ")
   div # ".answer-option" |> p # ".advice" ? before &
     content (stringContent " ⓘ ")
