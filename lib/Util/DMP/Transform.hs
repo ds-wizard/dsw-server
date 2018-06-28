@@ -1,5 +1,8 @@
 module Util.DMP.Transform
        ( dmpTransform
+       , dmpTransformTo
+       , exportTypes
+       , exportTypesStrings
        , DMPExportType(..)
        ) where
 
