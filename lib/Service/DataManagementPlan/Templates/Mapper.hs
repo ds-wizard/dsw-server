@@ -23,11 +23,11 @@ toHTML :: DataManagementPlanDTO -> BSL.ByteString
 toHTML = strToBSL . mkHTMLString
 
 toFormat :: DataManagementPlanFormat -> DataManagementPlanDTO -> BSL.ByteString
-toFormat format = MB.fromMaybe (strToBSL _ERROR_TRANSFORMATION_FAILED) . toType' (formatToType format)
+toFormat format = MB.fromMaybe (strToBSL _ERROR_SERVICE_DMP__TRANSFORMATION_FAILED) . toType' (formatToType format)
   where
     toType' :: Maybe DMPExportType -> DataManagementPlanDTO -> Maybe BSL.ByteString
     toType' (Just eType) dmp = fmap BSL.fromStrict . FromHTML.fromHTML eType . mkHTMLString $ dmp
-    toType' _ _              = Just (strToBSL _ERROR_UKNOWN_FORMAT)
+    toType' _ _              = Just (strToBSL _ERROR_SERVICE_DMP__UKNOWN_FORMAT)
 
 mkHTMLString :: DataManagementPlanDTO -> String
 mkHTMLString dmp = dmp2html $ dmp ^. filledKnowledgeModel
