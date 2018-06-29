@@ -82,9 +82,7 @@ getQuestionnaireDmpA = do
     heGetFormat format callback =
       case readMaybe (T.unpack format) of
         Just knownFormat -> callback knownFormat
-        Nothing ->
-          sendError . createErrorWithErrorMessage . _ERROR_VALIDATION__UNSUPPORTED_DMP_FORMAT $
-          T.unpack format
+        Nothing -> sendError . createErrorWithErrorMessage . _ERROR_VALIDATION__UNSUPPORTED_DMP_FORMAT $ T.unpack format
     getFilename :: String -> DataManagementPlanFormat -> String
     getFilename qtnUuid format = qtnUuid ++ formatExtension format
 

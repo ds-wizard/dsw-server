@@ -18,7 +18,7 @@ import Model.Questionnaire.Questionnaire
 import Service.DataManagementPlan.Convertor
 import Service.DataManagementPlan.DataManagementPlanMapper
 import Service.DataManagementPlan.ReplyApplicator
-import Service.DataManagementPlan.Templates.Mapper
+import Service.DataManagementPlan.Templates.FormatMapper
 
 createFilledKM :: Questionnaire -> FilledKnowledgeModel
 createFilledKM questionnaire =
@@ -45,8 +45,8 @@ exportDataManagementPlan :: String -> DataManagementPlanFormat -> AppContextM (E
 exportDataManagementPlan qtnUuid format = do
   heCreateDataManagementPlan qtnUuid $ \dmp ->
     case format of
-      JSON  -> return . Right . encode $ dmp
-      HTML  -> return . Right . toHTML $ dmp
+      JSON -> return . Right . encode $ dmp
+      HTML -> return . Right . toHTML $ dmp
       other -> return . toFormat other $ dmp
 
 -- --------------------------------
