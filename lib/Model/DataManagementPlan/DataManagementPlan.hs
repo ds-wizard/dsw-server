@@ -21,7 +21,7 @@ data DataManagementPlanFormat
   | MediaWiki
   | EPUB2
   | EPUB3
-  deriving (Show, Read, Eq, Enum, Bounded, Generic)
+  deriving (Show, Eq, Enum, Bounded, Generic)
 
 data DataManagementPlan = DataManagementPlan
   { _dataManagementPlanUuid :: U.UUID

@@ -26,7 +26,12 @@ allFormats :: [DataManagementPlanFormat]
 allFormats = [minBound..maxBound]
 
 stringFormatMap :: [(String, DataManagementPlanFormat)]
-stringFormatMap = [(map C.toLower . show $ format, format) | format <- allFormats ]
+stringFormatMap = [(map C.toLower . show $ format, format) | format <- allFormats]
 
 stringToFormat :: String -> Maybe DataManagementPlanFormat
 stringToFormat str = lookup (map C.toLower str) stringFormatMap
+
+instance Read DataManagementPlanFormat where
+  readsPrec _ str = case stringToFormat str of
+                      Just format -> [(format, "")]
+                      _           -> []

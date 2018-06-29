@@ -3,6 +3,7 @@ module Api.Handler.Questionnaire.QuestionnaireHandler where
 import Control.Monad.Reader (lift)
 import qualified Data.Text as T
 import Network.HTTP.Types.Status (created201, noContent204)
+import Text.Read (readMaybe)
 import Web.Scotty.Trans (json, param, status)
 
 import Api.Handler.Common
@@ -79,7 +80,7 @@ getQuestionnaireDmpA = do
           Left error -> sendError error
   where
     heGetFormat format callback =
-      case stringToFormat (T.unpack format) of
+      case readMaybe (T.unpack format) of
         Just knownFormat -> callback knownFormat
         Nothing ->
           sendError . createErrorWithErrorMessage . _ERROR_VALIDATION__UNSUPPORTED_DMP_FORMAT $
