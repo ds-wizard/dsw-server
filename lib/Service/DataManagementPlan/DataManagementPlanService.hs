@@ -47,7 +47,7 @@ exportDataManagementPlan qtnUuid format = do
     case format of
       JSON  -> return . Right . encode $ dmp
       HTML  -> return . Right . toHTML $ dmp
-      other -> return . Right . toFormat other $ dmp -- TODO: handle from Maybe
+      other -> return . Right . toFormat other $ dmp
 
 -- --------------------------------
 -- HELPERS

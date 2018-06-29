@@ -74,6 +74,10 @@ _ERROR_SERVICE_USER__REQUIRED_ADMIN_ROLE_OR_HASH_IN_QUERY_PARAMS =
 
 _ERROR_SERVICE_USER__REQUIRED_HASH_IN_QUERY_PARAMS = "A hash query param has to be provided"
 
+-- DataManagementPlan
+_ERROR_TRANSFORMATION_FAILED = "Couldn't transform to desired document format"
+_ERROR_UKNOWN_FORMAT = "Unprocessable DMP format"
+
 -- --------------------------------------
 -- HTTP CLIENT
 -- --------------------------------------

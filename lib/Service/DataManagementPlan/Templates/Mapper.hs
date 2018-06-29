@@ -8,6 +8,7 @@ import qualified Data.Text.Encoding as E
 import qualified Text.FromHTML as FromHTML
 
 import Api.Resource.DataManagementPlan.DataManagementPlanDTO
+import Common.Localization
 import Model.DataManagementPlan.DataManagementPlan
 import LensesConfig
 import Service.DataManagementPlan.Templates.Html
@@ -15,19 +16,18 @@ import Service.DataManagementPlan.Templates.Html
 -- | Enumeration of supported export document types
 type DMPExportType = FromHTML.ExportType
 
-tranformFail = "Couldn't transform to such format."
-unknownFormat = "Unprocessable DMP format."
+strToBSL :: String -> BSL.ByteString
+strToBSL = BSL.fromStrict . E.encodeUtf8 . T.pack
 
 toHTML :: DataManagementPlanDTO -> BSL.ByteString
-toHTML = BSL.fromStrict . E.encodeUtf8 . T.pack . mkHTMLString
+toHTML = strToBSL . mkHTMLString
 
--- TODO: Propagate Maybe (or Either with AppError)
 toFormat :: DataManagementPlanFormat -> DataManagementPlanDTO -> BSL.ByteString
-toFormat format = MB.fromMaybe tranformFail . toType' (formatToType format)
+toFormat format = MB.fromMaybe (strToBSL _ERROR_TRANSFORMATION_FAILED) . toType' (formatToType format)
   where
     toType' :: Maybe DMPExportType -> DataManagementPlanDTO -> Maybe BSL.ByteString
     toType' (Just eType) dmp = fmap BSL.fromStrict . FromHTML.fromHTML eType . mkHTMLString $ dmp
-    toType' _ _              = Just unknownFormat
+    toType' _ _              = Just (strToBSL _ERROR_UKNOWN_FORMAT)
 
 mkHTMLString :: DataManagementPlanDTO -> String
 mkHTMLString dmp = dmp2html $ dmp ^. filledKnowledgeModel
