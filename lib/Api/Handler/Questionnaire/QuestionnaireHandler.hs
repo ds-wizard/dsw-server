@@ -78,17 +78,13 @@ getQuestionnaireDmpA = do
           Left error -> sendError error
   where
     heGetFormat format callback =
-      case format of
-        "json" -> callback JSON
-        "html" -> callback HTML
-        unsupportedFormat ->
+      case stringToFormat (T.unpack format) of
+        Just knownFormat -> callback knownFormat
+        Nothing ->
           sendError . createErrorWithErrorMessage . _ERROR_VALIDATION__UNSUPPORTED_DMP_FORMAT $
-          (T.unpack unsupportedFormat)
+          T.unpack format
     getFilename :: String -> DataManagementPlanFormat -> String
-    getFilename qtnUuid format =
-      case format of
-        HTML -> qtnUuid ++ ".html"
-        JSON -> qtnUuid ++ ".json"
+    getFilename qtnUuid format = qtnUuid ++ formatExtension format
 
 deleteQuestionnaireA :: Endpoint
 deleteQuestionnaireA =
