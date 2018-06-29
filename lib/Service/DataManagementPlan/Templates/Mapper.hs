@@ -1,13 +1,14 @@
 module Service.DataManagementPlan.Templates.Mapper where
 
 import Control.Lens ((^.))
+import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy as BSL
-import qualified Data.Maybe as MB
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as E
 import qualified Text.FromHTML as FromHTML
 
 import Api.Resource.DataManagementPlan.DataManagementPlanDTO
+import Common.Error
 import Common.Localization
 import Model.DataManagementPlan.DataManagementPlan
 import LensesConfig
@@ -22,12 +23,15 @@ strToBSL = BSL.fromStrict . E.encodeUtf8 . T.pack
 toHTML :: DataManagementPlanDTO -> BSL.ByteString
 toHTML = strToBSL . mkHTMLString
 
-toFormat :: DataManagementPlanFormat -> DataManagementPlanDTO -> BSL.ByteString
-toFormat format = MB.fromMaybe (strToBSL _ERROR_SERVICE_DMP__TRANSFORMATION_FAILED) . toType' (formatToType format)
+toFormat :: DataManagementPlanFormat -> DataManagementPlanDTO -> Either AppError BSL.ByteString
+toFormat format = toType (formatToType format)
   where
-    toType' :: Maybe DMPExportType -> DataManagementPlanDTO -> Maybe BSL.ByteString
-    toType' (Just eType) dmp = fmap BSL.fromStrict . FromHTML.fromHTML eType . mkHTMLString $ dmp
-    toType' _ _              = Just (strToBSL _ERROR_SERVICE_DMP__UKNOWN_FORMAT)
+    toType :: Maybe DMPExportType -> DataManagementPlanDTO -> Either AppError BSL.ByteString
+    toType (Just eType) dmp = handleResult . FromHTML.fromHTML eType . mkHTMLString $ dmp
+    toType _ _              = Left . GeneralServerError $ _ERROR_SERVICE_DMP__UKNOWN_FORMAT
+    handleResult :: Maybe BS.ByteString -> Either AppError BSL.ByteString
+    handleResult (Just result) = Right . BSL.fromStrict $ result
+    handleResult _ = Left . GeneralServerError $ _ERROR_SERVICE_DMP__TRANSFORMATION_FAILED
 
 mkHTMLString :: DataManagementPlanDTO -> String
 mkHTMLString dmp = dmp2html $ dmp ^. filledKnowledgeModel
