@@ -37,7 +37,7 @@ toFormat format = toType (formatToType format)
     handleResult (Left err) = Left . GeneralServerError $ _ERROR_SERVICE_DMP__TRANSFORMATION_FAILED (bsToStr err)
 
 mkHTMLString :: DataManagementPlanDTO -> String
-mkHTMLString dmp = dmp2html $ dmp ^. filledKnowledgeModel
+mkHTMLString dmp = dmp2html dmp
 
 formatToType :: DataManagementPlanFormat -> Maybe DMPExportType
 formatToType HTML = Just FromHTML.HTML

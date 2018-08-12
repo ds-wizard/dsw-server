@@ -3,6 +3,7 @@ module Service.DataManagementPlan.Templates.Html
   ) where
 
 import Control.Lens ((^.))
+import Data.List
 import Data.Maybe
 import qualified Data.UUID as U
 import Text.Blaze.Html.Renderer.Pretty (renderHtml)
@@ -10,14 +11,16 @@ import Text.Blaze.Html5 ((!), stringValue)
 import qualified Text.Blaze.Html5 as H
 import qualified Text.Blaze.Html5.Attributes as A
 
+import Api.Resource.DataManagementPlan.DataManagementPlanDTO
 import Api.Resource.FilledKnowledgeModel.FilledKnowledgeModelDTO
 import Api.Resource.KnowledgeModel.KnowledgeModelDTO
+import Api.Resource.Report.ReportDTO
 import LensesConfig
 import Model.KnowledgeModel.KnowledgeModel
 import Service.DataManagementPlan.Templates.Css
 
-dmp2html :: FilledKnowledgeModelDTO -> String
-dmp2html = renderHtml . fkm2html
+dmp2html :: DataManagementPlanDTO -> String
+dmp2html = renderHtml . mkHtml
 
 -- -----------------------------------------------------------------------------
 textTitle = "DSW: Data Management Plan"
@@ -30,8 +33,8 @@ dswUrl = "https://dsw.fairdata.solutions"
 
 textNotAnswered = "This question has not been answered yet!"
 
-fkm2html :: FilledKnowledgeModelDTO -> H.Html
-fkm2html km =
+mkHtml :: DataManagementPlanDTO -> H.Html
+mkHtml dmp =
   H.docTypeHtml $ do
     H.head $ do
       H.title textTitle
@@ -44,17 +47,56 @@ fkm2html km =
             H.toHtml (textTitle <> " ")
             H.div ! A.class_ "km-name" ! A.id (stringValue . U.toString $ km ^. uuid) $ H.toHtml (km ^. name)
     -- Section per chapter
-        mapM_ chapter2html (km ^. chapters)
+        mapM_ (chapter2html dmp) (km ^. chapters)
         H.footer $ do
           H.toHtml (textFooter <> " ")
           H.span ! A.class_ "dsw-link" $ H.a ! A.href dswUrl ! A.target "_blank" $ H.toHtml textDSW
+  where km = dmp ^. filledKnowledgeModel
 
-chapter2html :: FilledChapterDTO -> H.Html
-chapter2html chapter =
+chapter2html :: DataManagementPlanDTO -> FilledChapterDTO -> H.Html
+chapter2html dmp chapter =
   H.section ! A.class_ "chapter" ! A.id (stringValue . U.toString $ chapter ^. uuid) $ do
     H.h2 ! A.class_ "title" $ H.toHtml $ chapter ^. title
     H.p ! A.class_ "text" $ H.toHtml $ chapter ^. text
+    chapterReport2html (dmp ^. metrics) . find (\cr -> (cr ^. chapterUuid) == (chapter ^. uuid)) $ (dmp ^. report . chapterReports)
     mapM_ question2html (chapter ^. questions)
+
+chapterReport2html :: [MetricDTO] -> Maybe ChapterReportDTO -> H.Html
+chapterReport2html metrics Nothing = H.toHtml ""
+chapterReport2html metrics (Just report) =
+  H.section ! A.class_ "report" $ do
+    H.h3 ! A.class_ "title" $ H.toHtml "Report"
+    H.h4 $ H.toHtml "Indications"
+    H.div ! A.class_ "indications" $ mapM_ indication2html (report ^. indications)
+    H.h4 $ H.toHtml "Metrics"
+    H.div ! A.class_ "metrics" $ H.table $ do
+      H.tr $ do
+        H.th $ H.toHtml "Metric"
+        H.th $ H.toHtml "Score"
+      mapM_ (uncurry metricSummary2htmlTr) pairedMetricSummaries
+    where
+      pairedMetricSummaries = mapMaybe mkMetricPair (_chapterReportDTOMetrics report)
+      mkMetricPair :: MetricSummaryDTO -> Maybe (MetricDTO, MetricSummaryDTO)
+      mkMetricPair summary = case find (\m -> (m ^. uuid) == (summary ^. metricUuid)) metrics of
+                               Just metric -> Just (metric, summary)
+                               _ -> Nothing
+
+indication2html :: IndicationDTO -> H.Html
+indication2html (AnsweredIndicationDTO' indication) =
+  H.table $ do
+    H.tr $ do
+      H.th $ H.toHtml "Anwered"
+      H.td $ H.toHtml $ indication ^. answeredQuestions
+    H.tr $ do
+      H.th $ H.toHtml "Unanwered"
+      H.td $ H.toHtml $ indication ^. unansweredQuestions
+-- indication2html _ = H.toHtml ""
+
+metricSummary2htmlTr :: MetricDTO -> MetricSummaryDTO -> H.Html
+metricSummary2htmlTr metric summary =
+  H.tr $ do
+    H.td $ H.toHtml $ metric ^. title
+    H.td $ H.toHtml $ summary ^. measure
 
 question2html :: FilledQuestionDTO -> H.Html
 question2html question =
