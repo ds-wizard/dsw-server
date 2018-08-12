@@ -70,10 +70,10 @@ chapterReport2html metrics (Just report) =
     H.div ! A.class_ "indications" $ mapM_ indication2html (report ^. indications)
     H.h4 $ H.toHtml "Metrics"
     H.div ! A.class_ "metrics" $ H.table $ do
-      H.tr $ do
+      H.thead $ H.tr $ do
         H.th $ H.toHtml "Metric"
         H.th $ H.toHtml "Score"
-      mapM_ (uncurry metricSummary2htmlTr) pairedMetricSummaries
+      H.tbody $ mapM_ (uncurry metricSummary2htmlTr) pairedMetricSummaries
     where
       pairedMetricSummaries = mapMaybe mkMetricPair (_chapterReportDTOMetrics report)
       mkMetricPair :: MetricSummaryDTO -> Maybe (MetricDTO, MetricSummaryDTO)
@@ -83,12 +83,12 @@ chapterReport2html metrics (Just report) =
 
 indication2html :: IndicationDTO -> H.Html
 indication2html (AnsweredIndicationDTO' indication) =
-  H.table $ do
+  H.table $ H.tbody $ do
     H.tr $ do
-      H.th $ H.toHtml "Anwered"
+      H.th $ H.toHtml "Answered"
       H.td $ H.toHtml $ indication ^. answeredQuestions
     H.tr $ do
-      H.th $ H.toHtml "Unanwered"
+      H.th $ H.toHtml "Unanswered"
       H.td $ H.toHtml $ indication ^. unansweredQuestions
 -- indication2html _ = H.toHtml ""
 

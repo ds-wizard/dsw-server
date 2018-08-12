@@ -57,3 +57,6 @@ mainCSS = do
     fontWeight bold
     color red
   p # ".no-answer" ? before & content (stringContent " ✘  ")
+  div # ".indications" |> table |> tbody |> tr |> th ? textAlign (alignSide sideLeft)
+  div # ".indications" |> table |> tbody |> tr |> th ? after & content (stringContent ": ")
+  div # ".metrics" |> table |> tbody |> tr |> td # lastOfType ? textAlign (alignSide sideRight)
