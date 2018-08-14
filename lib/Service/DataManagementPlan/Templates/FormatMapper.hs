@@ -1,6 +1,5 @@
 module Service.DataManagementPlan.Templates.FormatMapper where
 
-import Control.Lens ((^.))
 import Data.Default
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy as BSL
@@ -9,10 +8,8 @@ import qualified Data.Text.Encoding as E
 import qualified Text.FromHTML as FromHTML
 
 import Api.Resource.DataManagementPlan.DataManagementPlanDTO
-import LensesConfig
 import Localization
 import Model.DataManagementPlan.DataManagementPlan
-import Model.DataManagementPlan.DataManagementPlanTemplateContext
 import Model.Error.Error
 import Service.DataManagementPlan.Templates.Html
 
