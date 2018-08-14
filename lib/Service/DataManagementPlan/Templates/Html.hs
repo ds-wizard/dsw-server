@@ -118,11 +118,11 @@ question2html ctx question =
 qanswer2html :: DataManagementPlanTemplateContext -> FilledQuestionDTO -> H.Html
 qanswer2html ctx question
   | notAnswered = notAnsweredHtml
-  | otherwise =
+  | otherwise = fromMaybe (H.toHtml "") $
     case question ^. qType of
-      QuestionTypeOptions -> answerOption2html ctx . fromJust $ optionAnswer
-      QuestionTypeList -> answerItems2html ctx . fromJust $ itemsAnswer
-      _ -> answerSimple2html ctx . fromJust $ simpleAnswer
+      QuestionTypeOptions -> answerOption2html ctx <$> optionAnswer
+      QuestionTypeList -> answerItems2html ctx <$> itemsAnswer
+      _ -> answerSimple2html ctx <$> simpleAnswer
   where
     notAnswered = isNothing optionAnswer && isNothing itemsAnswer && isNothing simpleAnswer
     optionAnswer = question ^. answerOption
