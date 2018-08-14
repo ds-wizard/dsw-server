@@ -55,9 +55,12 @@ mainCSS = do
   div # ".answer-block" |> star # ".answer" ? before & content (stringContent " ✔  ")
   div # ".answer-option" |> p # ".advice" ? before & content (stringContent " ⓘ  ")
   div # ".answer-items" |> div # ".answer-item" |> span # ".title" ? display none
-  p # ".no-answer" ? do
+  div # ".question.required" ? p # ".no-answer" ? do
     fontWeight bold
     color red
+  div # ".question.optional" ? p # ".no-answer" ? do
+    fontWeight bold
+    color lightslategray
   p # ".no-answer" ? before & content (stringContent " ✘  ")
   div # ".indications" |> table |> tbody |> tr |> th ? textAlign (alignSide sideLeft)
   div # ".indications" |> table |> tbody |> tr |> th ? after & content (stringContent ": ")
