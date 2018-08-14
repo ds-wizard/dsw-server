@@ -1,6 +1,7 @@
 module Service.DataManagementPlan.Templates.FormatMapper where
 
 import Control.Lens ((^.))
+import Data.Default
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy as BSL
 import qualified Data.Text as T
@@ -11,6 +12,7 @@ import Api.Resource.DataManagementPlan.DataManagementPlanDTO
 import LensesConfig
 import Localization
 import Model.DataManagementPlan.DataManagementPlan
+import Model.DataManagementPlan.DataManagementPlanTemplateContext
 import Model.Error.Error
 import Service.DataManagementPlan.Templates.Html
 
@@ -37,7 +39,7 @@ toFormat format = toType (formatToType format)
     handleResult (Left err) = Left . GeneralServerError $ _ERROR_SERVICE_DMP__TRANSFORMATION_FAILED (bsToStr err)
 
 mkHTMLString :: DataManagementPlanDTO -> String
-mkHTMLString dmp = dmp2html dmp
+mkHTMLString = dmp2html def
 
 formatToType :: DataManagementPlanFormat -> Maybe DMPExportType
 formatToType HTML = Just FromHTML.HTML

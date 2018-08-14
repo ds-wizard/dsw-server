@@ -46,7 +46,9 @@ mainCSS = do
     margin (em 0.1) (em 0) (em 0.5) (em 0.2)
   li # ".expert" |> span # ".email" ? before & content (stringContent "[")
   li # ".expert" |> span # ".email" ? after & content (stringContent "]")
-  li # ".reference-dmpbook" |> span # ".dmpbook-chapter" ? before & content (stringContent "DMP Book chapter: ")
+  li # ".reference-resourcepage" |> a # ".resourcepage-link" ? before & content (stringContent "Resource page: ")
+  li # ".reference-url" |> a # ".url-link" ? before & content (stringContent "URL: ")
+  li # ".reference-xref" |> span # ".xref-uuid" ? before & content (stringContent "Related question: ")
   div # ".answer-block" |> star # ".answer" ? do
     fontWeight bold
     fontStyle italic
