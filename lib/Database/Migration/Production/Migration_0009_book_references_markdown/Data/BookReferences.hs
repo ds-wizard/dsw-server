@@ -71,7 +71,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "wgj"
-    , "bookChapter" BSON.=: "6.2"
+      , "bookChapter" BSON.=: "6.2"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -82,7 +82,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "ykv"
-    , "bookChapter" BSON.=: "6.1"
+      , "bookChapter" BSON.=: "6.1"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -93,7 +93,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "xvp"
-    , "bookChapter" BSON.=: "7.5.1"
+      , "bookChapter" BSON.=: "7.5.1"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -104,7 +104,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "hct"
-    , "bookChapter" BSON.=: "1.12.1"
+      , "bookChapter" BSON.=: "1.12.1"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -115,7 +115,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "usx"
-    , "bookChapter" BSON.=: "1.12.2"
+      , "bookChapter" BSON.=: "1.12.2"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -126,7 +126,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "gqs"
-    , "bookChapter" BSON.=: "1.15.1"
+      , "bookChapter" BSON.=: "1.15.1"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -137,7 +137,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "bqy"
-    , "bookChapter" BSON.=: "1.9"
+      , "bookChapter" BSON.=: "1.9"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -148,7 +148,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "bzu"
-    , "bookChapter" BSON.=: "6.6"
+      , "bookChapter" BSON.=: "6.6"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -159,7 +159,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "dcy"
-    , "bookChapter" BSON.=: "1.8"
+      , "bookChapter" BSON.=: "1.8"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -170,7 +170,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "grt"
-    , "bookChapter" BSON.=: "4.2.2"
+      , "bookChapter" BSON.=: "4.2.2"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -181,7 +181,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "ixr"
-    , "bookChapter" BSON.=: "2.5.1.2"
+      , "bookChapter" BSON.=: "2.5.1.2"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -192,7 +192,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "jrw"
-    , "bookChapter" BSON.=: "4.2.1"
+      , "bookChapter" BSON.=: "4.2.1"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -203,7 +203,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "jwg"
-    , "bookChapter" BSON.=: "2.2.3"
+      , "bookChapter" BSON.=: "2.2.3"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -214,7 +214,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "jxb"
-    , "bookChapter" BSON.=: "1.5"
+      , "bookChapter" BSON.=: "1.5"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -225,7 +225,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "kuz"
-    , "bookChapter" BSON.=: "1.13"
+      , "bookChapter" BSON.=: "1.13"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -236,7 +236,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "ikk"
-    , "bookChapter" BSON.=: "2.2"
+      , "bookChapter" BSON.=: "2.2"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -247,7 +247,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "njy"
-    , "bookChapter" BSON.=: "2.1"
+      , "bookChapter" BSON.=: "2.1"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -258,7 +258,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "hea"
-    , "bookChapter" BSON.=: "2.1.1"
+      , "bookChapter" BSON.=: "2.1.1"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -269,7 +269,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "atw"
-    , "bookChapter" BSON.=: "2.3.2"
+      , "bookChapter" BSON.=: "2.3.2"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -280,7 +280,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "pth"
-    , "bookChapter" BSON.=: "1.11.1"
+      , "bookChapter" BSON.=: "1.11.1"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -291,7 +291,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "qzt"
-    , "bookChapter" BSON.=: "4.1.1"
+      , "bookChapter" BSON.=: "4.1.1"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -302,7 +302,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "rbz"
-    , "bookChapter" BSON.=: "1.12"
+      , "bookChapter" BSON.=: "1.12"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -313,7 +313,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "rgy"
-    , "bookChapter" BSON.=: "1.6"
+      , "bookChapter" BSON.=: "1.6"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -324,7 +324,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "ske"
-    , "bookChapter" BSON.=: "2.2.2"
+      , "bookChapter" BSON.=: "2.2.2"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -335,7 +335,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "spg"
-    , "bookChapter" BSON.=: "2.3.1"
+      , "bookChapter" BSON.=: "2.3.1"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -346,7 +346,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "brz"
-    , "bookChapter" BSON.=: "2.4.1"
+      , "bookChapter" BSON.=: "2.4.1"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -357,7 +357,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "rhm"
-    , "bookChapter" BSON.=: "2.3"
+      , "bookChapter" BSON.=: "2.3"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -368,7 +368,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "tgk"
-    , "bookChapter" BSON.=: "2.5.1.3"
+      , "bookChapter" BSON.=: "2.5.1.3"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -379,7 +379,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "wht"
-    , "bookChapter" BSON.=: "1.10"
+      , "bookChapter" BSON.=: "1.10"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -390,7 +390,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "wya"
-    , "bookChapter" BSON.=: "1.7"
+      , "bookChapter" BSON.=: "1.7"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -401,7 +401,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "xyf"
-    , "bookChapter" BSON.=: "4.2.3"
+      , "bookChapter" BSON.=: "4.2.3"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -412,7 +412,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "kdp"
-    , "bookChapter" BSON.=: "2.5.5"
+      , "bookChapter" BSON.=: "2.5.5"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -423,7 +423,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "wia"
-    , "bookChapter" BSON.=: "2.7"
+      , "bookChapter" BSON.=: "2.7"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -434,7 +434,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "ybd"
-    , "bookChapter" BSON.=: "2.5.3"
+      , "bookChapter" BSON.=: "2.5.3"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -445,7 +445,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "zmu"
-    , "bookChapter" BSON.=: "2.5.6"
+      , "bookChapter" BSON.=: "2.5.6"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -456,7 +456,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "dta"
-    , "bookChapter" BSON.=: "2.5.4"
+      , "bookChapter" BSON.=: "2.5.4"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -467,7 +467,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "kqh"
-    , "bookChapter" BSON.=: "2.5.4.1"
+      , "bookChapter" BSON.=: "2.5.4.1"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -478,7 +478,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "ijn"
-    , "bookChapter" BSON.=: "2.8.1"
+      , "bookChapter" BSON.=: "2.8.1"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -489,7 +489,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "rqh"
-    , "bookChapter" BSON.=: "3.2"
+      , "bookChapter" BSON.=: "3.2"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -500,7 +500,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "nkj"
-    , "bookChapter" BSON.=: "3.1"
+      , "bookChapter" BSON.=: "3.1"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -511,7 +511,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "wqm"
-    , "bookChapter" BSON.=: "6.5.1"
+      , "bookChapter" BSON.=: "6.5.1"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -522,7 +522,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "fxm"
-    , "bookChapter" BSON.=: "5.2"
+      , "bookChapter" BSON.=: "5.2"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -533,7 +533,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "pzq"
-    , "bookChapter" BSON.=: "4.4"
+      , "bookChapter" BSON.=: "4.4"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -544,7 +544,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "qqb"
-    , "bookChapter" BSON.=: "5.3"
+      , "bookChapter" BSON.=: "5.3"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -555,7 +555,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "xke"
-    , "bookChapter" BSON.=: "7.4"
+      , "bookChapter" BSON.=: "7.4"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -566,7 +566,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "jbz"
-    , "bookChapter" BSON.=: "7.3.1"
+      , "bookChapter" BSON.=: "7.3.1"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -577,7 +577,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "cwq"
-    , "bookChapter" BSON.=: "7.2"
+      , "bookChapter" BSON.=: "7.2"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -588,7 +588,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "ivg"
-    , "bookChapter" BSON.=: "7.4.1"
+      , "bookChapter" BSON.=: "7.4.1"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -599,7 +599,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "jvm"
-    , "bookChapter" BSON.=: "7.1"
+      , "bookChapter" BSON.=: "7.1"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -610,7 +610,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "mjf"
-    , "bookChapter" BSON.=: "7.3"
+      , "bookChapter" BSON.=: "7.3"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -621,7 +621,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: ""
-    , "bookChapter" BSON.=: "7.4.3"
+      , "bookChapter" BSON.=: "7.4.3"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -632,7 +632,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "igj"
-    , "bookChapter" BSON.=: "7.5.2"
+      , "bookChapter" BSON.=: "7.5.2"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -643,7 +643,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "ezi"
-    , "bookChapter" BSON.=: "1.2"
+      , "bookChapter" BSON.=: "1.2"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -654,7 +654,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "fxe"
-    , "bookChapter" BSON.=: "7.4.4"
+      , "bookChapter" BSON.=: "7.4.4"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -665,7 +665,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "atq"
-    , "bookChapter" BSON.=: "1.1"
+      , "bookChapter" BSON.=: "1.1"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -676,7 +676,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "ckt"
-    , "bookChapter" BSON.=: "1.4"
+      , "bookChapter" BSON.=: "1.4"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -687,7 +687,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "qej"
-    , "bookChapter" BSON.=: "1.15.3.2"
+      , "bookChapter" BSON.=: "1.15.3.2"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -698,7 +698,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "mkg"
-    , "bookChapter" BSON.=: "1.15.4"
+      , "bookChapter" BSON.=: "1.15.4"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -709,7 +709,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "acx"
-    , "bookChapter" BSON.=: "1.16"
+      , "bookChapter" BSON.=: "1.16"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -720,7 +720,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "cvk"
-    , "bookChapter" BSON.=: "1.16.1"
+      , "bookChapter" BSON.=: "1.16.1"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -731,7 +731,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "yqk"
-    , "bookChapter" BSON.=: "1.15.2"
+      , "bookChapter" BSON.=: "1.15.2"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -742,7 +742,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "fqv"
-    , "bookChapter" BSON.=: "1.15.3"
+      , "bookChapter" BSON.=: "1.15.3"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -753,7 +753,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "eif"
-    , "bookChapter" BSON.=: "1.15.3.1"
+      , "bookChapter" BSON.=: "1.15.3.1"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -764,7 +764,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "ajz"
-    , "bookChapter" BSON.=: "1.16.2"
+      , "bookChapter" BSON.=: "1.16.2"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -775,7 +775,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "zxp"
-    , "bookChapter" BSON.=: "1.16.2.1"
+      , "bookChapter" BSON.=: "1.16.2.1"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -786,7 +786,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "jyd"
-    , "bookChapter" BSON.=: "1.11.2"
+      , "bookChapter" BSON.=: "1.11.2"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -797,7 +797,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "ajm"
-    , "bookChapter" BSON.=: "1.11.3"
+      , "bookChapter" BSON.=: "1.11.3"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -808,7 +808,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "fqu"
-    , "bookChapter" BSON.=: "1.13.1"
+      , "bookChapter" BSON.=: "1.13.1"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -819,7 +819,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "hhg"
-    , "bookChapter" BSON.=: "1.13.2"
+      , "bookChapter" BSON.=: "1.13.2"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -830,7 +830,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "csx"
-    , "bookChapter" BSON.=: "1.14"
+      , "bookChapter" BSON.=: "1.14"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -841,7 +841,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "tgd"
-    , "bookChapter" BSON.=: "1.16.2.2"
+      , "bookChapter" BSON.=: "1.16.2.2"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -852,7 +852,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "rzn"
-    , "bookChapter" BSON.=: "2.2.1"
+      , "bookChapter" BSON.=: "2.2.1"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -863,7 +863,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "kjp"
-    , "bookChapter" BSON.=: "2.5.1.1"
+      , "bookChapter" BSON.=: "2.5.1.1"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -874,7 +874,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "rht"
-    , "bookChapter" BSON.=: "2.5.2"
+      , "bookChapter" BSON.=: "2.5.2"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -885,7 +885,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "eky"
-    , "bookChapter" BSON.=: "2.5.1.3.1"
+      , "bookChapter" BSON.=: "2.5.1.3.1"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -896,7 +896,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "yqy"
-    , "bookChapter" BSON.=: "2.5.1"
+      , "bookChapter" BSON.=: "2.5.1"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -907,7 +907,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "hfg"
-    , "bookChapter" BSON.=: "3.2.1.1"
+      , "bookChapter" BSON.=: "3.2.1.1"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -918,7 +918,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "bpp"
-    , "bookChapter" BSON.=: "2.5.7"
+      , "bookChapter" BSON.=: "2.5.7"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -929,7 +929,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "cbq"
-    , "bookChapter" BSON.=: "2.6"
+      , "bookChapter" BSON.=: "2.6"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -940,7 +940,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "ybw"
-    , "bookChapter" BSON.=: "3.2.1"
+      , "bookChapter" BSON.=: "3.2.1"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -951,7 +951,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "ydj"
-    , "bookChapter" BSON.=: "4.2"
+      , "bookChapter" BSON.=: "4.2"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -962,7 +962,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "dwv"
-    , "bookChapter" BSON.=: "4.3"
+      , "bookChapter" BSON.=: "4.3"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
@@ -973,7 +973,7 @@ bookReferencesMD now =
     , []
     )
   , ( [ "shortUuid" BSON.=: "egv"
-    , "bookChapter" BSON.=: "4.2.4"
+      , "bookChapter" BSON.=: "4.2.4"
       ]
     , [ "$set" BSON.=:
         [ "content" BSON.=:
