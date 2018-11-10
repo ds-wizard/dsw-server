@@ -2,7 +2,6 @@ module Database.Migration.Production.Migration_0009_book_references_markdown.Dat
 
 import qualified Data.Bson as BSON
 
---bookReferencesMD :: UTCTime -> [(BSON.Selector, BSON.Document, [BSON.UpdateOption])]
 bookReferencesMD now =
   [ ( [ "shortUuid" BSON.=: "bvq"
       , "bookChapter" BSON.=: "7.4.2"
