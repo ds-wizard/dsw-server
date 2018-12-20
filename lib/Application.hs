@@ -3,6 +3,7 @@ module Application where
 import Control.Lens ((^.))
 import Control.Monad.Logger (runStdoutLoggingT)
 import Control.Monad.Reader (liftIO, runReaderT)
+import Control.Retry
 import Data.Default (def)
 import Network.Wai.Handler.Warp
        (Settings, defaultSettings, setPort)
@@ -24,6 +25,8 @@ import Util.Logger
 applicationConfigFile = "config/app-config.cfg"
 
 buildInfoFile = "config/build-info.cfg"
+
+retryBackoff = exponentialBackoff 1000000 <> limitRetries 5
 
 runServer :: IO ()
 runServer =
@@ -50,9 +53,11 @@ runServer =
       Right dswConfig -> do
         logInfo $ msg _CMP_CONFIG "loaded"
         logInfo $ "ENVIRONMENT: set to " ++ (show $ dswConfig ^. environment . env)
-        dbPool <- liftIO $ createDatabaseConnectionPool dswConfig
+        dbPool <-
+          withRetry retryBackoff (createDatabaseConnectionPool dswConfig) _CMP_DATABASE "creating connection pool"
         logInfo $ msg _CMP_DATABASE "connected"
-        msgChannel <- liftIO $ createMessagingChannel dswConfig
+        msgChannel <-
+          withRetry retryBackoff (createMessagingChannel dswConfig) _CMP_MESSAGING "connecting to messaging channel"
         logInfo $ msg _CMP_MESSAGING "connected"
         let serverPort = dswConfig ^. webConfig ^. port
         let baseContext =
@@ -60,6 +65,16 @@ runServer =
               {_baseContextConfig = dswConfig, _baseContextPool = dbPool, _baseContextMsgChannel = msgChannel}
         liftIO $ runDBMigrations baseContext
         liftIO $ runApplication baseContext
+
+withRetry backoff action _CMP description = recoverAll backoff loggedAction
+  where
+    loggedAction retryStatus = do
+      let retryInfo =
+            if rsIterNumber retryStatus > 0
+              then " (retry #" ++ show (rsIterNumber retryStatus) ++ ")"
+              else ""
+      logInfo $ msg _CMP (description ++ retryInfo)
+      liftIO $ action
 
 runDBMigrations context =
   case context ^. config . environment . env of

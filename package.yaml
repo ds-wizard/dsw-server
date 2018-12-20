@@ -57,6 +57,7 @@ library:
   - pwstore-fast
   - random
   - regex-compat
+  - retry
   - scotty
   - smtp-mail
   - text
