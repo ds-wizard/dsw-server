@@ -3,7 +3,6 @@ module Application where
 import Control.Lens ((^.))
 import Control.Monad.Logger (runStdoutLoggingT)
 import Control.Monad.Reader (liftIO, runReaderT)
-import Control.Monad.Trans.Class (lift)
 import Data.Default (def)
 import Network.Wai.Handler.Warp
        (Settings, defaultSettings, setPort)
@@ -51,16 +50,16 @@ runServer =
       Right dswConfig -> do
         logInfo $ msg _CMP_CONFIG "loaded"
         logInfo $ "ENVIRONMENT: set to " ++ (show $ dswConfig ^. environment . env)
-        runStdoutLoggingT $ createDBConn dswConfig $ \dbPool -> do
-          lift . logInfo $ msg _CMP_DATABASE "connected"
-          msgChannel <- liftIO $ createMessagingChannel dswConfig
-          lift . logInfo $ msg _CMP_MESSAGING "connected"
-          let serverPort = dswConfig ^. webConfig ^. port
-          let baseContext =
-                BaseContext
-                {_baseContextConfig = dswConfig, _baseContextPool = dbPool, _baseContextMsgChannel = msgChannel}
-          liftIO $ runDBMigrations baseContext
-          liftIO $ runApplication baseContext
+        dbPool <- liftIO $ createDatabaseConnectionPool dswConfig
+        logInfo $ msg _CMP_DATABASE "connected"
+        msgChannel <- liftIO $ createMessagingChannel dswConfig
+        logInfo $ msg _CMP_MESSAGING "connected"
+        let serverPort = dswConfig ^. webConfig ^. port
+        let baseContext =
+              BaseContext
+              {_baseContextConfig = dswConfig, _baseContextPool = dbPool, _baseContextMsgChannel = msgChannel}
+        liftIO $ runDBMigrations baseContext
+        liftIO $ runApplication baseContext
 
 runDBMigrations context =
   case context ^. config . environment . env of

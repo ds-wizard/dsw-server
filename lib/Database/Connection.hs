@@ -7,12 +7,15 @@ import Network
 
 import LensesConfig
 
-createDBConn dswConfig afterSuccess =
-  let appConfigDatabase = dswConfig ^. databaseConfig
-      dbHost = appConfigDatabase ^. host
-      dbPort = PortNumber (fromInteger (appConfigDatabase ^. port) :: PortNumber) :: PortID
-      dbName = pack (appConfigDatabase ^. databaseName)
-      dbCred = Just $ MongoAuth (pack $ appConfigDatabase ^. username) (pack $ appConfigDatabase ^. password)
-  in if appConfigDatabase ^. authEnabled
-       then withMongoDBConn dbName dbHost dbPort dbCred 1 afterSuccess
-       else withMongoDBConn dbName dbHost dbPort Nothing 1 afterSuccess
+createDatabaseConnectionPool dswConfig = do
+  createMongoDBPool dbName dbHost dbPort dbCred 1 1 1
+  where
+    appConfigDatabase = dswConfig ^. databaseConfig
+    dbHost = appConfigDatabase ^. host
+    dbPort = PortNumber (fromInteger (appConfigDatabase ^. port) :: PortNumber) :: PortID
+    dbName = pack (appConfigDatabase ^. databaseName)
+    dbCred = mkDBCred appConfigDatabase
+    mkDBCred appConfigDatabase =
+      if appConfigDatabase ^. authEnabled
+        then Just $ MongoAuth (pack $ appConfigDatabase ^. username) (pack $ appConfigDatabase ^. password)
+        else Nothing
