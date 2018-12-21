@@ -36,6 +36,7 @@ library:
   - ConfigFile
   - containers
   - data-default
+  - exceptions
   - fromhtml
   - github
   - http-client
@@ -86,6 +87,7 @@ library:
     - FunctionalDependencies
     - TypeSynonymInstances
     - FlexibleInstances
+    - ScopedTypeVariables
 
 executables:
   dsw-server:

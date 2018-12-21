@@ -1,6 +1,7 @@
 module Application where
 
 import Control.Lens ((^.))
+import Control.Monad.Catch
 import Control.Monad.Logger (runStdoutLoggingT)
 import Control.Monad.Reader (liftIO, runReaderT)
 import Control.Retry
@@ -26,7 +27,11 @@ applicationConfigFile = "config/app-config.cfg"
 
 buildInfoFile = "config/build-info.cfg"
 
-retryBackoff = exponentialBackoff 1000000 <> limitRetries 5
+retryCount = 5
+
+retryBaseWait = 2000000
+
+retryBackoff = exponentialBackoff retryBaseWait <> limitRetries retryCount
 
 runServer :: IO ()
 runServer =
@@ -53,11 +58,23 @@ runServer =
       Right dswConfig -> do
         logInfo $ msg _CMP_CONFIG "loaded"
         logInfo $ "ENVIRONMENT: set to " ++ (show $ dswConfig ^. environment . env)
+        logInfo $ msg _CMP_DATABASE "creating a connection pool"
         dbPool <-
-          withRetry retryBackoff (createDatabaseConnectionPool dswConfig) _CMP_DATABASE "creating connection pool"
+          liftIO $
+          withRetry
+            retryBackoff
+            _CMP_DATABASE
+            "failed to create a connection pool"
+            (createDatabaseConnectionPool dswConfig)
         logInfo $ msg _CMP_DATABASE "connected"
+        logInfo $ msg _CMP_MESSAGING "connecting to the message broker"
         msgChannel <-
-          withRetry retryBackoff (createMessagingChannel dswConfig) _CMP_MESSAGING "connecting to messaging channel"
+          liftIO $
+          withRetry
+            retryBackoff
+            _CMP_MESSAGING
+            "failed to connect to the message broker"
+            (createMessagingChannel dswConfig)
         logInfo $ msg _CMP_MESSAGING "connected"
         let serverPort = dswConfig ^. webConfig ^. port
         let baseContext =
@@ -66,15 +83,23 @@ runServer =
         liftIO $ runDBMigrations baseContext
         liftIO $ runApplication baseContext
 
-withRetry backoff action _CMP description = recoverAll backoff loggedAction
+withRetry :: RetryPolicyM IO -> String -> String -> IO a -> IO a
+withRetry backoff _CMP description action = recovering backoff handlers wrappedAction
   where
-    loggedAction retryStatus = do
-      let retryInfo =
-            if rsIterNumber retryStatus > 0
-              then " (retry #" ++ show (rsIterNumber retryStatus) ++ ")"
-              else ""
-      logInfo $ msg _CMP (description ++ retryInfo)
-      liftIO $ action
+    wrappedAction _ = action
+    handlers = skipAsyncExceptions ++ [handler]
+    handler retryStatus = Handler $ \(_ :: SomeException) -> loggingHandler retryStatus
+    loggingHandler retryStatus = do
+      let nextWait =
+            case rsPreviousDelay retryStatus of
+              Just x -> 2 * (fromIntegral x) / 1000000
+              Nothing -> fromIntegral retryBaseWait / 1000000
+      if rsIterNumber retryStatus < retryCount
+        then do
+          let retryInfo = "retry #" ++ show (rsIterNumber retryStatus + 1) ++ " in " ++ show nextWait ++ " seconds"
+          runStdoutLoggingT $ logWarn $ msg _CMP (description ++ " - " ++ retryInfo)
+        else runStdoutLoggingT $ logError $ msg _CMP description
+      return True
 
 runDBMigrations context =
   case context ^. config . environment . env of
