@@ -58,13 +58,13 @@ runServer =
       Right dswConfig -> do
         logInfo $ msg _CMP_CONFIG "loaded"
         logInfo $ "ENVIRONMENT: set to " ++ (show $ dswConfig ^. environment . env)
-        logInfo $ msg _CMP_DATABASE "creating a connection pool"
+        logInfo $ msg _CMP_DATABASE "connecting to the database"
         dbPool <-
           liftIO $
           withRetry
             retryBackoff
             _CMP_DATABASE
-            "failed to create a connection pool"
+            "failed to connect to the database"
             (createDatabaseConnectionPool dswConfig)
         logInfo $ msg _CMP_DATABASE "connected"
         logInfo $ msg _CMP_MESSAGING "connecting to the message broker"
