@@ -39,6 +39,8 @@ enabled = false
 name =
 email =
 host =
+port =
+usessl =
 username =
 password =
 
