@@ -6,30 +6,52 @@ module Service.Mail.Mailer
 
 import Control.Lens ((^.))
 import Control.Monad.Reader (asks, liftIO)
+import qualified Data.ByteString as S
+import qualified Data.ByteString.Lazy as B
 import qualified Data.Text as T
 import qualified Data.Text.Lazy as TL
 import qualified Data.UUID as U
-import qualified Network.Mail.SMTP as SMTP
+import qualified Network.HaskellNet.Auth as Auth
+import qualified Network.HaskellNet.SMTP as SMTP
+import qualified Network.HaskellNet.SMTP.SSL as SMTPSSL
+import qualified Network.Mail.Mime as MIME
 
 import LensesConfig
 import Model.Context.AppContext
 import Model.User.User
 
-createEmail :: Email -> T.Text -> TL.Text -> AppContextM ()
-createEmail to subject body = do
+createEmail to from subject plainBody "" _ = MIME.simpleMail' to from subject plainBody
+createEmail to from subject plainBody htmlBody attachments =
+  MIME.simpleMailInMemory to from subject plainBody htmlBody attachments
+
+makeConnection False host Nothing = SMTP.doSMTP host
+makeConnection False host (Just port) = SMTP.doSMTPPort host (fromIntegral port)
+makeConnection True host Nothing = SMTPSSL.doSMTPSSL host
+makeConnection True host (Just port) = SMTPSSL.doSMTPSSLWithSettings host settings
+  where
+    settings = SMTPSSL.defaultSettingsSMTPSSL {SMTPSSL.sslPort = fromIntegral port}
+
+sendEmail :: Email -> TL.Text -> TL.Text -> AppContextM ()
+sendEmail to subject body = do
   dswConfig <- asks _appContextConfig
   let mailConfig = dswConfig ^. mail
-      addrFrom = SMTP.Address (Just . T.pack $ mailConfig ^. name) (T.pack $ mailConfig ^. email)
-      cc = []
-      bcc = []
-      emailBody = SMTP.htmlPart body
-      addrTo = [SMTP.Address Nothing (T.pack to)]
+      from = mailConfig ^. email
+      addrFrom = MIME.Address (Just . T.pack $ mailConfig ^. name) (T.pack from)
+      addrTo = MIME.Address Nothing (T.pack to)
+      plainBody = body
+      htmlBody = ""
       mailHost = mailConfig ^. host
+      mailPort = mailConfig ^. port
+      mailUseSSL = mailConfig ^. useSSL
       mailUsername = mailConfig ^. username
       mailPassword = mailConfig ^. password
-      mailMessage = SMTP.simpleMail addrFrom addrTo cc bcc subject [emailBody]
+      mailSubject = TL.toStrict subject
+      mailMessage = createEmail addrFrom addrTo mailSubject plainBody htmlBody []
   if mailConfig ^. enabled
-    then liftIO $ SMTP.sendMailWithLogin mailHost mailUsername mailPassword mailMessage
+    then liftIO $ makeConnection mailUseSSL mailHost mailPort $ \connection -> do
+           SMTP.authenticate Auth.LOGIN mailUsername mailPassword connection
+           renderedMail <- MIME.renderMail' mailMessage
+           SMTP.sendMail from [to] (S.concat . B.toChunks $ renderedMail) connection
     else return ()
 
 sendRegistrationConfirmationMail :: Email -> U.UUID -> String -> AppContextM ()
@@ -40,7 +62,7 @@ sendRegistrationConfirmationMail email userId hash = do
       link = "<a href=\"" ++ clientLink ++ "\">here</a>"
       subject = "Confirmation Email"
       body = TL.pack $ "Hi! For account activation you have to click " ++ link ++ "! Elixir DSW Wizard Team"
-  createEmail email subject body
+  sendEmail email subject body
 
 sendRegistrationCreatedAnalyticsMail :: String -> String -> Email -> AppContextM ()
 sendRegistrationCreatedAnalyticsMail uName uSurname uEmail = do
@@ -50,7 +72,7 @@ sendRegistrationCreatedAnalyticsMail uName uSurname uEmail = do
       body =
         TL.pack $ "Hi! We have a new user (" ++ uName ++ " " ++ uSurname ++ ", " ++ uEmail ++
         ") in our Wizard! Elixir DSW Wizard Team"
-  createEmail analyticsAddress subject body
+  sendEmail analyticsAddress subject body
 
 sendResetPasswordMail :: Email -> U.UUID -> String -> AppContextM ()
 sendResetPasswordMail email userId hash = do
@@ -60,4 +82,4 @@ sendResetPasswordMail email userId hash = do
       link = "<a href=\"" ++ clientLink ++ "\">here</a>"
       subject = "Reset Password"
       body = TL.pack $ "Hi! You can set up a new password " ++ link ++ "! Elixir DSW Wizard Team"
-  createEmail email subject body
+  sendEmail email subject body

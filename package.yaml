@@ -43,10 +43,13 @@ library:
   - ginger
   - github
   - hashable
+  - HaskellNet
+  - HaskellNet-SSL
   - http-client
   - http-types
   - jwt
   - lens
+  - mime-mail
   - MissingH
   - mtl
   - monad-control
@@ -64,7 +67,6 @@ library:
   - regex-compat
   - retry
   - scotty
-  - smtp-mail
   - text
   - time
   - transformers
