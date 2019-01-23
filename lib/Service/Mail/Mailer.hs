@@ -38,8 +38,8 @@ sendEmail to subject body = do
       from = mailConfig ^. email
       addrFrom = MIME.Address (Just . T.pack $ mailConfig ^. name) (T.pack from)
       addrTo = MIME.Address Nothing (T.pack to)
-      plainBody = body
-      htmlBody = ""
+      plainBody = ""
+      htmlBody = body
       mailHost = mailConfig ^. host
       mailPort = mailConfig ^. port
       mailUseSSL = mailConfig ^. useSSL
@@ -60,18 +60,21 @@ sendRegistrationConfirmationMail email userId hash = do
   let clientAddress = dswConfig ^. clientConfig . address
       clientLink = clientAddress ++ "/signup-confirmation/" ++ U.toString userId ++ "/" ++ hash
       link = "<a href=\"" ++ clientLink ++ "\">here</a>"
-      subject = "Confirmation Email"
-      body = TL.pack $ "Hi! For account activation you have to click " ++ link ++ "! Elixir DSW Wizard Team"
+      mailName = dswConfig ^. mail . name
+      subject = TL.pack $ mailName ++ ": Confirmation Email"
+      body = TL.pack $ "Hi! For account activation you have to click " ++ link ++ "! " ++ mailName ++ " Team"
   sendEmail email subject body
 
 sendRegistrationCreatedAnalyticsMail :: String -> String -> Email -> AppContextM ()
 sendRegistrationCreatedAnalyticsMail uName uSurname uEmail = do
   dswConfig <- asks _appContextConfig
   let analyticsAddress = dswConfig ^. analytics . email
-      subject = "DSW Wizard: New user"
+      mailName = dswConfig ^. mail . name
+      subject = TL.pack $ mailName ++ ": New user"
       body =
-        TL.pack $ "Hi! We have a new user (" ++ uName ++ " " ++ uSurname ++ ", " ++ uEmail ++
-        ") in our Wizard! Elixir DSW Wizard Team"
+        TL.pack $ "Hi! We have a new user (" ++ uName ++ " " ++ uSurname ++ ", " ++ uEmail ++ ") in our Wizard! " ++
+        mailName ++
+        " Team"
   sendEmail analyticsAddress subject body
 
 sendResetPasswordMail :: Email -> U.UUID -> String -> AppContextM ()
@@ -80,6 +83,7 @@ sendResetPasswordMail email userId hash = do
   let clientAddress = dswConfig ^. clientConfig . address
       clientLink = clientAddress ++ "/forgotten-password/" ++ U.toString userId ++ "/" ++ hash
       link = "<a href=\"" ++ clientLink ++ "\">here</a>"
-      subject = "Reset Password"
-      body = TL.pack $ "Hi! You can set up a new password " ++ link ++ "! Elixir DSW Wizard Team"
+      mailName = dswConfig ^. mail . name
+      subject = TL.pack $ mailName ++ ": Reset Password"
+      body = TL.pack $ "Hi! You can set up a new password " ++ link ++ "! " ++ mailName ++ " Team"
   sendEmail email subject body
