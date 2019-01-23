@@ -49,9 +49,11 @@ sendEmail to subject body = do
       mailMessage = createEmail addrFrom addrTo mailSubject plainBody htmlBody []
   if mailConfig ^. enabled
     then liftIO $ makeConnection mailUseSSL mailHost mailPort $ \connection -> do
-           SMTP.authenticate Auth.LOGIN mailUsername mailPassword connection
+           authSuccess <- SMTP.authenticate Auth.LOGIN mailUsername mailPassword connection
            renderedMail <- MIME.renderMail' mailMessage
-           SMTP.sendMail from [to] (S.concat . B.toChunks $ renderedMail) connection
+           if authSuccess
+             then SMTP.sendMail from [to] (S.concat . B.toChunks $ renderedMail) connection
+             else return ()
     else return ()
 
 sendRegistrationConfirmationMail :: Email -> U.UUID -> String -> AppContextM ()
