@@ -42,13 +42,13 @@ sendEmail to subject body = do
       htmlBody = body
       mailHost = mailConfig ^. host
       mailPort = mailConfig ^. port
-      mailUseSSL = mailConfig ^. useSSL
+      mailSSL = mailConfig ^. ssl
       mailUsername = mailConfig ^. username
       mailPassword = mailConfig ^. password
       mailSubject = TL.toStrict subject
       mailMessage = createEmail addrFrom addrTo mailSubject plainBody htmlBody []
   if mailConfig ^. enabled
-    then liftIO $ makeConnection mailUseSSL mailHost mailPort $ \connection -> do
+    then liftIO $ makeConnection mailSSL mailHost mailPort $ \connection -> do
            authSuccess <- SMTP.authenticate Auth.LOGIN mailUsername mailPassword connection
            renderedMail <- MIME.renderMail' mailMessage
            if authSuccess

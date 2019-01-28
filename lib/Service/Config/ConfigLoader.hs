@@ -106,7 +106,7 @@ loadDSWConfig applicationConfigFile buildInfoFile = do
       mailEmail <- get configParser "Mail" "email"
       mailHost <- get configParser "Mail" "host"
       mailPort <- getOptional configParser "Mail" "port"
-      mailUseSSL <- getOptional configParser "Mail" "useSSL"
+      mailSSL <- getOptional configParser "Mail" "ssl"
       mailUsername <- get configParser "Mail" "username"
       mailPassword <- get configParser "Mail" "password"
       return
@@ -116,7 +116,7 @@ loadDSWConfig applicationConfigFile buildInfoFile = do
         , _appConfigMailEmail = mailEmail
         , _appConfigMailHost = mailHost
         , _appConfigMailPort = mailPort
-        , _appConfigMailUseSSL = fromMaybe False mailUseSSL
+        , _appConfigMailSsl = fromMaybe False mailSSL
         , _appConfigMailUsername = mailUsername
         , _appConfigMailPassword = mailPassword
         }

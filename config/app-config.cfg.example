@@ -40,7 +40,7 @@ name =
 email =
 host =
 port =
-usessl =
+ssl =
 username =
 password =
 
