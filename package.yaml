@@ -67,6 +67,7 @@ library:
   - regex-compat
   - retry
   - scotty
+  - smtp-mail
   - text
   - time
   - transformers

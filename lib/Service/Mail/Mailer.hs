@@ -16,6 +16,7 @@ import qualified Network.HaskellNet.Auth as Auth
 import qualified Network.HaskellNet.SMTP as SMTP
 import qualified Network.HaskellNet.SMTP.SSL as SMTPSSL
 import qualified Network.Mail.Mime as MIME
+import qualified Network.Mail.SMTP as SMTPMail
 
 import Constant.Component
 import LensesConfig
@@ -32,7 +33,7 @@ sendRegistrationConfirmationMail email userId hash = do
       mailName = dswConfig ^. mail . name
       subject = TL.pack $ mailName ++ ": Confirmation Email"
       body = TL.pack $ "Hi! For account activation you have to click " ++ link ++ "! " ++ mailName ++ " Team"
-  sendEmail email subject body
+  sendEmail [email] subject [SMTPMail.htmlPart body]
 
 sendRegistrationCreatedAnalyticsMail :: String -> String -> Email -> AppContextM ()
 sendRegistrationCreatedAnalyticsMail uName uSurname uEmail = do
@@ -44,7 +45,7 @@ sendRegistrationCreatedAnalyticsMail uName uSurname uEmail = do
         TL.pack $ "Hi! We have a new user (" ++ uName ++ " " ++ uSurname ++ ", " ++ uEmail ++ ") in our Wizard! " ++
         mailName ++
         " Team"
-  sendEmail analyticsAddress subject body
+  sendEmail [analyticsAddress] subject [SMTPMail.htmlPart body]
 
 sendResetPasswordMail :: Email -> U.UUID -> String -> AppContextM ()
 sendResetPasswordMail email userId hash = do
@@ -55,18 +56,11 @@ sendResetPasswordMail email userId hash = do
       mailName = dswConfig ^. mail . name
       subject = TL.pack $ mailName ++ ": Reset Password"
       body = TL.pack $ "Hi! You can set up a new password " ++ link ++ "! " ++ mailName ++ " Team"
-  sendEmail email subject body
+  sendEmail [email] subject [SMTPMail.htmlPart body]
 
 -- --------------------------------
 -- PRIVATE
 -- --------------------------------
-type Attachment = (T.Text, T.Text, B.ByteString)
-
-createEmail :: MIME.Address -> MIME.Address -> T.Text -> TL.Text -> TL.Text -> [Attachment] -> MIME.Mail
-createEmail to from subject plainBody "" _ = MIME.simpleMail' to from subject plainBody
-createEmail to from subject plainBody htmlBody attachments =
-  MIME.simpleMailInMemory to from subject plainBody htmlBody attachments
-
 makeConnection :: Integral i => Bool -> String -> Maybe i -> ((SMTP.SMTPConnection -> IO a) -> IO a)
 makeConnection False host Nothing = SMTP.doSMTP host
 makeConnection False host (Just port) = SMTP.doSMTPPort host (fromIntegral port)
@@ -75,29 +69,29 @@ makeConnection True host (Just port) = SMTPSSL.doSMTPSSLWithSettings host settin
   where
     settings = SMTPSSL.defaultSettingsSMTPSSL {SMTPSSL.sslPort = fromIntegral port}
 
-sendEmail :: Email -> TL.Text -> TL.Text -> AppContextM ()
-sendEmail to subject body = do
+sendEmail :: [Email] -> TL.Text -> [MIME.Part] -> AppContextM ()
+sendEmail to subject parts = do
   dswConfig <- asks _appContextConfig
   let mailConfig = dswConfig ^. mail
       from = mailConfig ^. email
       addrFrom = MIME.Address (Just . T.pack $ mailConfig ^. name) (T.pack from)
-      addrTo = MIME.Address Nothing (T.pack to)
-      plainBody = ""
-      htmlBody = body
+      addrsTo = map (MIME.Address Nothing . T.pack) to
+      addrsCc = []
+      addrsBcc = []
       mailHost = mailConfig ^. host
       mailPort = mailConfig ^. port
       mailSSL = mailConfig ^. ssl
       mailUsername = mailConfig ^. username
       mailPassword = mailConfig ^. password
       mailSubject = TL.toStrict subject
-      mailMessage = createEmail addrFrom addrTo mailSubject plainBody htmlBody []
+      mailMessage = SMTPMail.simpleMail addrFrom addrsTo addrsCc addrsBcc mailSubject parts
   if mailConfig ^. enabled
     then liftIO $ makeConnection mailSSL mailHost mailPort $ \connection -> do
            authSuccess <- SMTP.authenticate Auth.LOGIN mailUsername mailPassword connection
            renderedMail <- MIME.renderMail' mailMessage
            if authSuccess
              then do
-               SMTP.sendMail from [to] (S.concat . B.toChunks $ renderedMail) connection
-               runStdoutLoggingT $ logInfo $ msg _CMP_MAILER ("Email has been sent to " ++ to)
+               SMTP.sendMail from to (S.concat . B.toChunks $ renderedMail) connection
+               runStdoutLoggingT $ logInfo $ msg _CMP_MAILER ("Email has been sent to: " ++ unwords to)
              else runStdoutLoggingT $ logWarn $ msg _CMP_MAILER "Could not authenticate with SMTP server."
     else return ()
