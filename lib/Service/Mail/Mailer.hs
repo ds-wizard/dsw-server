@@ -57,10 +57,14 @@ sendResetPasswordMail email userId hash = do
 -- --------------------------------
 -- PRIVATE
 -- --------------------------------
+type Attachment = (T.Text, T.Text, B.ByteString)
+
+createEmail :: MIME.Address -> MIME.Address -> T.Text -> TL.Text -> TL.Text -> [Attachment] -> MIME.Mail
 createEmail to from subject plainBody "" _ = MIME.simpleMail' to from subject plainBody
 createEmail to from subject plainBody htmlBody attachments =
   MIME.simpleMailInMemory to from subject plainBody htmlBody attachments
 
+makeConnection :: Integral i => Bool -> String -> Maybe i -> ((SMTP.SMTPConnection -> IO a) -> IO a)
 makeConnection False host Nothing = SMTP.doSMTP host
 makeConnection False host (Just port) = SMTP.doSMTPPort host (fromIntegral port)
 makeConnection True host Nothing = SMTPSSL.doSMTPSSL host
