@@ -5,6 +5,7 @@ module Service.Mail.Mailer
   ) where
 
 import Control.Lens ((^.))
+import Control.Monad.Logger (runStdoutLoggingT)
 import Control.Monad.Reader (asks, liftIO)
 import qualified Data.ByteString as S
 import qualified Data.ByteString.Lazy as B
@@ -16,9 +17,11 @@ import qualified Network.HaskellNet.SMTP as SMTP
 import qualified Network.HaskellNet.SMTP.SSL as SMTPSSL
 import qualified Network.Mail.Mime as MIME
 
+import Constant.Component
 import LensesConfig
 import Model.Context.AppContext
 import Model.User.User
+import Util.Logger
 
 sendRegistrationConfirmationMail :: Email -> U.UUID -> String -> AppContextM ()
 sendRegistrationConfirmationMail email userId hash = do
@@ -93,6 +96,8 @@ sendEmail to subject body = do
            authSuccess <- SMTP.authenticate Auth.LOGIN mailUsername mailPassword connection
            renderedMail <- MIME.renderMail' mailMessage
            if authSuccess
-             then SMTP.sendMail from [to] (S.concat . B.toChunks $ renderedMail) connection
-             else return ()
+             then do
+               SMTP.sendMail from [to] (S.concat . B.toChunks $ renderedMail) connection
+               runStdoutLoggingT $ logInfo $ msg _CMP_MAILER ("Email has been sent to " ++ to)
+             else runStdoutLoggingT $ logWarn $ msg _CMP_MAILER "Could not authenticate with SMTP server."
     else return ()
