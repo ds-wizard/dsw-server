@@ -4,8 +4,8 @@ module Service.Mail.Mailer
   , sendResetPasswordMail
   ) where
 
+import Control.Exception (SomeException, catch)
 import Control.Lens ((^.))
-import Control.Monad.Logger (runStdoutLoggingT)
 import Control.Monad.Reader (asks, liftIO)
 import qualified Data.ByteString as S
 import qualified Data.ByteString.Lazy as B
@@ -61,6 +61,11 @@ sendResetPasswordMail email userId hash = do
 -- --------------------------------
 -- PRIVATE
 -- --------------------------------
+data MailResult
+  = Sent
+  | AuthError
+  | Error String
+
 makeConnection :: Integral i => Bool -> String -> Maybe i -> ((SMTP.SMTPConnection -> IO a) -> IO a)
 makeConnection False host Nothing = SMTP.doSMTP host
 makeConnection False host (Just port) = SMTP.doSMTPPort host (fromIntegral port)
@@ -85,13 +90,21 @@ sendEmail to subject parts = do
       mailPassword = mailConfig ^. password
       mailSubject = TL.toStrict subject
       mailMessage = SMTPMail.simpleMail addrFrom addrsTo addrsCc addrsBcc mailSubject parts
+      callback connection = do
+        authSuccess <- SMTP.authenticate Auth.LOGIN mailUsername mailPassword connection
+        renderedMail <- MIME.renderMail' mailMessage
+        if authSuccess
+          then do
+            SMTP.sendMail from to (S.concat . B.toChunks $ renderedMail) connection
+            return Sent
+          else return AuthError
+      errorCallback exc = return . Error . show $ (exc :: SomeException)
+      runMailer = makeConnection mailSSL mailHost mailPort callback
   if mailConfig ^. enabled
-    then liftIO $ makeConnection mailSSL mailHost mailPort $ \connection -> do
-           authSuccess <- SMTP.authenticate Auth.LOGIN mailUsername mailPassword connection
-           renderedMail <- MIME.renderMail' mailMessage
-           if authSuccess
-             then do
-               SMTP.sendMail from to (S.concat . B.toChunks $ renderedMail) connection
-               runStdoutLoggingT $ logInfo $ msg _CMP_MAILER ("Email has been sent to: " ++ unwords to)
-             else runStdoutLoggingT $ logWarn $ msg _CMP_MAILER "Could not authenticate with SMTP server."
+    then do
+      result <- liftIO $ catch runMailer errorCallback
+      case result of
+        Sent -> logInfo $ msg _CMP_MAILER ("Email has been sent to: " ++ unwords to)
+        AuthError -> logWarn $ msg _CMP_MAILER "Failed to send email: Could not authenticate with SMTP server"
+        Error excMsg -> logWarn $ msg _CMP_MAILER ("Failed to send email: " ++ excMsg)
     else return ()
