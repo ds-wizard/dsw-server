@@ -61,11 +61,6 @@ sendResetPasswordMail email userId hash = do
 -- --------------------------------
 -- PRIVATE
 -- --------------------------------
-data MailResult
-  = Sent
-  | AuthError
-  | Error String
-
 makeConnection :: Integral i => Bool -> String -> Maybe i -> ((SMTP.SMTPConnection -> IO a) -> IO a)
 makeConnection False host Nothing = SMTP.doSMTP host
 makeConnection False host (Just port) = SMTP.doSMTPPort host (fromIntegral port)
@@ -96,15 +91,14 @@ sendEmail to subject parts = do
         if authSuccess
           then do
             SMTP.sendMail from to (S.concat . B.toChunks $ renderedMail) connection
-            return Sent
-          else return AuthError
-      errorCallback exc = return . Error . show $ (exc :: SomeException)
+            return . Right . unwords $ to
+          else return . Left $ "Could not authenticate with SMTP server"
+      errorCallback exc = return . Left . show $ (exc :: SomeException)
       runMailer = makeConnection mailSSL mailHost mailPort callback
   if mailConfig ^. enabled
     then do
       result <- liftIO $ catch runMailer errorCallback
       case result of
-        Sent -> logInfo $ msg _CMP_MAILER ("Email has been sent to: " ++ unwords to)
-        AuthError -> logWarn $ msg _CMP_MAILER "Failed to send email: Could not authenticate with SMTP server"
-        Error excMsg -> logWarn $ msg _CMP_MAILER ("Failed to send email: " ++ excMsg)
+        Right recipients -> logInfo $ msg _CMP_MAILER ("Email has been sent to: " ++ recipients)
+        Left excMsg -> logError $ msg _CMP_MAILER ("Failed to send email: " ++ excMsg)
     else return ()
