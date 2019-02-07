@@ -20,6 +20,7 @@ import qualified Network.Mail.SMTP as SMTPMail
 
 import Constant.Component
 import LensesConfig
+import Localization
 import Model.Context.AppContext
 import Model.User.User
 import Util.Logger
@@ -91,14 +92,14 @@ sendEmail to subject parts = do
         if authSuccess
           then do
             SMTP.sendMail from to (S.concat . B.toChunks $ renderedMail) connection
-            return . Right . unwords $ to
-          else return . Left $ "Could not authenticate with SMTP server"
+            return . Right $ to
+          else return . Left $ _ERROR_SERVICE_MAIL__AUTH_ERROR_MESSAGE
       errorCallback exc = return . Left . show $ (exc :: SomeException)
       runMailer = makeConnection mailSSL mailHost mailPort callback
   if mailConfig ^. enabled
     then do
       result <- liftIO $ catch runMailer errorCallback
       case result of
-        Right recipients -> logInfo $ msg _CMP_MAILER ("Email has been sent to: " ++ recipients)
-        Left excMsg -> logError $ msg _CMP_MAILER ("Failed to send email: " ++ excMsg)
+        Right recipients -> logInfo $ msg _CMP_MAILER (_ERROR_SERVICE_MAIL__EMAIL_SENT_OK recipients)
+        Left excMsg -> logError $ msg _CMP_MAILER (_ERROR_SERVICE_MAIL__EMAIL_SENT_FAIL excMsg)
     else return ()
