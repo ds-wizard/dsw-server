@@ -15,8 +15,8 @@ tested-with: GHC==7.6.* GHC==7.8.*
 data-files:
   - config/app-config.cfg
   - config/build-info.cfg
-  - template/root.css
-  - template/root.html.jinja
+  - templates/dmp/root.css
+  - templates/dmp/root.html.jinja
 library:
   source-dirs: lib
   when:
