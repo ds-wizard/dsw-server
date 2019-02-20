@@ -9,6 +9,8 @@ import Control.Lens ((^.))
 import Control.Monad.Reader (asks, liftIO)
 import qualified Data.ByteString as S
 import qualified Data.ByteString.Lazy as B
+import Data.HashMap.Strict (fromList)
+import Data.Maybe (catMaybes)
 import qualified Data.Text as T
 import qualified Data.Text.Lazy as TL
 import qualified Data.UUID as U
@@ -17,51 +19,72 @@ import qualified Network.HaskellNet.SMTP as SMTP
 import qualified Network.HaskellNet.SMTP.SSL as SMTPSSL
 import qualified Network.Mail.Mime as MIME
 import qualified Network.Mail.SMTP as SMTPMail
+import Text.Ginger (parseGingerFile)
 
 import Constant.Component
 import LensesConfig
 import Localization
 import Model.Context.AppContext
 import Model.User.User
+import Service.Template.TemplateUtils (mLoadFile, render)
 import Util.Logger
 
 sendRegistrationConfirmationMail :: Email -> U.UUID -> String -> AppContextM ()
 sendRegistrationConfirmationMail email userId hash = do
   dswConfig <- asks _appContextConfig
+  htmlTemplate <- liftIO $ parseGingerFile mLoadFile "templates/mail/registrationConfirmation.html.j2"
+  plainTemplate <- liftIO $ parseGingerFile mLoadFile "templates/mail/registrationConfirmation.txt.j2"
   let clientAddress = dswConfig ^. clientConfig . address
-      clientLink = clientAddress ++ "/signup-confirmation/" ++ U.toString userId ++ "/" ++ hash
-      link = "<a href=\"" ++ clientLink ++ "\">here</a>"
+      activationLink = clientAddress ++ "/signup-confirmation/" ++ U.toString userId ++ "/" ++ hash
       mailName = dswConfig ^. mail . name
       subject = TL.pack $ mailName ++ ": Confirmation Email"
-      body = TL.pack $ "Hi! For account activation you have to click " ++ link ++ "! " ++ mailName ++ " Team"
-  sendEmail [email] subject [SMTPMail.htmlPart body]
+      context = fromList [("activationLink", activationLink), ("mailName", mailName)]
+      htmlBody = makeMailPart htmlTemplate SMTPMail.htmlPart context
+      plainBody = makeMailPart plainTemplate SMTPMail.plainTextPart context
+      parts = catMaybes [plainBody, htmlBody]
+  if length parts == 0
+    then return ()
+    else sendEmail [email] subject parts
 
 sendRegistrationCreatedAnalyticsMail :: String -> String -> Email -> AppContextM ()
 sendRegistrationCreatedAnalyticsMail uName uSurname uEmail = do
   dswConfig <- asks _appContextConfig
+  htmlTemplate <- liftIO $ parseGingerFile mLoadFile "templates/mail/registrationCreatedAnalytics.html.j2"
+  plainTemplate <- liftIO $ parseGingerFile mLoadFile "templates/mail/registrationCreatedAnalytics.txt.j2"
   let analyticsAddress = dswConfig ^. analytics . email
       mailName = dswConfig ^. mail . name
       subject = TL.pack $ mailName ++ ": New user"
-      body =
-        TL.pack $ "Hi! We have a new user (" ++ uName ++ " " ++ uSurname ++ ", " ++ uEmail ++ ") in our Wizard! " ++
-        mailName ++
-        " Team"
-  sendEmail [analyticsAddress] subject [SMTPMail.htmlPart body]
+      context = fromList [("uName", uName), ("uSurname", uSurname), ("uEmail", uEmail), ("mailName", mailName)]
+      htmlBody = makeMailPart htmlTemplate SMTPMail.htmlPart context
+      plainBody = makeMailPart plainTemplate SMTPMail.plainTextPart context
+      parts = catMaybes [plainBody, htmlBody]
+  if length parts == 0
+    then return ()
+    else sendEmail [analyticsAddress] subject parts
 
 sendResetPasswordMail :: Email -> U.UUID -> String -> AppContextM ()
 sendResetPasswordMail email userId hash = do
   dswConfig <- asks _appContextConfig
+  htmlTemplate <- liftIO $ parseGingerFile mLoadFile "templates/mail/resetPassword.html.j2"
+  plainTemplate <- liftIO $ parseGingerFile mLoadFile "templates/mail/resetPassword.txt.j2"
   let clientAddress = dswConfig ^. clientConfig . address
-      clientLink = clientAddress ++ "/forgotten-password/" ++ U.toString userId ++ "/" ++ hash
-      link = "<a href=\"" ++ clientLink ++ "\">here</a>"
+      resetLink = clientAddress ++ "/forgotten-password/" ++ U.toString userId ++ "/" ++ hash
       mailName = dswConfig ^. mail . name
       subject = TL.pack $ mailName ++ ": Reset Password"
-      body = TL.pack $ "Hi! You can set up a new password " ++ link ++ "! " ++ mailName ++ " Team"
-  sendEmail [email] subject [SMTPMail.htmlPart body]
+      context = fromList [("resetLink", resetLink), ("mailName", mailName)]
+      htmlBody = makeMailPart htmlTemplate SMTPMail.htmlPart context
+      plainBody = makeMailPart plainTemplate SMTPMail.plainTextPart context
+      parts = catMaybes [plainBody, htmlBody]
+  if length parts == 0
+    then return ()
+    else sendEmail [email] subject parts
 
 -- --------------------------------
 -- PRIVATE
 -- --------------------------------
+makeMailPart (Right template) maker context = Just . maker . TL.fromStrict $ render template context
+makeMailPart (Left _) _ _ = Nothing
+
 makeConnection :: Integral i => Bool -> String -> Maybe i -> ((SMTP.SMTPConnection -> IO a) -> IO a)
 makeConnection False host Nothing = SMTP.doSMTP host
 makeConnection False host (Just port) = SMTP.doSMTPPort host (fromIntegral port)
