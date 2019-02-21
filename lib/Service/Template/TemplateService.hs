@@ -16,7 +16,7 @@ import Model.Context.AppContext
 import Model.DataManagementPlan.DataManagementPlan
 import Model.Error.Error
 import Service.Template.TemplateMapper (heFormatToToHTMLType)
-import Service.Template.TemplateUtils (mLoadFile, render)
+import Util.Template (mLoadFile, render)
 
 templateFile = "templates/dmp/root.html.j2"
 

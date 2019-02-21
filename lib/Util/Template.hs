@@ -1,4 +1,4 @@
-module Service.Template.TemplateUtils where
+module Util.Template where
 
 import qualified Data.HashMap.Strict as HashMap
 import Data.Hashable

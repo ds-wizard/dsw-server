@@ -26,8 +26,8 @@ import LensesConfig
 import Localization
 import Model.Context.AppContext
 import Model.User.User
-import Service.Template.TemplateUtils (mLoadFile, render)
 import Util.Logger
+import Util.Template (mLoadFile, render)
 
 sendRegistrationConfirmationMail :: Email -> U.UUID -> String -> AppContextM ()
 sendRegistrationConfirmationMail email userId hash = do
