@@ -8,7 +8,6 @@ import Data.Maybe (fromJust)
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as E
 import qualified Text.FromHTML as FromHTML
-import Text.Ginger (formatParserError, parseGingerFile)
 
 import Api.Resource.DataManagementPlan.DataManagementPlanDTO
 import Localization
@@ -16,7 +15,7 @@ import Model.Context.AppContext
 import Model.DataManagementPlan.DataManagementPlan
 import Model.Error.Error
 import Service.Template.TemplateMapper (heFormatToToHTMLType)
-import Util.Template (mLoadFile, render)
+import Util.Template (loadAndRender)
 
 templateFile = "templates/dmp/root.html.j2"
 
@@ -37,12 +36,10 @@ generateTemplateInFormat format dmp =
 
 generateTemplate :: DataManagementPlanDTO -> AppContextM (Either AppError T.Text)
 generateTemplate dmp = do
-  eTemplate <- liftIO $ parseGingerFile mLoadFile templateFile
+  eTemplate <- liftIO $ loadAndRender templateFile (sampleContext dmp)
   case eTemplate of
-    Right template -> return . Right $ render template (sampleContext dmp)
-    Left error ->
-      return . Left . GeneralServerError $
-      _ERROR_SERVICE_TEMPLATE__LOADING_TEMPLATE_FAILED (formatParserError Nothing error)
+    Right template -> return . Right $ template
+    Left err -> return . Left . GeneralServerError $ _ERROR_SERVICE_TEMPLATE__LOADING_TEMPLATE_FAILED err
 
 -- --------------------------------
 -- HELPERS
