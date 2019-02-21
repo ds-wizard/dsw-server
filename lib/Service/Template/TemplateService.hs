@@ -18,7 +18,7 @@ import Model.Error.Error
 import Service.Template.TemplateMapper (heFormatToToHTMLType)
 import Service.Template.TemplateUtils (mLoadFile, render)
 
-templateFile = "template/dmp/root.html.j2"
+templateFile = "templates/dmp/root.html.j2"
 
 sampleContext :: DataManagementPlanDTO -> HashMap T.Text (HashMap T.Text Value)
 sampleContext dmp = fromList [("dmp", fromJust . decode . encode $ dmp)]
