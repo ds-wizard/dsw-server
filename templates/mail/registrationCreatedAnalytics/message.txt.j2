@@ -1,5 +1,9 @@
-Hi!
+Hello!
 
-We have a new user ({{ uName }} {{ uSurname }}, {{ uEmail }}) in our Wizard!
+Good news - we have a new user in our Wizard ({{ mailName}}):
 
-{{ include '../_common/footer.txt.j2' }}
+- Name: {{ user.name }} {{ user.surname }}
+- Email: {{ user.email }}
+- Role: {{ user.role }}
+
+{% include '../_common/footer.txt.j2' %}
