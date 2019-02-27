@@ -46,9 +46,7 @@ sendRegistrationConfirmationMail email userId hash = do
           , ("serverURL", clientAddress)
           ]
   parts <- loadMailTemplateParts "registrationConfirmation" context
-  if length parts == 0
-    then return ()
-    else sendEmail [email] subject parts
+  sendEmail [email] subject parts
 
 sendRegistrationCreatedAnalyticsMail :: String -> String -> Email -> AppContextM ()
 sendRegistrationCreatedAnalyticsMail uName uSurname uEmail = do
@@ -58,9 +56,7 @@ sendRegistrationCreatedAnalyticsMail uName uSurname uEmail = do
       subject = TL.pack $ mailName ++ ": New user"
       context = fromList [("uName", uName), ("uSurname", uSurname), ("uEmail", uEmail), ("mailName", mailName)]
   parts <- loadMailTemplateParts "registrationCreatedAnalytics" context
-  if length parts == 0
-    then return ()
-    else sendEmail [analyticsAddress] subject parts
+  sendEmail [analyticsAddress] subject parts
 
 sendResetPasswordMail :: Email -> U.UUID -> String -> AppContextM ()
 sendResetPasswordMail email userId hash = do
@@ -71,9 +67,7 @@ sendResetPasswordMail email userId hash = do
       subject = TL.pack $ mailName ++ ": Reset Password"
       context = fromList [("resetLink", resetLink), ("mailName", mailName)]
   parts <- loadMailTemplateParts "resetPassword" context
-  if length parts == 0
-    then return ()
-    else sendEmail [email] subject parts
+  sendEmail [email] subject parts
 
 -- --------------------------------
 -- PRIVATE
@@ -93,14 +87,18 @@ loadMailTemplateParts mailName context = do
   let root = "templates/mail/" ++ mailName
   plainTextPart <- makePlainTextPart (root ++ "/message.txt.j2") context
   htmlPart <- makeHTMLPart (root ++ "/message.html.j2") context
+  let mainParts = rights [plainTextPart, htmlPart]
   case (htmlPart, plainTextPart) of
     (Left _, Right _) -> logWarn $ msg _CMP_MAILER (_ERROR_SERVICE_MAIL__MISSING_HTML mailName)
     (Right _, Left _) -> logWarn $ msg _CMP_MAILER (_ERROR_SERVICE_MAIL__MISSING_PLAIN mailName)
     (Left _, Left _) -> logError $ msg _CMP_MAILER (_ERROR_SERVICE_MAIL__MISSING_HTML_PLAIN mailName)
     (_, _) -> return ()
-  templateFileParts <- loadFileParts (root ++ "/attachments")
-  globalFileParts <- loadFileParts "templates/mail/_common/attachments"
-  return $ rights [plainTextPart, htmlPart] ++ templateFileParts ++ globalFileParts
+  if length mainParts > 0
+    then do
+      templateFileParts <- loadFileParts (root ++ "/attachments")
+      globalFileParts <- loadFileParts "templates/mail/_common/attachments"
+      return $ mainParts ++ templateFileParts ++ globalFileParts
+    else return []
 
 loadFileParts :: String -> AppContextM [MIME.Part]
 loadFileParts root =
@@ -125,6 +123,7 @@ makeConnection True host (Just port) = SMTPSSL.doSMTPSSLWithSettings host settin
     settings = SMTPSSL.defaultSettingsSMTPSSL {SMTPSSL.sslPort = fromIntegral port}
 
 sendEmail :: [Email] -> TL.Text -> [MIME.Part] -> AppContextM ()
+sendEmail to subject [] = return () -- empty mail won't be sent
 sendEmail to subject parts = do
   dswConfig <- asks _appContextConfig
   let mailConfig = dswConfig ^. mail
