@@ -5,3 +5,8 @@ config/application-test.yml
 config/integration.yml
 config/integration-test.yml
 dsw-server.cabal
+
+# IDEA Stuff
+.idea
+dsw-server.iml
+out/
