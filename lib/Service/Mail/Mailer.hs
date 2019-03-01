@@ -34,11 +34,11 @@ import Model.User.User
 import Util.Logger
 import Util.Template (loadAndRender)
 
-sendRegistrationConfirmationMail :: User -> U.UUID -> String -> AppContextM ()
-sendRegistrationConfirmationMail user userId hash = do
+sendRegistrationConfirmationMail :: User -> String -> AppContextM ()
+sendRegistrationConfirmationMail user hash = do
   dswConfig <- asks _appContextConfig
   let clientAddress = dswConfig ^. clientConfig . address
-      activationLink = clientAddress ++ "/signup-confirmation/" ++ U.toString userId ++ "/" ++ hash
+      activationLink = clientAddress ++ "/signup-confirmation/" ++ U.toString (user ^. uuid) ++ "/" ++ hash
       mailName = dswConfig ^. mail . name
       subject = TL.pack $ mailName ++ ": Confirmation Email"
       additionals = [("activationLink", (Aeson.String $ T.pack activationLink))]
@@ -57,11 +57,11 @@ sendRegistrationCreatedAnalyticsMail user = do
   parts <- loadMailTemplateParts _MAIL_REGISTRATION_CREATED_ANALYTICS context
   sendEmail [analyticsAddress] subject parts
 
-sendResetPasswordMail :: User -> U.UUID -> String -> AppContextM ()
-sendResetPasswordMail user userId hash = do
+sendResetPasswordMail :: User -> String -> AppContextM ()
+sendResetPasswordMail user hash = do
   dswConfig <- asks _appContextConfig
   let clientAddress = dswConfig ^. clientConfig . address
-      resetLink = clientAddress ++ "/forgotten-password/" ++ U.toString userId ++ "/" ++ hash
+      resetLink = clientAddress ++ "/forgotten-password/" ++ U.toString (user ^. uuid) ++ "/" ++ hash
       mailName = dswConfig ^. mail . name
       subject = TL.pack $ mailName ++ ": Reset Password"
       additionals = [("resetLink", (Aeson.String $ T.pack resetLink))]

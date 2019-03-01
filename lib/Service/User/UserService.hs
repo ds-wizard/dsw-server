@@ -64,7 +64,7 @@ createUser reqDto uUuid uPasswordHash uRole uPermissions =
     insertUser user
     heCreateActionKey uUuid RegistrationActionKey $ \actionKey -> do
       publishToUserCreatedTopic user
-      sendRegistrationConfirmationMail user (actionKey ^. userId) (actionKey ^. hash)
+      sendRegistrationConfirmationMail user (actionKey ^. hash)
       sendAnalyticsEmailIfEnabled user
       return . Right $ toDTO user
   where
@@ -136,7 +136,7 @@ resetUserPassword :: ActionKeyDTO -> AppContextM (Maybe AppError)
 resetUserPassword reqDto =
   hmFindUserByEmail (reqDto ^. email) $ \user ->
     hmCreateActionKey (user ^. uuid) ForgottenPasswordActionKey $ \actionKey -> do
-      sendResetPasswordMail user (actionKey ^. userId) (actionKey ^. hash)
+      sendResetPasswordMail user (actionKey ^. hash)
       return Nothing
 
 createForgottenUserPassword :: String -> UserPasswordDTO -> AppContextM (Maybe AppError)
