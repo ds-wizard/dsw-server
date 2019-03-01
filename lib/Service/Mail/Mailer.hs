@@ -26,6 +26,7 @@ import System.Directory (listDirectory)
 import System.FilePath (takeFileName)
 
 import Constant.Component
+import Constant.Mailer
 import LensesConfig
 import Localization
 import Model.Context.AppContext
@@ -42,7 +43,7 @@ sendRegistrationConfirmationMail user userId hash = do
       subject = TL.pack $ mailName ++ ": Confirmation Email"
       additionals = [("activationLink", (Aeson.String $ T.pack activationLink))]
       context = makeMailContext mailName clientAddress user additionals
-  parts <- loadMailTemplateParts RegistrationConfirmation context
+  parts <- loadMailTemplateParts _MAIL_REGISTRATION_REGISTRATION_CONFIRMATION context
   sendEmail [user ^. email] subject parts
 
 sendRegistrationCreatedAnalyticsMail :: User -> AppContextM ()
@@ -53,7 +54,7 @@ sendRegistrationCreatedAnalyticsMail user = do
       mailName = dswConfig ^. mail . name
       subject = TL.pack $ mailName ++ ": New user"
       context = makeMailContext mailName clientAddress user []
-  parts <- loadMailTemplateParts RegistrationCreatedAnalytics context
+  parts <- loadMailTemplateParts _MAIL_REGISTRATION_CREATED_ANALYTICS context
   sendEmail [analyticsAddress] subject parts
 
 sendResetPasswordMail :: User -> U.UUID -> String -> AppContextM ()
@@ -65,19 +66,13 @@ sendResetPasswordMail user userId hash = do
       subject = TL.pack $ mailName ++ ": Reset Password"
       additionals = [("resetLink", (Aeson.String $ T.pack resetLink))]
       context = makeMailContext mailName clientAddress user additionals
-  parts <- loadMailTemplateParts ResetPassword context
+  parts <- loadMailTemplateParts _MAIL_RESET_PASSWORD context
   sendEmail [user ^. email] subject parts
 
 -- --------------------------------
 -- PRIVATE
 -- --------------------------------
 type MailContext = HashMap T.Text Aeson.Value
-
-data MailType
-  = RegistrationConfirmation
-  | RegistrationCreatedAnalytics
-  | ResetPassword
-  deriving (Show)
 
 makeHTMLPart fn context =
   liftIO $ do
@@ -108,26 +103,22 @@ makeMailContext mailName clientAddress user others =
         , ("active", Aeson.Bool $ user ^. active)
         ]
 
-mailToFolderName :: MailType -> String
-mailToFolderName RegistrationConfirmation = "registrationConfirmation"
-mailToFolderName RegistrationCreatedAnalytics = "registrationCreatedAnalytics"
-mailToFolderName ResetPassword = "resetPassword"
-
-loadMailTemplateParts :: MailType -> MailContext -> AppContextM [MIME.Part]
-loadMailTemplateParts mailType context = do
-  let root = "templates/mail/" ++ (mailToFolderName mailType)
-  plainTextPart <- makePlainTextPart (root ++ "/message.txt.j2") context
-  htmlPart <- makeHTMLPart (root ++ "/message.html.j2") context
+loadMailTemplateParts :: String -> MailContext -> AppContextM [MIME.Part]
+loadMailTemplateParts mailName context = do
+  let root = _MAIL_TEMPLATE_ROOT ++ mailName ++ "/"
+      commonRoot = _MAIL_TEMPLATE_ROOT ++ _MAIL_TEMPLATE_COMMON_FOLDER ++ "/"
+  plainTextPart <- makePlainTextPart (root ++ _MAIL_TEMPLATE_PLAIN_NAME) context
+  htmlPart <- makeHTMLPart (root ++ _MAIL_TEMPLATE_HTML_NAME) context
   let mainParts = rights [plainTextPart, htmlPart]
   case (htmlPart, plainTextPart) of
-    (Left _, Right _) -> logWarn $ msg _CMP_MAILER (_ERROR_SERVICE_MAIL__MISSING_HTML (show mailType))
-    (Right _, Left _) -> logWarn $ msg _CMP_MAILER (_ERROR_SERVICE_MAIL__MISSING_PLAIN (show mailType))
-    (Left _, Left _) -> logError $ msg _CMP_MAILER (_ERROR_SERVICE_MAIL__MISSING_HTML_PLAIN (show mailType))
+    (Left _, Right _) -> logWarn $ msg _CMP_MAILER (_ERROR_SERVICE_MAIL__MISSING_HTML mailName)
+    (Right _, Left _) -> logWarn $ msg _CMP_MAILER (_ERROR_SERVICE_MAIL__MISSING_PLAIN mailName)
+    (Left _, Left _) -> logError $ msg _CMP_MAILER (_ERROR_SERVICE_MAIL__MISSING_HTML_PLAIN mailName)
     (_, _) -> return ()
   if length mainParts > 0
     then do
-      templateFileParts <- loadFileParts (root ++ "/attachments")
-      globalFileParts <- loadFileParts "templates/mail/_common/attachments"
+      templateFileParts <- loadFileParts $ root ++ _MAIL_TEMPLATE_ATTACHMENTS_FOLDER
+      globalFileParts <- loadFileParts $ commonRoot ++ _MAIL_TEMPLATE_ATTACHMENTS_FOLDER
       return $ mainParts ++ templateFileParts ++ globalFileParts
     else return []
 
