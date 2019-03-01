@@ -2,9 +2,7 @@
 <html>
 <head>
   <style type="text/css">
-    header {text-align: center; line-height: 3em; padding: 0.5em;}
-    header > img {height: 3em; margin-right: 1em; display: inline-block; vertical-align: middle; }
-    header > h1 {display: inline-block; margin: 0; color: #333; font-family: Roboto, sans-serif; vertical-align: middle; }
+    {% include 'style.css' %}
   </style>
 </head>
 <body>
@@ -15,7 +13,6 @@
   <main>
     {% block body %}{% endblock %}
   </main>
-  <hr>
   <footer>
     <small>This email was generated from <a href="{{ clientAddress }}" target="_blank">{{ mailName }}</a>.</small>
   </footer>
