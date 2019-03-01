@@ -14,13 +14,7 @@ import Model.QuestionnaireMigrator.QuestionnaireMigratorState
 
 qtnmCollection = "questionnaireMigrations"
 
-findQuestionnaireMigratorStateByQuestionnaireUuid :: U.UUID -> AppContextM (Either AppError QuestionnaireMigratorState)
-findQuestionnaireMigratorStateByQuestionnaireUuid uuid = do
-  let action = findOne $ select ["questionnaireUuid" =: uuid] qtnmCollection
-  maybeState <- runDB action
-  return . deserializeMaybeEntity $ maybeState
-
-insertQuestionnaireMigratorState :: QuestionnaireMigratorMigrationState -> AppContextM Value
+insertQuestionnaireMigratorState :: QuestionnaireMigratorState -> AppContextM Value
 insertQuestionnaireMigratorState state = do
   let action = insert qtnmCollection (toBSON state)
   runDB action
