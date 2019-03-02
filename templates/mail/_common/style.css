@@ -1,7 +1,7 @@
 header {
   line-height: 3em;
   padding: 0.5em;
-  margin-bottom: 1em;
+  margin-bottom: 1.5em;
 }
 header > img {
   height: 3em;
@@ -17,5 +17,7 @@ header > h1 {
   vertical-align: middle;
 }
 footer {
-  border-top: 1px solid #666;
+  margin-top: 1em;
+  font-style: italic;
+  color: #666;
 }
