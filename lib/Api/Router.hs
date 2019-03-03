@@ -24,6 +24,7 @@ import Api.Handler.Organization.OrganizationHandler
 import Api.Handler.Package.PackageHandler
 import Api.Handler.PublicQuestionnaire.PublicQuestionnaireHandler
 import Api.Handler.Questionnaire.QuestionnaireHandler
+import Api.Handler.QuestionnaireMigrator.QuestionnaireMigratorHandler
 import Api.Handler.Template.TemplateHandler
 import Api.Handler.Token.TokenHandler
 import Api.Handler.Typehint.TypehintHandler
@@ -140,6 +141,7 @@ createEndpoints context
   post "/questionnaires/:qtnUuid/report/preview" postQuestionnaireReportPreviewA
   get "/questionnaires/:qtnUuid/report" getQuestionnaireReportA
   delete "/questionnaires/:qtnUuid" deleteQuestionnaireA
+--  post "/questionnaires/:qtnUuid/migrations" postQuestionnaireMigrationsA
    --------------------
    -- TYPEHINTS
    --------------------
