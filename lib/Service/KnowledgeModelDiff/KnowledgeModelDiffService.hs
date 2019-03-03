@@ -1,10 +1,13 @@
-module Service.KnowledgeModelDiff.KnowledgeModelDiff
-  ( diffKnowledgemodelsById
+module Service.KnowledgeModelDiff.KnowledgeModelDiffService
+  ( diffKnowledgeModelsById
+  , heDiffKnowledgeModelsById
   ) where
 
 import Model.Error.Error
 import Model.Context.AppContext
 import Model.Event.Event
+import Model.KnowledgeModelDiff.DiffEvent
+import Model.KnowledgeModelDiff.KnowledgeModelDiff
 import Model.KnowledgeModel.KnowledgeModel
 import Service.Package.PackageService
   ( heGetAllPreviousEventsSincePackageId
@@ -13,19 +16,10 @@ import Service.Package.PackageService
 import Service.KnowledgeModel.KnowledgeModelApplicator (heCreateKnowledgeModel)
 import Service.Migrator.Applicator.Applicator
 
-data DiffEvent
-  = NodeAdded String
-  | NodeDeleted String
-  | NodeEdited String
-
-data KnowledgeModelDiff = KnowledgeModelDiff
-  { _knowledgeModelDiffKnowledgeModel :: KnowledgeModel
-  , _knowledgeModelDiffEvents :: [DiffEvent]
-  }
-
--- Creates new knowledgemodel-like diff tree and diff events based on given knowledge model uuids
-diffKnowledgemodelsById :: String -> String -> AppContextM (Either AppError KnowledgeModelDiff)
-diffKnowledgemodelsById oldKmId newKmId =
+-- Creates new knowledgemodel-like diff tree and diff events between
+-- old knowledgemodel and new knowledgemodel.
+diffKnowledgeModelsById :: String -> String -> AppContextM (Either AppError KnowledgeModelDiff)
+diffKnowledgeModelsById oldKmId newKmId =
   -- TODO: Validate input data here
   heGetAllPreviousEventsSincePackageId oldKmId $ \oldKmEvents ->
     heCreateKnowledgeModel oldKmEvents $ \oldKm ->
@@ -53,3 +47,16 @@ createDiffEvents :: [Event] -> [DiffEvent]
 createDiffEvents []     = []
 createDiffEvents (e:es) = [sanitizeEvent e] ++ (createDiffEvents es)
   where sanitizeEvent _ = NodeEdited ""
+
+-- --------------------------------
+-- HELPERS
+-- --------------------------------
+
+-- Helper knowledgemodel diffing function. Creates diff between old knowledgemodel
+-- and new knowledgemodel. Calls given callback on success.
+heDiffKnowledgeModelsById :: String -> String -> (KnowledgeModelDiff -> AppContextM (Either AppError a)) -> AppContextM (Either AppError a)
+heDiffKnowledgeModelsById oldKmId newKmId callback = do
+  eitherDiff <- diffKnowledgeModelsById oldKmId newKmId
+  case eitherDiff of
+    Left error   -> return . Left $ error
+    Right kmDiff -> callback kmDiff
