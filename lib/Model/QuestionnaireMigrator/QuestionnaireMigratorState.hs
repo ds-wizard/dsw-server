@@ -6,7 +6,7 @@ import Model.Questionnaire.Questionnaire
 import Model.KnowledgeModel.KnowledgeModel
 
 data QuestionnaireMigratorState = QuestionnaireMigratorState
-    { _questionnaireMigratorStateQuestionnaire :: Questionnaire
-    , _questionnaireMigratorStateDiffKnowledgeModel :: KnowledgeModel
-    , _questionnaireMigratorStateTargetPackageId :: U.UUID
-    } deriving (Show, Eq)
+  { _questionnaireMigratorStateQuestionnaire :: Questionnaire
+  , _questionnaireMigratorStateDiffKnowledgeModel :: KnowledgeModel
+  , _questionnaireMigratorStateTargetPackageId :: U.UUID
+  } deriving (Show, Eq)

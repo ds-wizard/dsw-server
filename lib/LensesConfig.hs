@@ -25,6 +25,8 @@ import Api.Resource.Migration.MigratorConflictDTO
 import Api.Resource.Migration.MigratorStateCreateDTO
 import Api.Resource.Migration.MigratorStateDTO
 import Api.Resource.Migration.MigratorStateDetailDTO
+import Api.Resource.QuestionnaireMigrator.QuestionnaireMigratorStateCreateDTO
+import Api.Resource.QuestionnaireMigrator.QuestionnaireMigratorStateDTO
 import Api.Resource.Organization.OrganizationChangeDTO
 import Api.Resource.Organization.OrganizationDTO
 import Api.Resource.Package.PackageDTO
@@ -300,6 +302,7 @@ makeFields ''MigratorStateDTO
 
 -- Model / QuestionnaireMigrator
 makeFields ''QuestionnaireMigratorState
+makeFields ''QuestionnaireMigratorStateDTO
 
 -- Model / Organization
 makeFields ''Organization
@@ -513,6 +516,8 @@ makeFields ''LevelDTO
 
 -- Api / Resource / Migrator
 makeFields ''MigratorState
+-- Api / Resource / QuestionnaireMigrator
+makeFields ''QuestionnaireMigratorStateCreateDTO
 
 -- Api / Resource / Organization
 makeFields ''OrganizationDTO

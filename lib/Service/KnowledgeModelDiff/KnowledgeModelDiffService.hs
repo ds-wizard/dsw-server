@@ -13,16 +13,15 @@ import Service.Package.PackageService
   ( heGetAllPreviousEventsSincePackageId
   , heGetAllPreviousEventsSincePackageIdAndUntilPackageId
   )
-import Service.KnowledgeModel.KnowledgeModelApplicator (heCreateKnowledgeModel)
-import Service.Migrator.Applicator.Applicator
-
+import Service.KnowledgeModel.KnowledgeModelService (heCompileKnowledgeModel)
+import Service.Migration.KnowledgeModel.Applicator.Applicator
 -- Creates new knowledgemodel-like diff tree and diff events between
 -- old knowledgemodel and new knowledgemodel.
 diffKnowledgeModelsById :: String -> String -> AppContextM (Either AppError KnowledgeModelDiff)
 diffKnowledgeModelsById oldKmId newKmId =
   -- TODO: Validate input data here
   heGetAllPreviousEventsSincePackageId oldKmId $ \oldKmEvents ->
-    heCreateKnowledgeModel oldKmEvents $ \oldKm ->
+    heCompileKnowledgeModel oldKmEvents Nothing [] $ \oldKm ->
       heGetAllPreviousEventsSincePackageIdAndUntilPackageId newKmId oldKmId $ \newKmEvents ->
         case runDiffApplicator oldKm newKmEvents of
           Left error -> return . Left $ error

@@ -10,11 +10,10 @@ import Database.BSON.QuestionnaireMigrator.QuestionnaireMigratorState ()
 import Database.DAO.Common
 import Model.Context.AppContext
 import Model.Error.Error
-import Model.QuestionnaireMigrator.QuestionnaireMigratorState
-
+import Api.Resource.QuestionnaireMigrator.QuestionnaireMigratorStateCreateDTO
 qtnmCollection = "questionnaireMigrations"
 
-insertQuestionnaireMigratorState :: QuestionnaireMigratorState -> AppContextM Value
-insertQuestionnaireMigratorState state = do
-  let action = insert qtnmCollection (toBSON state)
-  runDB action
+--createQuestionnaireMigratorState :: QuestionnaireMigratorStateCreateDTO -> AppContextM Value
+--createQuestionnaireMigratorState state = do
+--  let action = insert qtnmCollection (toBSON state)
+--  runDB action
