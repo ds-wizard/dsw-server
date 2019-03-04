@@ -12,6 +12,7 @@ import qualified Data.ByteString as S
 import qualified Data.ByteString.Lazy as B
 import Data.Either (rights)
 import Data.HashMap.Strict (HashMap, fromList)
+import Data.Maybe (fromJust)
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as E
 import qualified Data.Text.Lazy as TL
@@ -25,16 +26,16 @@ import qualified Network.Mime as MIME
 import System.Directory (listDirectory)
 import System.FilePath (takeFileName)
 
+import Api.Resource.User.UserDTO
 import Constant.Component
 import Constant.Mailer
 import LensesConfig
 import Localization
 import Model.Context.AppContext
-import Model.User.User
 import Util.Logger
 import Util.Template (loadAndRender)
 
-sendRegistrationConfirmationMail :: User -> String -> AppContextM ()
+sendRegistrationConfirmationMail :: UserDTO -> String -> AppContextM ()
 sendRegistrationConfirmationMail user hash = do
   dswConfig <- asks _appContextConfig
   let clientAddress = dswConfig ^. clientConfig . address
@@ -46,7 +47,7 @@ sendRegistrationConfirmationMail user hash = do
   parts <- loadMailTemplateParts _MAIL_REGISTRATION_REGISTRATION_CONFIRMATION context
   sendEmail [user ^. email] subject parts
 
-sendRegistrationCreatedAnalyticsMail :: User -> AppContextM ()
+sendRegistrationCreatedAnalyticsMail :: UserDTO -> AppContextM ()
 sendRegistrationCreatedAnalyticsMail user = do
   dswConfig <- asks _appContextConfig
   let clientAddress = dswConfig ^. clientConfig . address
@@ -57,7 +58,7 @@ sendRegistrationCreatedAnalyticsMail user = do
   parts <- loadMailTemplateParts _MAIL_REGISTRATION_CREATED_ANALYTICS context
   sendEmail [analyticsAddress] subject parts
 
-sendResetPasswordMail :: User -> String -> AppContextM ()
+sendResetPasswordMail :: UserDTO -> String -> AppContextM ()
 sendResetPasswordMail user hash = do
   dswConfig <- asks _appContextConfig
   let clientAddress = dswConfig ^. clientConfig . address
@@ -84,24 +85,14 @@ makePlainTextPart fn context =
     template <- loadAndRender fn context
     return $ (SMTPMail.plainTextPart . TL.fromStrict) <$> template
 
-makeMailContext :: String -> String -> User -> [(T.Text, Aeson.Value)] -> MailContext
+makeMailContext :: String -> String -> UserDTO -> [(T.Text, Aeson.Value)] -> MailContext
 makeMailContext mailName clientAddress user others =
   fromList $
   [ ("mailName", Aeson.String $ T.pack mailName)
   , ("clientAddress", Aeson.String $ T.pack clientAddress)
-  , ("user", Aeson.Object userMap)
+  , ("user", fromJust . Aeson.decode . Aeson.encode $ user)
   ] ++
   others
-  where
-    userMap :: MailContext
-    userMap =
-      fromList
-        [ ("name", Aeson.String $ T.pack $ user ^. name)
-        , ("surname", Aeson.String $ T.pack $ user ^. surname)
-        , ("email", Aeson.String $ T.pack $ user ^. email)
-        , ("role", Aeson.String $ T.pack $ user ^. role)
-        , ("active", Aeson.Bool $ user ^. active)
-        ]
 
 loadMailTemplateParts :: String -> MailContext -> AppContextM [MIME.Part]
 loadMailTemplateParts mailName context = do
@@ -145,7 +136,7 @@ makeConnection True host (Just port) = SMTPSSL.doSMTPSSLWithSettings host settin
   where
     settings = SMTPSSL.defaultSettingsSMTPSSL {SMTPSSL.sslPort = fromIntegral port}
 
-sendEmail :: [Email] -> TL.Text -> [MIME.Part] -> AppContextM ()
+sendEmail :: [String] -> TL.Text -> [MIME.Part] -> AppContextM ()
 sendEmail to subject [] = return () -- empty mail won't be sent
 sendEmail to subject parts = do
   dswConfig <- asks _appContextConfig
