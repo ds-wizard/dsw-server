@@ -8,6 +8,7 @@ import Model.Error.Error
 import Model.Context.AppContext
 import Api.Resource.QuestionnaireMigrator.QuestionnaireMigratorStateCreateDTO
 import Api.Resource.QuestionnaireMigrator.QuestionnaireMigratorStateDTO
+import Database.DAO.QuestionnaireMigrator.QuestionnaireMigratorDAO
 import Database.DAO.Questionnaire.QuestionnaireDAO
 import Service.KnowledgeModelDiff.KnowledgeModelDiffService
 
@@ -29,3 +30,27 @@ createQuestionnaireMigration qId qDto =
 -- Creates backup for old questionnaire and moves migrated questionnaire to its place.
 finishQuestionnaireMigration :: String -> Either AppError QuestionnaireMigratorStateDTO
 finishQuestionnaireMigration = undefined
+
+cancelQuestionnaireMigration :: String -> AppContextM (Maybe AppError)
+cancelQuestionnaireMigration qtnUuid =
+  hmFindQuestionnaireMigratorStateByQuestionnaireId qtnUuid $ \_ -> do
+    deleteQuestionnaireMigratorStateByQuestionnaireId qtnUuid
+    return Nothing
+
+-- --------------------------------
+-- HELPERS
+-- --------------------------------
+
+heFindQuestionnaireMigratorStateByQuestionnaireId :: String -> (QuestionnaireMigratorState -> AppContextM (Either AppError a)) -> AppContextM (Either AppError a)
+heFindQuestionnaireMigratorStateByQuestionnaireId qtnUuid callback = do
+  state <- findQuestionnaireMigratorStateByQuestionnaireId qtnUuid
+  case state of
+    Left error  -> return . Left $ error
+    Right state -> callback state
+
+hmFindQuestionnaireMigratorStateByQuestionnaireId :: String -> (QuestionnaireMigratorState -> AppContextM (Maybe AppError)) -> AppContextM (Maybe AppError)
+hmFindQuestionnaireMigratorStateByQuestionnaireId qtnUuid callback = do
+  state <- findQuestionnaireMigratorStateByQuestionnaireId qtnUuid
+  case state of
+    Left error  -> return . Just $ error
+    Right state -> callback state
