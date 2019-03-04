@@ -3,20 +3,18 @@ module Service.QuestionnaireMigrator.QuestionnaireMigratorMapper where
 import Control.Lens ((^.))
 
 import LensesConfig
-import Api.Resource.QuestionnaireMigrator.QuestionnaireMigratorStateDTO
 import Model.QuestionnaireMigrator.QuestionnaireMigratorState
-import Service.Questionnaire.QuestionnaireMapper
+import Model.Package.Package
+import Api.Resource.QuestionnaireMigrator.QuestionnaireMigratorStateDTO
+import Service.Package.PackageMapper
+import qualified Service.Questionnaire.QuestionnaireMapper as QM
+import qualified Service.KnowledgeModel.KnowledgeModelMapper as KM
 
---fromDTO :: QuestionnaireMigratorStateDTO -> QuestionnaireMigratorState
---fromDTO dto = QuestionnaireMigratorState
---  { _questionnaireMigratorStateQuestionnaire = dto ^. questionnaire
---  , _questionnaireMigratorStateDiffKnowledgeModel = dto ^. diffKnowledgeModel
---  , _questionnaireMigratorStateTargetPackageId = dto ^. targetPackageId
---  }
---
---toDTO :: QuestionnaireMigratorState -> QuestionnaireMigratorStateDTO
---toDTO model = QuestionnaireMigratorStateDTO
---  { _questionnaireMigratorStateDTOQuestionnaire = model ^. questionnaire
---  , _questionnaireMigratorStateDTODiffKnowledgeModel = model ^. diffKnowledgeModel
---  , _questionnaireMigratorStateDTOTargetPackageId = model ^. targetPackageId
---  }
+toDTO :: QuestionnaireMigratorState -> Package -> QuestionnaireMigratorStateDTO
+toDTO model pkg = QuestionnaireMigratorStateDTO
+  { _questionnaireMigratorStateDTOQuestionnaire = qtnDTO
+  , _questionnaireMigratorStateDTODiffKnowledgeModel = KM.toKnowledgeModelDTO $ model ^. diffKnowledgeModel
+  , _questionnaireMigratorStateDTOTargetPackageId = model ^. targetPackageId
+  }
+  where qtnDTO = QM.toDetailWithPackageDTO (model ^. questionnaire) pkgDTO
+        pkgDTO = packageToDTO pkg

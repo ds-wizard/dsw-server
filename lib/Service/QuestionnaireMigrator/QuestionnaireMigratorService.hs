@@ -6,26 +6,30 @@ import Control.Lens ((^.))
 import LensesConfig
 import Model.Error.Error
 import Model.Context.AppContext
+import Model.QuestionnaireMigrator.QuestionnaireMigratorState
 import Api.Resource.QuestionnaireMigrator.QuestionnaireMigratorStateCreateDTO
 import Api.Resource.QuestionnaireMigrator.QuestionnaireMigratorStateDTO
 import Database.DAO.QuestionnaireMigrator.QuestionnaireMigratorDAO
 import Database.DAO.Questionnaire.QuestionnaireDAO
+import Database.DAO.Package.PackageDAO
 import Service.KnowledgeModelDiff.KnowledgeModelDiffService
-
--- Remove latter
-import Model.QuestionnaireMigrator.QuestionnaireMigratorState
+import qualified Service.QuestionnaireMigrator.QuestionnaireMigratorMapper as QM
 
 -- Creates new questionnaire migration from questionnaire id and target package id.
-createQuestionnaireMigration :: String -> QuestionnaireMigratorStateCreateDTO -> AppContextM (Either AppError QuestionnaireMigratorState)
+createQuestionnaireMigration :: String -> QuestionnaireMigratorStateCreateDTO -> AppContextM (Either AppError QuestionnaireMigratorStateDTO)
 createQuestionnaireMigration qId qDto =
   -- TODO: Ensure there is no previous migration
   heFindQuestionnaireById qId $ \questionnaire ->
     heDiffKnowledgeModelsById (questionnaire ^. packageId) (UUID.toString $ qDto ^. targetPackageId) $ \kmDiff ->
-      return . Right $ QuestionnaireMigratorState
-        { _questionnaireMigratorStateQuestionnaire      = questionnaire
-        , _questionnaireMigratorStateDiffKnowledgeModel = kmDiff ^. knowledgeModel
-        , _questionnaireMigratorStateTargetPackageId    = qDto ^. targetPackageId
-        }
+      heFindPackageById (questionnaire ^. packageId) $ \package -> do
+        let state =
+              QuestionnaireMigratorState
+                { _questionnaireMigratorStateQuestionnaire = undefined
+                , _questionnaireMigratorStateDiffKnowledgeModel = undefined
+                , _questionnaireMigratorStateTargetPackageId = undefined
+                }
+        _ <- createQuestionnaireMigratorState state
+        return . Right $ QM.toDTO state package
 
 -- Creates backup for old questionnaire and moves migrated questionnaire to its place.
 finishQuestionnaireMigration :: String -> Either AppError QuestionnaireMigratorStateDTO

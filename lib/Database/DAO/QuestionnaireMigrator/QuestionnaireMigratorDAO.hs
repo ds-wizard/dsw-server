@@ -1,5 +1,6 @@
 module Database.DAO.QuestionnaireMigrator.QuestionnaireMigratorDAO
-  ( findQuestionnaireMigratorStateByQuestionnaireId
+  ( createQuestionnaireMigratorState
+  , findQuestionnaireMigratorStateByQuestionnaireId
   , deleteQuestionnaireMigratorStateByQuestionnaireId
   ) where
 
@@ -14,14 +15,13 @@ import Database.DAO.Common
 import Model.Context.AppContext
 import Model.Error.Error
 import Model.QuestionnaireMigrator.QuestionnaireMigratorState
-import Api.Resource.QuestionnaireMigrator.QuestionnaireMigratorStateCreateDTO
 
 qtnmCollection = "questionnaireMigrations"
 
---createQuestionnaireMigratorState :: QuestionnaireMigratorStateCreateDTO -> AppContextM Value
---createQuestionnaireMigratorState state = do
---  let action = insert qtnmCollection (toBSON state)
---  runDB action
+createQuestionnaireMigratorState :: QuestionnaireMigratorState -> AppContextM Value
+createQuestionnaireMigratorState state = do
+  let action = insert qtnmCollection (toBSON state)
+  runDB action
 
 findQuestionnaireMigratorStateByQuestionnaireId :: String -> AppContextM (Either AppError QuestionnaireMigratorState)
 findQuestionnaireMigratorStateByQuestionnaireId qtnUuid = do
