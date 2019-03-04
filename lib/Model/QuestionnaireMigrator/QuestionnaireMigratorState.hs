@@ -1,12 +1,12 @@
 module Model.QuestionnaireMigrator.QuestionnaireMigratorState where
 
-import qualified Data.UUID as U
-
 import Model.Questionnaire.Questionnaire
 import Model.KnowledgeModel.KnowledgeModel
+import Model.KnowledgeModelDiff.DiffEvent
 
 data QuestionnaireMigratorState = QuestionnaireMigratorState
   { _questionnaireMigratorStateQuestionnaire :: Questionnaire
   , _questionnaireMigratorStateDiffKnowledgeModel :: KnowledgeModel
-  , _questionnaireMigratorStateTargetPackageId :: U.UUID
+  , _questionnaireMigratorStateDiffEvents :: [DiffEvent]
+  , _questionnaireMigratorStateTargetPackageId :: String
   } deriving (Show, Eq)

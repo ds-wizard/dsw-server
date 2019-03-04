@@ -1,6 +1,5 @@
 module Service.QuestionnaireMigrator.QuestionnaireMigratorService where
 
-import qualified Data.UUID as UUID
 import Control.Lens ((^.))
 
 import LensesConfig
@@ -20,15 +19,16 @@ createQuestionnaireMigration :: String -> QuestionnaireMigratorStateCreateDTO ->
 createQuestionnaireMigration qId qDto =
   -- TODO: Ensure there is no previous migration
   heFindQuestionnaireById qId $ \questionnaire ->
-    heDiffKnowledgeModelsById (questionnaire ^. packageId) (UUID.toString $ qDto ^. targetPackageId) $ \kmDiff ->
+    heDiffKnowledgeModelsById (questionnaire ^. packageId) (qDto ^. targetPackageId) $ \kmDiff ->
       heFindPackageById (questionnaire ^. packageId) $ \package -> do
         let state =
               QuestionnaireMigratorState
-                { _questionnaireMigratorStateQuestionnaire = undefined
-                , _questionnaireMigratorStateDiffKnowledgeModel = undefined
-                , _questionnaireMigratorStateTargetPackageId = undefined
+                { _questionnaireMigratorStateQuestionnaire = questionnaire
+                , _questionnaireMigratorStateDiffKnowledgeModel = kmDiff ^. knowledgeModel
+                , _questionnaireMigratorStateTargetPackageId = qDto ^. targetPackageId
+                , _questionnaireMigratorStateDiffEvents = kmDiff ^. events
                 }
-        _ <- createQuestionnaireMigratorState state
+        createQuestionnaireMigratorState state
         return . Right $ QM.toDTO state package
 
 -- Creates backup for old questionnaire and moves migrated questionnaire to its place.
