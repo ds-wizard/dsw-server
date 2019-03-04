@@ -8,11 +8,12 @@ import Control.Exception (SomeException, catch, handle)
 import Control.Lens ((^.))
 import Control.Monad.Reader (asks, liftIO)
 import qualified Data.Aeson as Aeson
+import Data.Aeson.Types (emptyObject)
 import qualified Data.ByteString as S
 import qualified Data.ByteString.Lazy as B
 import Data.Either (rights)
 import Data.HashMap.Strict (HashMap, fromList)
-import Data.Maybe (fromJust)
+import Data.Maybe (fromMaybe)
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as E
 import qualified Data.Text.Lazy as TL
@@ -90,7 +91,7 @@ makeMailContext mailName clientAddress user others =
   fromList $
   [ ("mailName", Aeson.String $ T.pack mailName)
   , ("clientAddress", Aeson.String $ T.pack clientAddress)
-  , ("user", fromJust . Aeson.decode . Aeson.encode $ user)
+  , ("user", fromMaybe emptyObject . Aeson.decode . Aeson.encode $ user)
   ] ++
   others
 

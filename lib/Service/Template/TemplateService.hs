@@ -2,9 +2,10 @@ module Service.Template.TemplateService where
 
 import Control.Monad.Reader (liftIO)
 import Data.Aeson (Value, decode, encode)
+import Data.Aeson.Types (emptyObject)
 import qualified Data.ByteString.Lazy as BS
 import Data.HashMap.Strict (HashMap, fromList)
-import Data.Maybe (fromJust)
+import Data.Maybe (fromMaybe)
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as E
 import qualified Text.FromHTML as FromHTML
@@ -19,8 +20,8 @@ import Util.Template (loadAndRender)
 
 templateFile = "templates/dmp/root.html.j2"
 
-sampleContext :: DataManagementPlanDTO -> HashMap T.Text (HashMap T.Text Value)
-sampleContext dmp = fromList [("dmp", fromJust . decode . encode $ dmp)]
+sampleContext :: DataManagementPlanDTO -> HashMap T.Text Value
+sampleContext dmp = fromList [("dmp", fromMaybe emptyObject . decode . encode $ dmp)]
 
 generateTemplateInFormat ::
      DataManagementPlanFormat -> DataManagementPlanDTO -> AppContextM (Either AppError BS.ByteString)
