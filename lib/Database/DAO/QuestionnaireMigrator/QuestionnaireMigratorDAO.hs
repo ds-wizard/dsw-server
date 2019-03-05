@@ -4,11 +4,10 @@ module Database.DAO.QuestionnaireMigrator.QuestionnaireMigratorDAO
   , deleteQuestionnaireMigratorStateByQuestionnaireId
   ) where
 
-import qualified Data.UUID as U
 import Data.Bson
 import Data.Bson.Generic
 import Database.MongoDB
-       ((=:), delete, fetch, findOne, insert, merge, save, select)
+       ((=:), delete, findOne, insert, select)
 
 import Database.BSON.QuestionnaireMigrator.QuestionnaireMigratorState ()
 import Database.DAO.Common

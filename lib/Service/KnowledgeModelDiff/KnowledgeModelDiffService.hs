@@ -3,23 +3,10 @@ module Service.KnowledgeModelDiff.KnowledgeModelDiffService
   , heDiffKnowledgeModelsById
   ) where
 
-import qualified Data.UUID as U
-import Control.Lens ((^.))
-
-import LensesConfig
 import Model.Error.Error
 import Model.Context.AppContext
 import Model.Event.Event
-import Model.Event.EventPath
 import Model.KnowledgeModelDiff.KnowledgeModelDiff
-import Model.KnowledgeModel.KnowledgeModel
-
-import Model.Event.Answer.AnswerEvent
-import Model.Event.Chapter.ChapterEvent
-import Model.Event.Expert.ExpertEvent
-import Model.Event.KnowledgeModel.KnowledgeModelEvent
-import Model.Event.Question.QuestionEvent
-import Model.Event.Reference.ReferenceEvent
 
 import Service.Package.PackageService
   ( heGetAllPreviousEventsSincePackageId
@@ -42,7 +29,7 @@ diffKnowledgeModelsById oldKmId newKmId =
             , _knowledgeModelDiffEvents = cleanUpDiffEvents newKmEvents
             }
 
--- Cleans up diff redudant diff events
+-- Cleans up redundant diff events and preservers first edit event only.
 cleanUpDiffEvents :: [Event] -> [Event]
 cleanUpDiffEvents = id
 
