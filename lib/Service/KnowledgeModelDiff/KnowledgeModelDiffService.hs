@@ -36,24 +36,12 @@ diffKnowledgeModelsById oldKmId newKmId =
   heGetAllPreviousEventsSincePackageId oldKmId $ \oldKmEvents ->
     heCompileKnowledgeModel oldKmEvents Nothing [] $ \oldKm ->
       heGetAllPreviousEventsSincePackageIdAndUntilPackageId newKmId oldKmId $ \newKmEvents ->
-        case runDiffApplicator oldKm newKmEvents of
+        case runDiffApplicator (Just oldKm) newKmEvents of
           Left error -> return . Left $ error
           Right km   -> return . Right $ KnowledgeModelDiff
             { _knowledgeModelDiffKnowledgeModel = km
             , _knowledgeModelDiffEvents = createDiffEvents newKmEvents
             }
-
--- Runs custom knowledgemodel migration and omits delete events (so deleted paths are still available
--- for diff events)
-runDiffApplicator :: KnowledgeModel -> [Event] -> Either AppError KnowledgeModel
-runDiffApplicator km events = runApplicator (Just km) editedEvents
-  where editedEvents = filter isNotDeleteEvent events
-        isNotDeleteEvent (DeleteChapterEvent' _)   = False
-        isNotDeleteEvent (DeleteQuestionEvent' _ ) = False
-        isNotDeleteEvent (DeleteAnswerEvent' _)    = False
-        isNotDeleteEvent (DeleteExpertEvent' _)    = False
-        isNotDeleteEvent (DeleteReferenceEvent' _) = False
-        isNotDeleteEvent _                         = True
 
 createDiffEvents :: [Event] -> [DiffEvent]
 createDiffEvents = map convertKmEventToDiffEvent
