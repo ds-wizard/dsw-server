@@ -6,6 +6,7 @@ import GHC.Generics
 
 import Model.Questionnaire.QuestionnaireReply
 
+-- TODO: Add migration
 data Questionnaire = Questionnaire
   { _questionnaireUuid :: U.UUID
   , _questionnaireName :: String

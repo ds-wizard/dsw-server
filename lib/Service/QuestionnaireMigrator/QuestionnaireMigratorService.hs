@@ -35,6 +35,11 @@ createQuestionnaireMigration qId qDto =
 finishQuestionnaireMigration :: String -> Either AppError QuestionnaireMigratorStateDTO
 finishQuestionnaireMigration = undefined
 
+getQuestionnaireMigration :: String -> AppContextM (Either AppError QuestionnaireMigratorStateDTO)
+getQuestionnaireMigration qtnUuid = heFindQuestionnaireMigratorStateByQuestionnaireId qtnUuid $ \state ->
+  heFindPackageById (state ^. targetPackageId) $ \package ->
+    return . Right $ QM.toDTO state package
+
 cancelQuestionnaireMigration :: String -> AppContextM (Maybe AppError)
 cancelQuestionnaireMigration qtnUuid =
   hmFindQuestionnaireMigratorStateByQuestionnaireId qtnUuid $ \_ -> do
