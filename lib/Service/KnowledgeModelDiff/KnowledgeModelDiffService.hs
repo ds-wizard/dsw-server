@@ -3,12 +3,25 @@ module Service.KnowledgeModelDiff.KnowledgeModelDiffService
   , heDiffKnowledgeModelsById
   ) where
 
+import qualified Data.UUID as U
+import Control.Lens ((^.))
+
+import LensesConfig
 import Model.Error.Error
 import Model.Context.AppContext
 import Model.Event.Event
+import Model.Event.EventPath
 import Model.KnowledgeModelDiff.DiffEvent
 import Model.KnowledgeModelDiff.KnowledgeModelDiff
 import Model.KnowledgeModel.KnowledgeModel
+
+import Model.Event.Answer.AnswerEvent
+import Model.Event.Chapter.ChapterEvent
+import Model.Event.Expert.ExpertEvent
+import Model.Event.KnowledgeModel.KnowledgeModelEvent
+import Model.Event.Question.QuestionEvent
+import Model.Event.Reference.ReferenceEvent
+
 import Service.Package.PackageService
   ( heGetAllPreviousEventsSincePackageId
   , heGetAllPreviousEventsSincePackageIdAndUntilPackageId
@@ -43,9 +56,26 @@ runDiffApplicator km events = runApplicator (Just km) editedEvents
         isNotDeleteEvent _                         = True
 
 createDiffEvents :: [Event] -> [DiffEvent]
-createDiffEvents []     = []
-createDiffEvents (e:es) = [sanitizeEvent e] ++ (createDiffEvents es)
-  where sanitizeEvent _ = NodeEdited ""
+createDiffEvents = map convertKmEventToDiffEvent
+
+convertKmEventToDiffEvent :: Event -> DiffEvent
+convertKmEventToDiffEvent (AddKnowledgeModelEvent' e) = NodeAdded ""
+convertKmEventToDiffEvent (EditKnowledgeModelEvent' e) = NodeEdited ""
+convertKmEventToDiffEvent (AddChapterEvent' _) = NodeAdded ""
+convertKmEventToDiffEvent (EditChapterEvent' _) = NodeEdited ""
+convertKmEventToDiffEvent (DeleteChapterEvent' _) = NodeEdited ""
+convertKmEventToDiffEvent (AddQuestionEvent' _) = NodeAdded ""
+convertKmEventToDiffEvent (EditQuestionEvent' _) = NodeEdited ""
+convertKmEventToDiffEvent (DeleteQuestionEvent' _) = NodeDeleted ""
+convertKmEventToDiffEvent (AddAnswerEvent' _) = NodeAdded ""
+convertKmEventToDiffEvent (EditAnswerEvent' _) = NodeEdited ""
+convertKmEventToDiffEvent (DeleteAnswerEvent' _) = NodeDeleted ""
+convertKmEventToDiffEvent (AddExpertEvent' _) = NodeAdded ""
+convertKmEventToDiffEvent (EditExpertEvent' _) = NodeEdited ""
+convertKmEventToDiffEvent (DeleteExpertEvent' _) = NodeDeleted ""
+convertKmEventToDiffEvent (AddReferenceEvent' _) = NodeAdded ""
+convertKmEventToDiffEvent (EditReferenceEvent' _) = NodeEdited ""
+convertKmEventToDiffEvent (DeleteReferenceEvent' _) = NodeDeleted ""
 
 -- --------------------------------
 -- HELPERS

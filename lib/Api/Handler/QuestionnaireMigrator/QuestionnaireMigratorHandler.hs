@@ -21,7 +21,7 @@ postQuestionnaireMigrationsCurrentA =
 
 -- Endpoint for canceling questionnaire migration.
 deleteQuestionnaireMigrationsCurrentA :: Endpoint
-deleteQuestionnaireMigrationsCurrentA = undefined
+deleteQuestionnaireMigrationsCurrentA =
   checkPermission "QTN_PERM" $
     getAuthServiceExecutor $ \runInAuthService -> do
       qtnUuid <- param "questionnaireUuid"
