@@ -11,7 +11,6 @@ import Model.Error.Error
 import Model.Context.AppContext
 import Model.Event.Event
 import Model.Event.EventPath
-import Model.KnowledgeModelDiff.DiffEvent
 import Model.KnowledgeModelDiff.KnowledgeModelDiff
 import Model.KnowledgeModel.KnowledgeModel
 
@@ -40,30 +39,12 @@ diffKnowledgeModelsById oldKmId newKmId =
           Left error -> return . Left $ error
           Right km   -> return . Right $ KnowledgeModelDiff
             { _knowledgeModelDiffKnowledgeModel = km
-            , _knowledgeModelDiffEvents = createDiffEvents newKmEvents
+            , _knowledgeModelDiffEvents = cleanUpDiffEvents newKmEvents
             }
 
-createDiffEvents :: [Event] -> [DiffEvent]
-createDiffEvents = map convertKmEventToDiffEvent
-
-convertKmEventToDiffEvent :: Event -> DiffEvent
-convertKmEventToDiffEvent (AddKnowledgeModelEvent' e) = NodeAdded ""
-convertKmEventToDiffEvent (EditKnowledgeModelEvent' e) = NodeEdited ""
-convertKmEventToDiffEvent (AddChapterEvent' _) = NodeAdded ""
-convertKmEventToDiffEvent (EditChapterEvent' _) = NodeEdited ""
-convertKmEventToDiffEvent (DeleteChapterEvent' _) = NodeEdited ""
-convertKmEventToDiffEvent (AddQuestionEvent' _) = NodeAdded ""
-convertKmEventToDiffEvent (EditQuestionEvent' _) = NodeEdited ""
-convertKmEventToDiffEvent (DeleteQuestionEvent' _) = NodeDeleted ""
-convertKmEventToDiffEvent (AddAnswerEvent' _) = NodeAdded ""
-convertKmEventToDiffEvent (EditAnswerEvent' _) = NodeEdited ""
-convertKmEventToDiffEvent (DeleteAnswerEvent' _) = NodeDeleted ""
-convertKmEventToDiffEvent (AddExpertEvent' _) = NodeAdded ""
-convertKmEventToDiffEvent (EditExpertEvent' _) = NodeEdited ""
-convertKmEventToDiffEvent (DeleteExpertEvent' _) = NodeDeleted ""
-convertKmEventToDiffEvent (AddReferenceEvent' _) = NodeAdded ""
-convertKmEventToDiffEvent (EditReferenceEvent' _) = NodeEdited ""
-convertKmEventToDiffEvent (DeleteReferenceEvent' _) = NodeDeleted ""
+-- Cleans up diff redudant diff events
+cleanUpDiffEvents :: [Event] -> [Event]
+cleanUpDiffEvents = id
 
 -- --------------------------------
 -- HELPERS

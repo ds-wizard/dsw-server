@@ -77,7 +77,6 @@ import Model.Http.HttpRequest
 import Model.KnowledgeModel.KnowledgeModel
 import Model.KnowledgeModelBundle.KnowledgeModelBundle
 import Model.KnowledgeModelDiff.KnowledgeModelDiff
-import Model.KnowledgeModelDiff.DiffEvent
 import Model.Level.Level
 import Model.Migrator.MigratorState
 import Model.QuestionnaireMigrator.QuestionnaireMigratorState
@@ -285,8 +284,6 @@ makeFields ''KnowledgeModelBundle
 
 -- Model / KnowledgeModelDiff
 makeFields ''KnowledgeModelDiff
-
-makeFields ''DiffEvent
 
 -- Model / Level
 makeFields ''Level
