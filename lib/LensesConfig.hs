@@ -299,6 +299,7 @@ makeFields ''MigratorStateDTO
 
 -- Model / QuestionnaireMigrator
 makeFields ''QuestionnaireMigratorState
+
 makeFields ''QuestionnaireMigratorStateDTO
 
 -- Model / Organization
@@ -513,6 +514,7 @@ makeFields ''LevelDTO
 
 -- Api / Resource / Migrator
 makeFields ''MigratorState
+
 -- Api / Resource / QuestionnaireMigrator
 makeFields ''QuestionnaireMigratorStateCreateDTO
 
