@@ -30,5 +30,5 @@ findQuestionnaireMigratorStateByQuestionnaireId qtnUuid = do
 
 deleteQuestionnaireMigratorStateByQuestionnaireId :: String -> AppContextM ()
 deleteQuestionnaireMigratorStateByQuestionnaireId qtnUuid = do
-  let action = delete $ select ["questionnaireUuid" =: qtnUuid] qtnmCollection
+  let action = delete $ select ["questionnaire.uuid" =: qtnUuid] qtnmCollection
   runDB action

@@ -39,7 +39,7 @@ deleteQuestionnaireMigrationsCurrentA :: Endpoint
 deleteQuestionnaireMigrationsCurrentA =
   checkPermission "QTN_PERM" $
     getAuthServiceExecutor $ \runInAuthService -> do
-      qtnUuid <- param "questionnaireUuid"
+      qtnUuid <- param "qtnUuid"
       result  <- runInAuthService $ cancelQuestionnaireMigration qtnUuid
       case result of
         Nothing    -> status noContent204
