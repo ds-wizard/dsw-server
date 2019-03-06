@@ -24,7 +24,7 @@ createQuestionnaireMigratorState state = do
 
 findQuestionnaireMigratorStateByQuestionnaireId :: String -> AppContextM (Either AppError QuestionnaireMigratorState)
 findQuestionnaireMigratorStateByQuestionnaireId qtnUuid = do
-  let action = findOne $ select ["questionnaireUuid" =: qtnUuid] qtnmCollection
+  let action = findOne $ select ["questionnaire.uuid" =: qtnUuid] qtnmCollection
   maybeState <- runDB action
   return . deserializeMaybeEntity $ maybeState
 
