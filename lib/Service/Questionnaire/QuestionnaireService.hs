@@ -22,6 +22,8 @@ import Service.KnowledgeModel.KnowledgeModelService
 import Service.Questionnaire.QuestionnaireMapper
 import Util.Uuid
 
+import Model.Questionnaire.QuestionnaireState
+
 getQuestionnaires :: AppContextM (Either AppError [QuestionnaireDTO])
 getQuestionnaires =
   heFindQuestionnaires $ \questionnaires -> do
@@ -41,7 +43,8 @@ getQuestionnaires =
           eitherQtnWithPkg <- ioEitherQtnWithPkg
           case eitherQtnWithPkg of
             Right (qtn, pkg) -> do
-              let qtnDTO = toDTO qtn pkg
+              -- TODO: Find actual state and remove the import
+              let qtnDTO = toDTO qtn pkg QSDefault
               return . Right $ acc ++ [qtnDTO]
             Left error -> return . Left $ error
         Left error -> return . Left $ error
@@ -69,12 +72,14 @@ createQuestionnaireWithGivenUuid qtnUuid reqDto =
       now <- liftIO getCurrentTime
       let qtn = fromQuestionnaireCreateDTO reqDto qtnUuid (currentUser ^. uuid) now now
       insertQuestionnaire qtn
-      return . Right $ toSimpleDTO qtn package
+      -- TODO: Find the actual questionnaire state
+      return . Right $ toSimpleDTO qtn package QSDefault
 
 getQuestionnaireById :: String -> AppContextM (Either AppError QuestionnaireDTO)
 getQuestionnaireById qtnUuid =
   heFindQuestionnaireById qtnUuid $ \qtn ->
-    checkPermissionToQtn qtn $ heFindPackageById (qtn ^. packageId) $ \package -> return . Right $ toDTO qtn package
+    -- TODO: Find the actual questionnaire state
+    checkPermissionToQtn qtn $ heFindPackageById (qtn ^. packageId) $ \package -> return . Right $ toDTO qtn package QSDefault
 
 getQuestionnaireDetailById :: String -> AppContextM (Either AppError QuestionnaireDetailDTO)
 getQuestionnaireDetailById qtnUuid =

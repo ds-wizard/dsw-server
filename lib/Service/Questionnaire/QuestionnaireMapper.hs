@@ -4,40 +4,47 @@ import Control.Lens ((^.))
 import Data.Time
 import Data.UUID (UUID)
 
+import qualified Api.Resource.Questionnaire.QuestionnaireStateDTO as QSD
+import qualified Model.Questionnaire.QuestionnaireState as QS
+
 import Api.Resource.Package.PackageDTO
 import Api.Resource.Questionnaire.QuestionnaireChangeDTO
 import Api.Resource.Questionnaire.QuestionnaireCreateDTO
 import Api.Resource.Questionnaire.QuestionnaireDTO
 import Api.Resource.Questionnaire.QuestionnaireDetailDTO
 import Api.Resource.Questionnaire.QuestionnaireReplyDTO
+import Api.Resource.Questionnaire.QuestionnaireStateDTO
 import LensesConfig
 import Model.KnowledgeModel.KnowledgeModel
 import Model.Package.Package
 import Model.Questionnaire.Questionnaire
 import Model.Questionnaire.QuestionnaireReply
+import Model.Questionnaire.QuestionnaireState
 import Service.KnowledgeModel.KnowledgeModelMapper
 import Service.Package.PackageMapper
 
-toDTO :: Questionnaire -> Package -> QuestionnaireDTO
-toDTO questionnaire package =
+toDTO :: Questionnaire -> Package -> QuestionnaireState -> QuestionnaireDTO
+toDTO questionnaire package state =
   QuestionnaireDTO
   { _questionnaireDTOUuid = questionnaire ^. uuid
   , _questionnaireDTOName = questionnaire ^. name
   , _questionnaireDTOLevel = questionnaire ^. level
   , _questionnaireDTOPrivate = questionnaire ^. private
+  , _questionnaireDTOState = toStateDTO state
   , _questionnaireDTOPackage = packageToDTO package
   , _questionnaireDTOOwnerUuid = questionnaire ^. ownerUuid
   , _questionnaireDTOCreatedAt = questionnaire ^. createdAt
   , _questionnaireDTOUpdatedAt = questionnaire ^. updatedAt
   }
 
-toSimpleDTO :: Questionnaire -> PackageWithEvents -> QuestionnaireDTO
-toSimpleDTO questionnaire package =
+toSimpleDTO :: Questionnaire -> PackageWithEvents -> QuestionnaireState -> QuestionnaireDTO
+toSimpleDTO questionnaire package state =
   QuestionnaireDTO
   { _questionnaireDTOUuid = questionnaire ^. uuid
   , _questionnaireDTOName = questionnaire ^. name
   , _questionnaireDTOLevel = questionnaire ^. level
   , _questionnaireDTOPrivate = questionnaire ^. private
+  , _questionnaireDTOState = toStateDTO state
   , _questionnaireDTOPackage = packageWithEventsToDTO package
   , _questionnaireDTOOwnerUuid = questionnaire ^. ownerUuid
   , _questionnaireDTOCreatedAt = questionnaire ^. createdAt
@@ -91,6 +98,11 @@ toDetailWithPackageDTO questionnaire package knowledgeModel =
   , _questionnaireDetailDTOCreatedAt = questionnaire ^. createdAt
   , _questionnaireDetailDTOUpdatedAt = questionnaire ^. updatedAt
   }
+
+toStateDTO :: QuestionnaireState -> QuestionnaireStateDTO
+toStateDTO QS.QSDefault = QSD.QSDefault
+toStateDTO QS.QSMigrating = QSD.QSMigrating
+toStateDTO QS.QSOutdated = QSD.QSOutdated
 
 fromReplyDTO :: ReplyDTO -> Reply
 fromReplyDTO reply = Reply {_replyPath = reply ^. path, _replyValue = fromReplyValueDTO $ reply ^. value}

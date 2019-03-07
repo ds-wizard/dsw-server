@@ -11,6 +11,7 @@ import Api.Resource.QuestionnaireMigrator.QuestionnaireMigratorStateDTO
 import Database.DAO.QuestionnaireMigrator.QuestionnaireMigratorDAO
 import Database.DAO.Questionnaire.QuestionnaireDAO
 import Database.DAO.Package.PackageDAO
+import Service.KnowledgeModel.KnowledgeModelService
 import Service.KnowledgeModelDiff.KnowledgeModelDiffService
 import qualified Service.QuestionnaireMigrator.QuestionnaireMigratorMapper as QM
 
@@ -20,16 +21,17 @@ createQuestionnaireMigration qId qDto =
   -- TODO: Ensure there is no previous migration
   heFindQuestionnaireById qId $ \questionnaire ->
     heDiffKnowledgeModelsById (questionnaire ^. packageId) (qDto ^. targetPackageId) $ \kmDiff ->
-      heFindPackageById (questionnaire ^. packageId) $ \package -> do
-        let state =
-              QuestionnaireMigratorState
-                { _questionnaireMigratorStateQuestionnaire = questionnaire
-                , _questionnaireMigratorStateDiffKnowledgeModel = kmDiff ^. knowledgeModel
-                , _questionnaireMigratorStateTargetPackageId = qDto ^. targetPackageId
-                , _questionnaireMigratorStateDiffEvents = kmDiff ^. events
-                }
-        createQuestionnaireMigratorState state
-        return . Right $ QM.toDTO state package
+      heFindPackageById (questionnaire ^. packageId) $ \package ->
+        heCompileKnowledgeModel [] (Just $ questionnaire ^. packageId) (questionnaire ^. selectedTagUuids) $ \compiledKm -> do
+          let state =
+                QuestionnaireMigratorState
+                  { _questionnaireMigratorStateQuestionnaire = questionnaire
+                  , _questionnaireMigratorStateDiffKnowledgeModel = kmDiff ^. knowledgeModel
+                  , _questionnaireMigratorStateTargetPackageId = qDto ^. targetPackageId
+                  , _questionnaireMigratorStateDiffEvents = kmDiff ^. events
+                  }
+          createQuestionnaireMigratorState state
+          return . Right $ QM.toDTO state package compiledKm
 
 -- Creates backup for old questionnaire and moves migrated questionnaire to its place.
 finishQuestionnaireMigration :: String -> Either AppError QuestionnaireMigratorStateDTO
@@ -37,9 +39,12 @@ finishQuestionnaireMigration = undefined
 
 -- Returns current questionnaire migration state for given uuid.
 getQuestionnaireMigration :: String -> AppContextM (Either AppError QuestionnaireMigratorStateDTO)
-getQuestionnaireMigration qtnUuid = heFindQuestionnaireMigratorStateByQuestionnaireId qtnUuid $ \state ->
-  heFindPackageById (state ^. targetPackageId) $ \package ->
-    return . Right $ QM.toDTO state package
+getQuestionnaireMigration qtnUuid =
+  heFindQuestionnaireMigratorStateByQuestionnaireId qtnUuid $ \state ->
+    heFindQuestionnaireById qtnUuid $ \questionnaire ->
+      heFindPackageById (state ^. targetPackageId) $ \package ->
+        heCompileKnowledgeModel [] (Just $ questionnaire ^. packageId) (questionnaire ^. selectedTagUuids) $ \compiledKm ->
+          return . Right $ QM.toDTO state package compiledKm
 
 -- Cancels questionnaire migration for given uuid.
 cancelQuestionnaireMigration :: String -> AppContextM (Maybe AppError)

@@ -3,6 +3,7 @@ module Api.Resource.Questionnaire.QuestionnaireJM where
 import Control.Monad
 import Data.Aeson
 
+import Api.Resource.Questionnaire.QuestionnaireStateJM ()
 import Api.Resource.Questionnaire.QuestionnaireDTO
 
 instance FromJSON QuestionnaireDTO where
@@ -11,6 +12,7 @@ instance FromJSON QuestionnaireDTO where
     _questionnaireDTOName <- o .: "name"
     _questionnaireDTOLevel <- o .: "level"
     _questionnaireDTOPrivate <- o .: "private"
+    _questionnaireDTOState <- o .: "state"
     _questionnaireDTOPackage <- o .: "package"
     _questionnaireDTOOwnerUuid <- o .: "ownerUuid"
     _questionnaireDTOCreatedAt <- o .: "createdAt"
@@ -25,6 +27,7 @@ instance ToJSON QuestionnaireDTO where
       , "name" .= _questionnaireDTOName
       , "level" .= _questionnaireDTOLevel
       , "private" .= _questionnaireDTOPrivate
+      , "state" .= _questionnaireDTOState
       , "package" .= _questionnaireDTOPackage
       , "ownerUuid" .= _questionnaireDTOOwnerUuid
       , "createdAt" .= _questionnaireDTOCreatedAt
