@@ -67,13 +67,14 @@ toIntegrationReplyValueDTO IntegrationValue {..} =
   IntegrationValueDTO
   {_integrationValueDTOIntId = _integrationValueIntId, _integrationValueDTOIntValue = _integrationValueIntValue}
 
-toDetailWithPackageWithEventsDTO :: Questionnaire -> PackageWithEvents -> KnowledgeModel -> QuestionnaireDetailDTO
-toDetailWithPackageWithEventsDTO questionnaire package knowledgeModel =
+toDetailWithPackageWithEventsDTO :: Questionnaire -> PackageWithEvents -> KnowledgeModel -> QuestionnaireState -> QuestionnaireDetailDTO
+toDetailWithPackageWithEventsDTO questionnaire package knowledgeModel state =
   QuestionnaireDetailDTO
   { _questionnaireDetailDTOUuid = questionnaire ^. uuid
   , _questionnaireDetailDTOName = questionnaire ^. name
   , _questionnaireDetailDTOLevel = questionnaire ^. level
   , _questionnaireDetailDTOPrivate = questionnaire ^. private
+  , _questionnaireDetailDTOState = toStateDTO state
   , _questionnaireDetailDTOPackage = packageWithEventsToDTO package
   , _questionnaireDetailDTOSelectedTagUuids = questionnaire ^. selectedTagUuids
   , _questionnaireDetailDTOKnowledgeModel = toKnowledgeModelDTO knowledgeModel
@@ -83,13 +84,14 @@ toDetailWithPackageWithEventsDTO questionnaire package knowledgeModel =
   , _questionnaireDetailDTOUpdatedAt = questionnaire ^. updatedAt
   }
 
-toDetailWithPackageDTO :: Questionnaire -> PackageDTO -> KnowledgeModel -> QuestionnaireDetailDTO
-toDetailWithPackageDTO questionnaire package knowledgeModel =
+toDetailWithPackageDTO :: Questionnaire -> PackageDTO -> KnowledgeModel -> QuestionnaireState -> QuestionnaireDetailDTO
+toDetailWithPackageDTO questionnaire package knowledgeModel state =
   QuestionnaireDetailDTO
   { _questionnaireDetailDTOUuid = questionnaire ^. uuid
   , _questionnaireDetailDTOName = questionnaire ^. name
   , _questionnaireDetailDTOLevel = questionnaire ^. level
   , _questionnaireDetailDTOPrivate = questionnaire ^. private
+  , _questionnaireDetailDTOState = toStateDTO state
   , _questionnaireDetailDTOPackage = package
   , _questionnaireDetailDTOSelectedTagUuids = questionnaire ^. selectedTagUuids
   , _questionnaireDetailDTOKnowledgeModel = toKnowledgeModelDTO knowledgeModel

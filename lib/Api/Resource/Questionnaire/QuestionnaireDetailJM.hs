@@ -5,6 +5,7 @@ import Data.Aeson
 
 import Api.Resource.Questionnaire.QuestionnaireDetailDTO
 import Api.Resource.Questionnaire.QuestionnaireReplyJS ()
+import Api.Resource.Questionnaire.QuestionnaireStateJM ()
 
 instance FromJSON QuestionnaireDetailDTO where
   parseJSON (Object o) = do
@@ -12,6 +13,7 @@ instance FromJSON QuestionnaireDetailDTO where
     _questionnaireDetailDTOName <- o .: "name"
     _questionnaireDetailDTOLevel <- o .: "level"
     _questionnaireDetailDTOPrivate <- o .: "private"
+    _questionnaireDetailDTOState <- o .: "state"
     _questionnaireDetailDTOPackage <- o .: "package"
     _questionnaireDetailDTOSelectedTagUuids <- o .: "selectedTagUuids"
     _questionnaireDetailDTOKnowledgeModel <- o .: "knowledgeModel"
@@ -29,6 +31,7 @@ instance ToJSON QuestionnaireDetailDTO where
       , "name" .= _questionnaireDetailDTOName
       , "level" .= _questionnaireDetailDTOLevel
       , "private" .= _questionnaireDetailDTOPrivate
+      , "state" .= _questionnaireDetailDTOState
       , "package" .= _questionnaireDetailDTOPackage
       , "selectedTagUuids" .= _questionnaireDetailDTOSelectedTagUuids
       , "knowledgeModel" .= _questionnaireDetailDTOKnowledgeModel

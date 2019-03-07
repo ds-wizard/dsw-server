@@ -13,9 +13,11 @@ import Localization
 import Model.Context.AppContext
 import Model.Error.Error
 import Service.Common
+import Model.Questionnaire.QuestionnaireState
 import Service.KnowledgeModel.KnowledgeModelMapper
 import Service.KnowledgeModel.KnowledgeModelService
 import Service.Package.PackageMapper
+import Service.Questionnaire.QuestionnaireMapper
 
 getPublicQuestionnaire :: AppContextM (Either AppError QuestionnaireDetailDTO)
 getPublicQuestionnaire =
@@ -31,6 +33,8 @@ getPublicQuestionnaire =
             , _questionnaireDetailDTOName = "Public Questionnaire"
             , _questionnaireDetailDTOLevel = 2
             , _questionnaireDetailDTOPrivate = False
+            -- TODO: Find questionnaire current state and remove import
+            , _questionnaireDetailDTOState = toStateDTO QSDefault
             , _questionnaireDetailDTOPackage = packageWithEventsToDTO package
             , _questionnaireDetailDTOSelectedTagUuids = []
             , _questionnaireDetailDTOKnowledgeModel = toKnowledgeModelDTO knowledgeModel

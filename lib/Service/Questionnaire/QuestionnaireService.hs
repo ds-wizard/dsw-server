@@ -87,7 +87,8 @@ getQuestionnaireDetailById qtnUuid =
     checkPermissionToQtn qtn $ do
       heFindPackageWithEventsById (qtn ^. packageId) $ \package ->
         heCompileKnowledgeModel [] (Just $ qtn ^. packageId) (qtn ^. selectedTagUuids) $ \knowledgeModel ->
-          return . Right $ toDetailWithPackageWithEventsDTO qtn package knowledgeModel
+          -- TODO: Find current questionnaire state
+          return . Right $ toDetailWithPackageWithEventsDTO qtn package knowledgeModel QSDefault
 
 modifyQuestionnaire :: String -> QuestionnaireChangeDTO -> AppContextM (Either AppError QuestionnaireDetailDTO)
 modifyQuestionnaire qtnUuid reqDto =
@@ -97,7 +98,7 @@ modifyQuestionnaire qtnUuid reqDto =
       let updatedQtn = fromChangeDTO qtnDto reqDto (currentUser ^. uuid) now
       updateQuestionnaireById updatedQtn
       heCompileKnowledgeModel [] (Just $ updatedQtn ^. packageId) (updatedQtn ^. selectedTagUuids) $ \knowledgeModel ->
-        return . Right $ toDetailWithPackageDTO updatedQtn (qtnDto ^. package) knowledgeModel
+        return . Right $ toDetailWithPackageDTO updatedQtn (qtnDto ^. package) knowledgeModel QSDefault
 
 deleteQuestionnaire :: String -> AppContextM (Maybe AppError)
 deleteQuestionnaire qtnUuid =

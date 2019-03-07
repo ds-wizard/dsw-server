@@ -5,6 +5,7 @@ import qualified Data.UUID as U
 
 import Api.Resource.KnowledgeModel.KnowledgeModelDTO
 import Api.Resource.Package.PackageDTO
+import Api.Resource.Questionnaire.QuestionnaireStateDTO
 import Api.Resource.Questionnaire.QuestionnaireReplyDTO
 import Api.Resource.Questionnaire.QuestionnaireReplyJS ()
 
@@ -13,6 +14,7 @@ data QuestionnaireDetailDTO = QuestionnaireDetailDTO
   , _questionnaireDetailDTOName :: String
   , _questionnaireDetailDTOLevel :: Int
   , _questionnaireDetailDTOPrivate :: Bool
+  , _questionnaireDetailDTOState :: QuestionnaireStateDTO
   , _questionnaireDetailDTOPackage :: PackageDTO
   , _questionnaireDetailDTOSelectedTagUuids :: [U.UUID]
   , _questionnaireDetailDTOKnowledgeModel :: KnowledgeModelDTO
