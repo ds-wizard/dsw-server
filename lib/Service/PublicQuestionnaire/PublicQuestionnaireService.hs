@@ -5,7 +5,6 @@ import Control.Monad.Reader (liftIO)
 import Data.Maybe (fromJust)
 import Data.Time
 import qualified Data.UUID as U
-
 import Api.Resource.Questionnaire.QuestionnaireDetailDTO
 import Database.DAO.PublicPackage.PublicPackageDAO
 import LensesConfig
@@ -18,6 +17,7 @@ import Service.KnowledgeModel.KnowledgeModelMapper
 import Service.KnowledgeModel.KnowledgeModelService
 import Service.Package.PackageMapper
 import Service.Questionnaire.QuestionnaireMapper
+import Service.QuestionnaireMigrator.QuestionnaireMigratorService
 
 getPublicQuestionnaire :: AppContextM (Either AppError QuestionnaireDetailDTO)
 getPublicQuestionnaire =
@@ -33,7 +33,6 @@ getPublicQuestionnaire =
             , _questionnaireDetailDTOName = "Public Questionnaire"
             , _questionnaireDetailDTOLevel = 2
             , _questionnaireDetailDTOPrivate = False
-            -- TODO: Find questionnaire current state and remove import
             , _questionnaireDetailDTOState = toStateDTO QSDefault
             , _questionnaireDetailDTOPackage = packageWithEventsToDTO package
             , _questionnaireDetailDTOSelectedTagUuids = []

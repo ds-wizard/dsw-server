@@ -20,6 +20,7 @@ import Model.Package.Package
 import Model.Questionnaire.Questionnaire
 import Service.KnowledgeModel.KnowledgeModelService
 import Service.Questionnaire.QuestionnaireMapper
+import Service.QuestionnaireMigrator.QuestionnaireMigratorService
 import Util.Uuid
 
 import Model.Questionnaire.QuestionnaireState
@@ -43,9 +44,11 @@ getQuestionnaires =
           eitherQtnWithPkg <- ioEitherQtnWithPkg
           case eitherQtnWithPkg of
             Right (qtn, pkg) -> do
-              -- TODO: Find actual state and remove the import
-              let qtnDTO = toDTO qtn pkg QSDefault
-              return . Right $ acc ++ [qtnDTO]
+              let qtnUuid = U.toString $ qtn ^. uuid
+                  pkgId = pkg ^. pId
+              heGetQuestionnaireState qtnUuid pkgId $ \state -> do
+                let qtnDTO = toDTO qtn pkg state
+                return . Right $ acc ++ [qtnDTO]
             Left error -> return . Left $ error
         Left error -> return . Left $ error
 
@@ -78,17 +81,19 @@ createQuestionnaireWithGivenUuid qtnUuid reqDto =
 getQuestionnaireById :: String -> AppContextM (Either AppError QuestionnaireDTO)
 getQuestionnaireById qtnUuid =
   heFindQuestionnaireById qtnUuid $ \qtn ->
-    -- TODO: Find the actual questionnaire state
-    checkPermissionToQtn qtn $ heFindPackageById (qtn ^. packageId) $ \package -> return . Right $ toDTO qtn package QSDefault
+    checkPermissionToQtn qtn $ heFindPackageById (qtn ^. packageId) $ \package ->
+      heGetQuestionnaireState qtnUuid (package ^. pId) $ \state ->
+        return . Right $ toDTO qtn package state
 
 getQuestionnaireDetailById :: String -> AppContextM (Either AppError QuestionnaireDetailDTO)
 getQuestionnaireDetailById qtnUuid =
   heFindQuestionnaireById qtnUuid $ \qtn ->
-    checkPermissionToQtn qtn $ do
+    checkPermissionToQtn qtn $
       heFindPackageWithEventsById (qtn ^. packageId) $ \package ->
-        heCompileKnowledgeModel [] (Just $ qtn ^. packageId) (qtn ^. selectedTagUuids) $ \knowledgeModel ->
-          -- TODO: Find current questionnaire state
-          return . Right $ toDetailWithPackageWithEventsDTO qtn package knowledgeModel QSDefault
+        heCompileKnowledgeModel [] (Just $ qtn ^. packageId) (qtn ^. selectedTagUuids) $ \knowledgeModel -> do
+          let pkgId = package ^. pId
+          heGetQuestionnaireState qtnUuid pkgId $ \state ->
+            return . Right $ toDetailWithPackageWithEventsDTO qtn package knowledgeModel state
 
 modifyQuestionnaire :: String -> QuestionnaireChangeDTO -> AppContextM (Either AppError QuestionnaireDetailDTO)
 modifyQuestionnaire qtnUuid reqDto =
@@ -96,9 +101,11 @@ modifyQuestionnaire qtnUuid reqDto =
     heGetCurrentUser $ \currentUser -> do
       now <- liftIO getCurrentTime
       let updatedQtn = fromChangeDTO qtnDto reqDto (currentUser ^. uuid) now
+      let pkgId = qtnDto ^. package ^. pId
       updateQuestionnaireById updatedQtn
-      heCompileKnowledgeModel [] (Just $ updatedQtn ^. packageId) (updatedQtn ^. selectedTagUuids) $ \knowledgeModel ->
-        return . Right $ toDetailWithPackageDTO updatedQtn (qtnDto ^. package) knowledgeModel QSDefault
+      heCompileKnowledgeModel [] (Just pkgId) (updatedQtn ^. selectedTagUuids) $ \knowledgeModel ->
+        heGetQuestionnaireState qtnUuid pkgId $ \state ->
+          return . Right $ toDetailWithPackageDTO updatedQtn (qtnDto ^. package) knowledgeModel state
 
 deleteQuestionnaire :: String -> AppContextM (Maybe AppError)
 deleteQuestionnaire qtnUuid =

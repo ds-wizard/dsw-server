@@ -3,6 +3,8 @@ module Service.QuestionnaireMigrator.QuestionnaireMigratorService
   , finishQuestionnaireMigration
   , getQuestionnaireMigration
   , cancelQuestionnaireMigration
+  , getQuestionnaireState
+  , heGetQuestionnaireState
   ) where
 
 import Control.Lens ((^.))
@@ -12,7 +14,6 @@ import Model.Error.Error
 import Model.Context.AppContext
 import Model.QuestionnaireMigrator.QuestionnaireMigratorState
 import Model.Questionnaire.QuestionnaireState
-import Model.Package.Package
 import Api.Resource.QuestionnaireMigrator.QuestionnaireMigratorStateCreateDTO
 import Api.Resource.QuestionnaireMigrator.QuestionnaireMigratorStateDTO
 import Database.DAO.QuestionnaireMigrator.QuestionnaireMigratorDAO
@@ -30,17 +31,17 @@ createQuestionnaireMigration qId qDto =
   heFindQuestionnaireById qId $ \questionnaire ->
     heDiffKnowledgeModelsById (questionnaire ^. packageId) (qDto ^. targetPackageId) $ \kmDiff ->
       heFindPackageById (questionnaire ^. packageId) $ \package ->
-        heCompileKnowledgeModel [] (Just $ questionnaire ^. packageId) (questionnaire ^. selectedTagUuids) $ \compiledKm -> do
-          let state =
-                QuestionnaireMigratorState
-                  { _questionnaireMigratorStateQuestionnaire = questionnaire
-                  , _questionnaireMigratorStateDiffKnowledgeModel = kmDiff ^. knowledgeModel
-                  , _questionnaireMigratorStateTargetPackageId = qDto ^. targetPackageId
-                  , _questionnaireMigratorStateDiffEvents = kmDiff ^. events
-                  }
-          createQuestionnaireMigratorState state
-          -- TODO: Find current questionnaire state and remove import
-          return . Right $ QM.toDTO state package compiledKm QSDefault
+        heCompileKnowledgeModel [] (Just $ questionnaire ^. packageId) (questionnaire ^. selectedTagUuids) $ \compiledKm ->
+          heGetQuestionnaireState qId (qDto ^. targetPackageId) $ \qtnState -> do
+            let state =
+                  QuestionnaireMigratorState
+                    { _questionnaireMigratorStateQuestionnaire = questionnaire
+                    , _questionnaireMigratorStateDiffKnowledgeModel = kmDiff ^. knowledgeModel
+                    , _questionnaireMigratorStateTargetPackageId = qDto ^. targetPackageId
+                    , _questionnaireMigratorStateDiffEvents = kmDiff ^. events
+                    }
+            createQuestionnaireMigratorState state
+            return . Right $ QM.toDTO state package compiledKm qtnState
 
 -- Creates backup for old questionnaire and moves migrated questionnaire to its place.
 finishQuestionnaireMigration :: String -> Either AppError QuestionnaireMigratorStateDTO
@@ -49,12 +50,12 @@ finishQuestionnaireMigration = undefined
 -- Returns current questionnaire migration state for given uuid.
 getQuestionnaireMigration :: String -> AppContextM (Either AppError QuestionnaireMigratorStateDTO)
 getQuestionnaireMigration qtnUuid =
-  heFindQuestionnaireMigratorStateByQuestionnaireId qtnUuid $ \state ->
+  heFindQuestionnaireMigratorStateByQuestionnaireId qtnUuid $ \mState ->
     heFindQuestionnaireById qtnUuid $ \questionnaire ->
-      heFindPackageById (state ^. targetPackageId) $ \package ->
+      heFindPackageById (mState ^. targetPackageId) $ \package ->
         heCompileKnowledgeModel [] (Just $ questionnaire ^. packageId) (questionnaire ^. selectedTagUuids) $ \compiledKm ->
-          -- TODO: Find current questionnaire state and remove import
-          return . Right $ QM.toDTO state package compiledKm QSDefault
+          heGetQuestionnaireState qtnUuid (mState ^. targetPackageId) $ \qtnState ->
+            return . Right $ QM.toDTO mState package compiledKm qtnState
 
 -- Cancels questionnaire migration for given uuid.
 cancelQuestionnaireMigration :: String -> AppContextM (Maybe AppError)
@@ -63,16 +64,24 @@ cancelQuestionnaireMigration qtnUuid =
     deleteQuestionnaireMigratorStateByQuestionnaireId qtnUuid
     return Nothing
 
--- Determines current questionnaire state.
-getQuestionnaireState :: String -> Package -> AppContextM (Either AppError QuestionnaireState)
-getQuestionnaireState qtnUuid pkg =
+-- Determines current questionnaire state based on questionnaire and package id.
+getQuestionnaireState :: String -> String -> AppContextM (Either AppError QuestionnaireState)
+getQuestionnaireState qtnUuid pkgId =
   heIsQuestionnaireStateIsMigrating qtnUuid $ \_ ->
-    heQuestionnaireStateIsOutdated pkg $ \_ ->
+    heQuestionnaireStateIsOutdated pkgId $ \_ ->
       return . Right $ QSDefault
 
 -- --------------------------------
 -- HELPERS
 -- --------------------------------
+
+-- Determines current questionnaire state based on questionnaire and package id.
+heGetQuestionnaireState :: String -> String -> ((QuestionnaireState) -> AppContextM (Either AppError a)) -> AppContextM (Either AppError a)
+heGetQuestionnaireState qtnUuid pkgId callback = do
+  eState <- getQuestionnaireState qtnUuid pkgId
+  case eState of
+    Left error  -> return . Left $ error
+    Right state -> callback state
 
 -- Checks whether the questionnaire state is currently migrating. Calls callback otherwise.
 heIsQuestionnaireStateIsMigrating :: String -> (() -> AppContextM (Either AppError QuestionnaireState)) -> AppContextM (Either AppError QuestionnaireState)
@@ -83,10 +92,10 @@ heIsQuestionnaireStateIsMigrating qtnUuid elseCallback = do
     Left error              -> return . Left $ error
     otherwise               -> return . Right $ QSMigrating
 
--- Checks whether the questionnaire state is currently outdated. Calls callback otherwise.
-heQuestionnaireStateIsOutdated :: Package -> (() -> AppContextM (Either AppError QuestionnaireState)) -> AppContextM (Either AppError QuestionnaireState)
-heQuestionnaireStateIsOutdated pkg elseCallback = do
-  eNewerPackages <- getNewerPackages $ pkg ^. pId
+-- Checks whether the questionnaire state is currently outdated based on package id. Calls callback otherwise.
+heQuestionnaireStateIsOutdated :: String -> (() -> AppContextM (Either AppError QuestionnaireState)) -> AppContextM (Either AppError QuestionnaireState)
+heQuestionnaireStateIsOutdated pkgId elseCallback = do
+  eNewerPackages <- getNewerPackages $ pkgId
   case eNewerPackages of
     Left error -> return . Left $ error
     Right pkgs -> case Prelude.length pkgs of
