@@ -36,12 +36,10 @@ createQuestionnaireMigration qId qDto =
             let state =
                   QuestionnaireMigratorState
                     { _questionnaireMigratorStateQuestionnaire = questionnaire
-                    , _questionnaireMigratorStateDiffKnowledgeModel = kmDiff ^. knowledgeModel
                     , _questionnaireMigratorStateTargetPackageId = qDto ^. targetPackageId
-                    , _questionnaireMigratorStateDiffEvents = kmDiff ^. events
                     }
             createQuestionnaireMigratorState state
-            return . Right $ QM.toDTO state package compiledKm qtnState
+            return . Right $ QM.toDTO state kmDiff package compiledKm qtnState
 
 -- Creates backup for old questionnaire and moves migrated questionnaire to its place.
 finishQuestionnaireMigration :: String -> Either AppError QuestionnaireMigratorStateDTO
@@ -53,9 +51,12 @@ getQuestionnaireMigration qtnUuid =
   heFindQuestionnaireMigratorStateByQuestionnaireId qtnUuid $ \mState ->
     heFindQuestionnaireById qtnUuid $ \questionnaire ->
       heFindPackageById (mState ^. targetPackageId) $ \package ->
-        heCompileKnowledgeModel [] (Just $ questionnaire ^. packageId) (questionnaire ^. selectedTagUuids) $ \compiledKm ->
-          heGetQuestionnaireState qtnUuid (mState ^. targetPackageId) $ \qtnState ->
-            return . Right $ QM.toDTO mState package compiledKm qtnState
+        heCompileKnowledgeModel [] (Just $ questionnaire ^. packageId) (questionnaire ^. selectedTagUuids) $ \compiledKm -> do
+          let prevPkgId = questionnaire ^. packageId
+          let targetPkgId = mState ^. targetPackageId
+          heDiffKnowledgeModelsById prevPkgId targetPkgId $ \kmDiff ->
+            heGetQuestionnaireState qtnUuid (mState ^. targetPackageId) $ \qtnState ->
+              return . Right $ QM.toDTO mState kmDiff package compiledKm qtnState
 
 -- Cancels questionnaire migration for given uuid.
 cancelQuestionnaireMigration :: String -> AppContextM (Maybe AppError)

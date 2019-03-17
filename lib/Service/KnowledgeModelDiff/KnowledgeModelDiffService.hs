@@ -7,26 +7,27 @@ import Model.Error.Error
 import Model.Context.AppContext
 import Model.Event.Event
 import Model.KnowledgeModelDiff.KnowledgeModelDiff
-
 import Service.Package.PackageService
   ( heGetAllPreviousEventsSincePackageId
   , heGetAllPreviousEventsSincePackageIdAndUntilPackageId
   )
 import Service.KnowledgeModel.KnowledgeModelService (heCompileKnowledgeModel)
 import Service.Migration.KnowledgeModel.Applicator.Applicator
+
 -- Creates new knowledgemodel-like diff tree and diff events between
 -- an old knowledgemodel and a new knowledgemodel.
 diffKnowledgeModelsById :: String -> String -> AppContextM (Either AppError KnowledgeModelDiff)
-diffKnowledgeModelsById oldKmId newKmId =
+diffKnowledgeModelsById prevKmId newKmId =
   -- TODO: Validate input data here
-  heGetAllPreviousEventsSincePackageId oldKmId $ \oldKmEvents ->
-    heCompileKnowledgeModel oldKmEvents Nothing [] $ \oldKm ->
-      heGetAllPreviousEventsSincePackageIdAndUntilPackageId newKmId oldKmId $ \newKmEvents ->
-        case runDiffApplicator (Just oldKm) newKmEvents of
+  heGetAllPreviousEventsSincePackageId prevKmId $ \prevKmEvents ->
+    heCompileKnowledgeModel prevKmEvents Nothing [] $ \prevKm ->
+      heGetAllPreviousEventsSincePackageIdAndUntilPackageId newKmId prevKmId $ \newKmEvents ->
+        case runDiffApplicator (Just prevKm) newKmEvents of
           Left error -> return . Left $ error
           Right km   -> return . Right $ KnowledgeModelDiff
-            { _knowledgeModelDiffKnowledgeModel = km
-            , _knowledgeModelDiffEvents = cleanUpDiffEvents newKmEvents
+            { _knowledgeModelDiffDiffKnowledgeModel = km
+            , _knowledgeModelDiffDiffEvents = cleanUpDiffEvents newKmEvents
+            , _knowledgeModelDiffPreviousKnowledgeModel = prevKm
             }
 
 -- Cleans up redundant diff events and preservers first edit event only.

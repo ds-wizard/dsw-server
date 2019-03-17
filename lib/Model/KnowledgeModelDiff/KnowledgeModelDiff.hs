@@ -4,6 +4,7 @@ import Model.KnowledgeModel.KnowledgeModel
 import Model.Event.Event
 
 data KnowledgeModelDiff = KnowledgeModelDiff
-  { _knowledgeModelDiffKnowledgeModel :: KnowledgeModel
-  , _knowledgeModelDiffEvents :: [Event]
+  { _knowledgeModelDiffDiffKnowledgeModel :: KnowledgeModel
+  , _knowledgeModelDiffDiffEvents :: [Event]
+  , _knowledgeModelDiffPreviousKnowledgeModel :: KnowledgeModel
   }
