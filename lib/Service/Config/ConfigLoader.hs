@@ -73,8 +73,8 @@ loadDSWConfig applicationConfigFile buildInfoFile = do
         , _appConfigDatabasePassword = password
         }
     loadAppConfigMessaging configParser = do
-      mbMqEnabled <- getOptional configParser "Messaging" "enabled"
-      let mqEnabled = fromMaybe True mbMqEnabled
+      mMqEnabled <- getOptional configParser "Messaging" "enabled"
+      let mqEnabled = fromMaybe True mMqEnabled
       mqHost <- doIf mqEnabled (get configParser "Messaging" "host") ""
       mqPort <- doIf mqEnabled (get configParser "Messaging" "port") 0
       mqUsername <- doIf mqEnabled (get configParser "Messaging" "username") ""
