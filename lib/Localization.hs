@@ -106,6 +106,8 @@ _ERROR_SERVICE_USER__REQUIRED_HASH_IN_QUERY_PARAMS = "A hash query param has to 
 
 _ERROR_SERVICE_USER__MISSING_USER = "You have to be log in to run."
 
+_ERROR_SERVICE_USER__EMAIL_NOT_SENT = "An email could not be sent at the moment, please contact the administator."
+
 -- --------------------------------------
 -- HTTP CLIENT
 -- --------------------------------------
