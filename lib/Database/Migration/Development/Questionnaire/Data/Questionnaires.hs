@@ -44,6 +44,7 @@ questionnaire1 =
   , _questionnaireOwnerUuid = Just $ fromJust (U.fromString "ec6f8e90-2a91-49ec-aa3f-9eab2267fc66")
   , _questionnaireCreatedAt = UTCTime (fromJust $ fromGregorianValid 2018 1 20) 0
   , _questionnaireUpdatedAt = UTCTime (fromJust $ fromGregorianValid 2018 1 25) 0
+  , _questionnaireQuestionFlags = []
   }
 
 questionnaire1Edited :: Questionnaire
@@ -59,6 +60,7 @@ questionnaire1Edited =
   , _questionnaireOwnerUuid = questionnaire1 ^. ownerUuid
   , _questionnaireCreatedAt = questionnaire1 ^. createdAt
   , _questionnaireUpdatedAt = UTCTime (fromJust $ fromGregorianValid 2018 1 25) 0
+  , _questionnaireQuestionFlags = []
   }
 
 createReplyKey :: [String] -> String

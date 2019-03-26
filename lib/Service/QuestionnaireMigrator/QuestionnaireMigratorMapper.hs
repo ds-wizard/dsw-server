@@ -8,8 +8,6 @@ import Model.KnowledgeModel.KnowledgeModel
 import Model.Questionnaire.QuestionnaireState
 import Model.QuestionnaireMigrator.QuestionnaireMigratorState
 import Model.KnowledgeModelDiff.KnowledgeModelDiff
-import Model.KnowledgeModel.KnowledgeModel
-import Model.Event.Event
 import Api.Resource.QuestionnaireMigrator.QuestionnaireMigratorStateDTO
 import Service.Event.EventMapper
 import qualified Service.Questionnaire.QuestionnaireMapper as QM

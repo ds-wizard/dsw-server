@@ -37,6 +37,7 @@ import Api.Resource.Questionnaire.QuestionnaireCreateDTO
 import Api.Resource.Questionnaire.QuestionnaireDTO
 import Api.Resource.Questionnaire.QuestionnaireDetailDTO
 import Api.Resource.Questionnaire.QuestionnaireReplyDTO
+import Api.Resource.Questionnaire.QuestionFlagDTO
 import Api.Resource.Report.ReportDTO
 import Api.Resource.Template.TemplateDTO
 import Api.Resource.Token.TokenCreateDTO
@@ -84,6 +85,7 @@ import Model.Organization.Organization
 import Model.Package.Package
 import Model.Questionnaire.Questionnaire
 import Model.Questionnaire.QuestionnaireReply
+import Model.Questionnaire.QuestionFlag
 import Model.Report.Report
 import Model.User.User
 
@@ -318,6 +320,10 @@ makeFields ''Reply
 makeFields ''ReplyValue
 
 makeFields ''IntegrationReplyValue
+
+makeFields ''QuestionFlag
+
+makeFields ''QuestionFlagDTO
 
 -- Model / Report
 makeFields ''Indication

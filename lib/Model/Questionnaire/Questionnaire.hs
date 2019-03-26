@@ -5,6 +5,7 @@ import qualified Data.UUID as U
 import GHC.Generics
 
 import Model.Questionnaire.QuestionnaireReply
+import Model.Questionnaire.QuestionFlag
 
 -- TODO: Add migration
 data Questionnaire = Questionnaire
@@ -18,6 +19,7 @@ data Questionnaire = Questionnaire
   , _questionnaireReplies :: [Reply]
   , _questionnaireCreatedAt :: UTCTime
   , _questionnaireUpdatedAt :: UTCTime
+  , _questionnaireQuestionFlags :: [QuestionFlag]
   } deriving (Generic, Show)
 
 instance Eq Questionnaire where
@@ -28,4 +30,6 @@ instance Eq Questionnaire where
     _questionnairePrivate a == _questionnairePrivate b &&
     _questionnairePackageId a == _questionnairePackageId b &&
     _questionnaireSelectedTagUuids a == _questionnaireSelectedTagUuids b &&
-    _questionnaireOwnerUuid a == _questionnaireOwnerUuid b && _questionnaireReplies a == _questionnaireReplies b
+    _questionnaireOwnerUuid a == _questionnaireOwnerUuid b &&
+    _questionnaireReplies a == _questionnaireReplies b &&
+    _questionnaireQuestionFlags a == _questionnaireQuestionFlags b

@@ -3,7 +3,6 @@ module Database.BSON.QuestionnaireMigrator.QuestionnaireMigratorState where
 import Control.Lens ((^.))
 import qualified Data.Bson as BSON
 import Data.Bson.Generic
-import Data.Maybe
 
 import LensesConfig
 import Database.BSON.Questionnaire.Questionnaire ()

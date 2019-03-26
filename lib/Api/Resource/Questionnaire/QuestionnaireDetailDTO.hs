@@ -7,6 +7,7 @@ import Api.Resource.KnowledgeModel.KnowledgeModelDTO
 import Api.Resource.Package.PackageDTO
 import Api.Resource.Questionnaire.QuestionnaireStateDTO
 import Api.Resource.Questionnaire.QuestionnaireReplyDTO
+import Api.Resource.Questionnaire.QuestionFlagDTO
 import Api.Resource.Questionnaire.QuestionnaireReplyJS ()
 
 data QuestionnaireDetailDTO = QuestionnaireDetailDTO
@@ -22,6 +23,7 @@ data QuestionnaireDetailDTO = QuestionnaireDetailDTO
   , _questionnaireDetailDTOOwnerUuid :: Maybe U.UUID
   , _questionnaireDetailDTOCreatedAt :: UTCTime
   , _questionnaireDetailDTOUpdatedAt :: UTCTime
+  , _questionnaireDetailDTOQuestionFlags :: [QuestionFlagDTO]
   } deriving (Show)
 
 instance Eq QuestionnaireDetailDTO where
@@ -34,4 +36,5 @@ instance Eq QuestionnaireDetailDTO where
     _questionnaireDetailDTOSelectedTagUuids a == _questionnaireDetailDTOSelectedTagUuids b &&
     _questionnaireDetailDTOKnowledgeModel a == _questionnaireDetailDTOKnowledgeModel b &&
     _questionnaireDetailDTOReplies a == _questionnaireDetailDTOReplies b &&
-    _questionnaireDetailDTOOwnerUuid a == _questionnaireDetailDTOOwnerUuid b
+    _questionnaireDetailDTOOwnerUuid a == _questionnaireDetailDTOOwnerUuid b &&
+    _questionnaireDetailDTOQuestionFlags a == _questionnaireDetailDTOQuestionFlags b

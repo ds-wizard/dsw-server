@@ -21,6 +21,7 @@ import Model.Questionnaire.Questionnaire
 import Model.Questionnaire.QuestionnaireReply
 import Model.Questionnaire.QuestionnaireState
 import Service.KnowledgeModel.KnowledgeModelMapper
+import Service.Questionnaire.QuestionFlagMapper
 import Service.Package.PackageMapper
 
 toDTO :: Questionnaire -> Package -> QuestionnaireState -> QuestionnaireDTO
@@ -82,6 +83,7 @@ toDetailWithPackageWithEventsDTO questionnaire package knowledgeModel state =
   , _questionnaireDetailDTOOwnerUuid = questionnaire ^. ownerUuid
   , _questionnaireDetailDTOCreatedAt = questionnaire ^. createdAt
   , _questionnaireDetailDTOUpdatedAt = questionnaire ^. updatedAt
+  , _questionnaireDetailDTOQuestionFlags = toQuestionFlagDTO <$> questionnaire ^. questionFlags
   }
 
 toDetailWithPackageDTO :: Questionnaire -> PackageDTO -> KnowledgeModel -> QuestionnaireState -> QuestionnaireDetailDTO
@@ -99,6 +101,7 @@ toDetailWithPackageDTO questionnaire package knowledgeModel state =
   , _questionnaireDetailDTOOwnerUuid = questionnaire ^. ownerUuid
   , _questionnaireDetailDTOCreatedAt = questionnaire ^. createdAt
   , _questionnaireDetailDTOUpdatedAt = questionnaire ^. updatedAt
+  , _questionnaireDetailDTOQuestionFlags = toQuestionFlagDTO <$> questionnaire ^. questionFlags
   }
 
 toStateDTO :: QuestionnaireState -> QuestionnaireStateDTO
@@ -138,6 +141,8 @@ fromChangeDTO qtn dto currentUserUuid now =
         else Nothing
   , _questionnaireCreatedAt = qtn ^. createdAt
   , _questionnaireUpdatedAt = now
+  -- TODO: Add actual value
+  , _questionnaireQuestionFlags = []
   }
 
 fromQuestionnaireCreateDTO :: QuestionnaireCreateDTO -> UUID -> UUID -> UTCTime -> UTCTime -> Questionnaire
@@ -156,4 +161,5 @@ fromQuestionnaireCreateDTO dto qtnUuid currentUserUuid qtnCreatedAt qtnUpdatedAt
         else Nothing
   , _questionnaireCreatedAt = qtnCreatedAt
   , _questionnaireUpdatedAt = qtnUpdatedAt
+  , _questionnaireQuestionFlags = []
   }

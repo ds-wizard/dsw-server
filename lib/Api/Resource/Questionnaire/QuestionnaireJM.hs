@@ -4,6 +4,7 @@ import Control.Monad
 import Data.Aeson
 
 import Api.Resource.Questionnaire.QuestionnaireStateJM ()
+import Api.Resource.Questionnaire.QuestionFlagJM ()
 import Api.Resource.Questionnaire.QuestionnaireDTO
 
 instance FromJSON QuestionnaireDTO where

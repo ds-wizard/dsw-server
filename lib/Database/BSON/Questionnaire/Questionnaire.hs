@@ -3,9 +3,11 @@ module Database.BSON.Questionnaire.Questionnaire where
 import Control.Lens ((^.))
 import qualified Data.Bson as BSON
 import Data.Bson.Generic
+import Data.Maybe ()
 
 import Database.BSON.Common
 import Database.BSON.Questionnaire.QuestionnaireReply ()
+import Database.BSON.Questionnaire.QuestionFlag ()
 import LensesConfig
 import Model.Questionnaire.Questionnaire
 
@@ -21,6 +23,7 @@ instance ToBSON Questionnaire where
     , "ownerUuid" BSON.=: serializeMaybeUUID (questionnaire ^. ownerUuid)
     , "createdAt" BSON.=: (questionnaire ^. createdAt)
     , "updatedAt" BSON.=: (questionnaire ^. updatedAt)
+    , "questionFlags" BSON.=: (questionnaire ^. questionFlags)
     ]
 
 instance FromBSON Questionnaire where
@@ -35,6 +38,7 @@ instance FromBSON Questionnaire where
     let ownerUuid = deserializeMaybeUUID $ BSON.lookup "ownerUuid" doc
     createdAt <- BSON.lookup "createdAt" doc
     updatedAt <- BSON.lookup "updatedAt" doc
+    questionFlags <- BSON.lookup "questionFlags" doc
     return
       Questionnaire
       { _questionnaireUuid = uuid
@@ -47,4 +51,5 @@ instance FromBSON Questionnaire where
       , _questionnaireOwnerUuid = ownerUuid
       , _questionnaireCreatedAt = createdAt
       , _questionnaireUpdatedAt = updatedAt
+      , _questionnaireQuestionFlags = questionFlags
       }
