@@ -66,7 +66,7 @@ createUser reqDto uUuid uPasswordHash uRole uPermissions =
       publishToUserCreatedTopic user
       emailResult <- sendRegistrationConfirmationMail (toDTO user) (actionKey ^. hash)
       case emailResult of
-        Left errMessage -> return . Left $ GeneralServerError _ERROR_SERVICE_USER__EMAIL_NOT_SENT
+        Left errMessage -> return . Left $ GeneralServerError _ERROR_SERVICE_USER__ACTIVATION_EMAIL_NOT_SENT
         _ -> do
           sendAnalyticsEmailIfEnabled user
           return . Right $ toDTO user
@@ -141,7 +141,7 @@ resetUserPassword reqDto =
     hmCreateActionKey (user ^. uuid) ForgottenPasswordActionKey $ \actionKey -> do
       emailResult <- sendResetPasswordMail (toDTO user) (actionKey ^. hash)
       case emailResult of
-        Left errMessage -> return . Just $ GeneralServerError _ERROR_SERVICE_USER__EMAIL_NOT_SENT
+        Left errMessage -> return . Just $ GeneralServerError _ERROR_SERVICE_USER__RECOVERY_EMAIL_NOT_SENT
         _ -> return Nothing
 
 createForgottenUserPassword :: String -> UserPasswordDTO -> AppContextM (Maybe AppError)
