@@ -5,6 +5,7 @@ module Service.QuestionnaireMigrator.QuestionnaireMigratorService
   , cancelQuestionnaireMigration
   , getQuestionnaireState
   , heGetQuestionnaireState
+  , resolveQuestionnaireQuestionChange
   ) where
 
 import Control.Lens ((^.))
@@ -16,6 +17,7 @@ import Model.QuestionnaireMigrator.QuestionnaireMigratorState
 import Model.Questionnaire.QuestionnaireState
 import Api.Resource.QuestionnaireMigrator.QuestionnaireMigratorStateCreateDTO
 import Api.Resource.QuestionnaireMigrator.QuestionnaireMigratorStateDTO
+import Api.Resource.Questionnaire.QuestionFlagDTO
 import Database.DAO.QuestionnaireMigrator.QuestionnaireMigratorDAO
 import Database.DAO.Questionnaire.QuestionnaireDAO
 import Database.DAO.Package.PackageDAO
@@ -71,6 +73,9 @@ getQuestionnaireState qtnUuid pkgId =
   heIsQuestionnaireStateIsMigrating qtnUuid $ \_ ->
     heQuestionnaireStateIsOutdated pkgId $ \_ ->
       return . Right $ QSDefault
+
+resolveQuestionnaireQuestionChange :: String -> QuestionFlagDTO -> AppContextM (Maybe AppError)
+resolveQuestionnaireQuestionChange = undefined
 
 -- --------------------------------
 -- HELPERS

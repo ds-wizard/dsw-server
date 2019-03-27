@@ -33,7 +33,6 @@ getQuestionnaireMigrationsCurrentA =
       Right resDto -> json resDto
       Left error   -> sendError error
 
-
 -- Endpoint for canceling questionnaire migration.
 deleteQuestionnaireMigrationsCurrentA :: Endpoint
 deleteQuestionnaireMigrationsCurrentA =
@@ -41,6 +40,21 @@ deleteQuestionnaireMigrationsCurrentA =
     getAuthServiceExecutor $ \runInAuthService -> do
       qtnUuid <- param "qtnUuid"
       result  <- runInAuthService $ cancelQuestionnaireMigration qtnUuid
+      case result of
+        Nothing    -> status noContent204
+        Just error -> sendError error
+
+-- --------------
+-- Question Flags
+-- --------------
+
+postQuestionnaireMigrationsQuestionFlagA :: Endpoint
+postQuestionnaireMigrationsQuestionFlagA =
+  checkPermission "QTN_PERM" $
+  getAuthServiceExecutor $ \runInAuthService ->
+    getReqDto $ \flagDto -> do
+      qtnUuid <- param "qtnUuid"
+      result  <- runInAuthService $ resolveQuestionnaireQuestionChange qtnUuid flagDto
       case result of
         Nothing    -> status noContent204
         Just error -> sendError error
