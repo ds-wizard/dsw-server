@@ -144,6 +144,7 @@ createEndpoints context
   get "/questionnaires/:qtnUuid/migrations" getQuestionnaireMigrationsCurrentA
   post "/questionnaires/:qtnUuid/migrations" postQuestionnaireMigrationsCurrentA
   delete "/questionnaires/:qtnUuid/migrations" deleteQuestionnaireMigrationsCurrentA
+  post "/questionnaires/:qtnUuid/migrations/resolveQuestionEvent" postQuestionnaireMigrationsQuestionFlagA
    --------------------
    -- TYPEHINTS
    --------------------

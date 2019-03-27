@@ -2,13 +2,16 @@ module Database.DAO.QuestionnaireMigrator.QuestionnaireMigratorDAO
   ( createQuestionnaireMigratorState
   , findQuestionnaireMigratorStateByQuestionnaireId
   , deleteQuestionnaireMigratorStateByQuestionnaireId
+  , updateQuestionnareMigratorStateByQuestionnaireId
   ) where
 
 import Data.Bson
 import Data.Bson.Generic
 import Database.MongoDB
-       ((=:), delete, findOne, insert, select)
+       ((=:), delete, findOne, insert, select, save, merge, fetch)
+import Control.Lens ((^.))
 
+import LensesConfig
 import Database.BSON.QuestionnaireMigrator.QuestionnaireMigratorState ()
 import Database.DAO.Common
 import Model.Context.AppContext
@@ -31,4 +34,11 @@ findQuestionnaireMigratorStateByQuestionnaireId qtnUuid = do
 deleteQuestionnaireMigratorStateByQuestionnaireId :: String -> AppContextM ()
 deleteQuestionnaireMigratorStateByQuestionnaireId qtnUuid = do
   let action = delete $ select ["questionnaire.uuid" =: qtnUuid] qtnmCollection
+  runDB action
+
+updateQuestionnareMigratorStateByQuestionnaireId :: QuestionnaireMigratorState -> AppContextM ()
+updateQuestionnareMigratorStateByQuestionnaireId state = do
+  let action =
+        fetch (select ["questionnaire.uuid" =: (state ^. questionnaire ^. uuid)] qtnmCollection) >>=
+        save qtnmCollection . merge (toBSON state)
   runDB action

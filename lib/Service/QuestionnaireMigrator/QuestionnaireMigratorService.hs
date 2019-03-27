@@ -8,13 +8,14 @@ module Service.QuestionnaireMigrator.QuestionnaireMigratorService
   , resolveQuestionnaireQuestionChange
   ) where
 
-import Control.Lens ((^.))
+import Control.Lens ((^.), (&), (.~))
 
 import LensesConfig
 import Model.Error.Error
 import Model.Context.AppContext
 import Model.QuestionnaireMigrator.QuestionnaireMigratorState
 import Model.Questionnaire.QuestionnaireState
+import Model.Questionnaire.QuestionFlag
 import Api.Resource.QuestionnaireMigrator.QuestionnaireMigratorStateCreateDTO
 import Api.Resource.QuestionnaireMigrator.QuestionnaireMigratorStateDTO
 import Api.Resource.Questionnaire.QuestionFlagDTO
@@ -24,6 +25,7 @@ import Database.DAO.Package.PackageDAO
 import Service.KnowledgeModel.KnowledgeModelService
 import Service.KnowledgeModelDiff.KnowledgeModelDiffService
 import Service.Package.PackageService
+import Service.Questionnaire.QuestionFlagMapper
 import qualified Service.QuestionnaireMigrator.QuestionnaireMigratorMapper as QM
 
 -- Creates new questionnaire migration from questionnaire id and target package id.
@@ -75,7 +77,15 @@ getQuestionnaireState qtnUuid pkgId =
       return . Right $ QSDefault
 
 resolveQuestionnaireQuestionChange :: String -> QuestionFlagDTO -> AppContextM (Maybe AppError)
-resolveQuestionnaireQuestionChange = undefined
+resolveQuestionnaireQuestionChange qtnUuid qtnFlag =
+  hmFindQuestionnaireMigratorStateByQuestionnaireId qtnUuid $ \mState -> do
+    let flags = (mState ^. questionnaire) ^. questionFlags
+    let newFlag = fromQuestionFlagDTO qtnFlag
+    hmCheckIfQuestionWasAlreadyFlagged (newFlag ^. questionPath) flags $ do
+      let updatedFlags = flags ++ [newFlag]
+          updatedState = mState & questionnaire . questionFlags .~ updatedFlags
+      updateQuestionnareMigratorStateByQuestionnaireId updatedState
+      return Nothing
 
 -- --------------------------------
 -- HELPERS
@@ -121,3 +131,8 @@ hmFindQuestionnaireMigratorStateByQuestionnaireId qtnUuid callback = do
   case state of
     Left error  -> return . Just $ error
     Right state -> callback state
+
+hmCheckIfQuestionWasAlreadyFlagged :: [String] -> [QuestionFlag] -> AppContextM (Maybe AppError) -> AppContextM (Maybe AppError)
+hmCheckIfQuestionWasAlreadyFlagged path flags callback =
+  -- TODO: Implement acutal validation
+  callback
