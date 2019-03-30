@@ -41,6 +41,7 @@ getPublicQuestionnaire =
             , _questionnaireDetailDTOOwnerUuid = Nothing
             , _questionnaireDetailDTOCreatedAt = now
             , _questionnaireDetailDTOUpdatedAt = now
+            , _questionnaireDetailDTOQuestionFlags = []
             }
       Left (NotExistsError _) -> return . Left . NotExistsError $ _ERROR_SERVICE_PQ__NOT_SET_UP
       Left error -> return . Left $ error

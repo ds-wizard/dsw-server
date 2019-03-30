@@ -3,7 +3,7 @@ module Api.Resource.QuestionnaireMigrator.QuestionnaireMigratorStateJM where
 import Control.Monad
 import Data.Aeson
 
-import Api.Resource.Questionnaire.QuestionnaireJM ()
+import Api.Resource.Questionnaire.QuestionnaireDetailJM ()
 import Api.Resource.QuestionnaireMigrator.QuestionnaireMigratorStateDTO
 
 instance FromJSON QuestionnaireMigratorStateDTO where

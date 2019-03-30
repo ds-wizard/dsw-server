@@ -12,6 +12,7 @@ import Api.Resource.QuestionnaireMigrator.QuestionnaireMigratorStateDTO
 import Service.Event.EventMapper
 import qualified Service.Questionnaire.QuestionnaireMapper as QM
 import qualified Service.KnowledgeModel.KnowledgeModelMapper as KM
+import qualified Service.Package.PackageMapper as PM
 
 toDTO :: QuestionnaireMigratorState -> KnowledgeModelDiff -> Package -> KnowledgeModel -> QuestionnaireState -> QuestionnaireMigratorStateDTO
 toDTO model diff pkg km qtnState =
@@ -22,4 +23,4 @@ toDTO model diff pkg km qtnState =
     , _questionnaireMigratorStateDTOTargetPackageId = model ^. targetPackageId
     , _questionnaireMigratorStateDTODiffEvents = toDTOs $ diff ^. diffEvents
     }
-  where qtnDTO = QM.toDTO (model ^. questionnaire) pkg qtnState
+  where qtnDTO = QM.toDetailWithPackageDTO (model ^. questionnaire) (PM.packageToDTO pkg) km qtnState
