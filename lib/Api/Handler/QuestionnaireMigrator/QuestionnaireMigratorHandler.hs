@@ -2,6 +2,7 @@ module Api.Handler.QuestionnaireMigrator.QuestionnaireMigratorHandler where
 
 import Network.HTTP.Types.Status (noContent204, created201)
 import Web.Scotty.Trans (json, param, status)
+import qualified Data.Text as T
 
 import Api.Handler.Common
 import Api.Resource.QuestionnaireMigrator.QuestionnaireMigratorStateCreateJM ()
@@ -43,6 +44,21 @@ deleteQuestionnaireMigrationsCurrentA =
       case result of
         Nothing    -> status noContent204
         Just error -> sendError error
+
+deleteQuestionnaireMigrationQuestionFlagA :: Endpoint
+deleteQuestionnaireMigrationQuestionFlagA =
+  checkPermission "QTN_PERM" $
+    getAuthServiceExecutor $ \runInAuthService -> do
+      qtnUuid <- param "qtnUuid"
+      questionPathString <- param "questionPath"
+      result <- runInAuthService $ deleteQuestionnaireQuestionChange qtnUuid (splitOn "." questionPathString)
+      case result of
+        Nothing -> status noContent204
+        Just error -> sendError error
+
+splitOn :: String -> String -> [String]
+splitOn delimiter text =
+  map (T.unpack) $ T.splitOn (T.pack delimiter) (T.pack text)
 
 -- --------------
 -- Question Flags
