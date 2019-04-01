@@ -112,7 +112,7 @@ loadMailTemplateParts mailName context = do
       templateFileParts <- loadFileParts $ root ++ _MAIL_TEMPLATE_ATTACHMENTS_FOLDER
       globalFileParts <- loadFileParts $ commonRoot ++ _MAIL_TEMPLATE_ATTACHMENTS_FOLDER
       return . Right $ mainParts ++ fromRight [] templateFileParts ++ fromRight [] globalFileParts
-    else return $ Left "No HTML neither PLAIN TEXT"
+    else return . Left $ _ERROR_SERVICE_MAIL__MISSING_HTML_PLAIN mailName
 
 loadFileParts :: String -> AppContextM (Either String [MIME.Part])
 loadFileParts root =
@@ -138,7 +138,7 @@ makeConnection True host (Just port) = SMTPSSL.doSMTPSSLWithSettings host settin
     settings = SMTPSSL.defaultSettingsSMTPSSL {SMTPSSL.sslPort = fromIntegral port}
 
 sendEmail :: [String] -> TL.Text -> [MIME.Part] -> AppContextM (Either String ())
-sendEmail to subject [] = return $ Left "Tried to sent empty email" -- empty mail won't be sent
+sendEmail to subject [] = return $ Left _ERROR_SERVICE_MAIL__TRIED_SEND_EMPTY_MAIL
 sendEmail to subject parts = do
   dswConfig <- asks _appContextConfig
   let mailConfig = dswConfig ^. mail
