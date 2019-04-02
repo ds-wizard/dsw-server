@@ -321,9 +321,9 @@ makeFields ''ReplyValue
 
 makeFields ''IntegrationReplyValue
 
-makeFields ''QuestionFlag
+makeFields ''QuestionFlags
 
-makeFields ''QuestionFlagDTO
+makeFields ''QuestionFlagsDTO
 
 -- Model / Report
 makeFields ''Indication

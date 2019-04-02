@@ -19,7 +19,7 @@ data Questionnaire = Questionnaire
   , _questionnaireReplies :: [Reply]
   , _questionnaireCreatedAt :: UTCTime
   , _questionnaireUpdatedAt :: UTCTime
-  , _questionnaireQuestionFlags :: [QuestionFlag]
+  , _questionnaireQuestionFlags :: [QuestionFlags]
   } deriving (Generic, Show)
 
 instance Eq Questionnaire where

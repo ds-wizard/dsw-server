@@ -14,16 +14,16 @@ toQuestionFlagTypeDTO :: QF.QuestionFlagType -> QD.QuestionFlagTypeDTO
 toQuestionFlagTypeDTO QF.NeedsReview = QD.NeedsReview
 toQuestionFlagTypeDTO QF.MigrationResolved = QD.MigrationResolved
 
-fromQuestionFlagDTO :: QD.QuestionFlagDTO -> QF.QuestionFlag
+fromQuestionFlagDTO :: QD.QuestionFlagsDTO -> QF.QuestionFlags
 fromQuestionFlagDTO dto =
-  QF.QuestionFlag
-    { _questionFlagQuestionPath = dto ^. questionPath
-    , _questionFlagFlagType = fromQuestionFlagTypeDTO $ dto ^. flagType
+  QF.QuestionFlags
+    { _questionFlagsQuestionPath = dto ^. questionPath
+    , _questionFlagsFlagTypes = map fromQuestionFlagTypeDTO $ dto ^. flagTypes
     }
 
-toQuestionFlagDTO :: QF.QuestionFlag -> QD.QuestionFlagDTO
+toQuestionFlagDTO :: QF.QuestionFlags -> QD.QuestionFlagsDTO
 toQuestionFlagDTO model =
-  QD.QuestionFlagDTO
-    { _questionFlagDTOQuestionPath = model ^. questionPath
-    , _questionFlagDTOFlagType = toQuestionFlagTypeDTO $ model ^. flagType
+  QD.QuestionFlagsDTO
+    { _questionFlagsDTOQuestionPath = model ^. questionPath
+    , _questionFlagsDTOFlagTypes = map toQuestionFlagTypeDTO $ model ^. flagTypes
     }

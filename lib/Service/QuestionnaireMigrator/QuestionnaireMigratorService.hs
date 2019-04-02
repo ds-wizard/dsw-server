@@ -6,7 +6,6 @@ module Service.QuestionnaireMigrator.QuestionnaireMigratorService
   , getQuestionnaireState
   , heGetQuestionnaireState
   , resolveQuestionnaireQuestionChange
-  , deleteQuestionnaireQuestionChange
   ) where
 
 import Control.Lens ((^.), (&), (.~))
@@ -78,27 +77,18 @@ getQuestionnaireState qtnUuid pkgId =
     heQuestionnaireStateIsOutdated pkgId $ \_ ->
       return . Right $ QSDefault
 
-resolveQuestionnaireQuestionChange :: String -> QuestionFlagDTO -> AppContextM (Maybe AppError)
+resolveQuestionnaireQuestionChange :: String -> QuestionFlagsDTO -> AppContextM (Maybe AppError)
 resolveQuestionnaireQuestionChange qtnUuid qtnFlag =
   hmFindQuestionnaireMigratorStateByQuestionnaireId qtnUuid $ \mState -> do
-    let flags = (mState ^. questionnaire) ^. questionFlags
+    let flags = filter (ignoreFlagsAtPath (qtnFlag ^. questionPath)) $ (mState ^. questionnaire) ^. questionFlags
         newFlag = fromQuestionFlagDTO qtnFlag
-    hmCheckIfQuestionWasAlreadyFlagged (newFlag ^. questionPath) flags $ do
-      let updatedFlags = flags ++ [newFlag]
-          updatedState = mState & questionnaire . questionFlags .~ updatedFlags
-      updateQuestionnareMigratorStateByQuestionnaireId updatedState
-      return Nothing
+        updatedFlags = flags ++ [newFlag]
+        updatedState = mState & questionnaire . questionFlags .~ updatedFlags
+    updateQuestionnareMigratorStateByQuestionnaireId updatedState
+    return Nothing
+    where ignoreFlagsAtPath :: [String] -> QuestionFlags -> Bool
+          ignoreFlagsAtPath path flags = path /= flags ^. questionPath
 
-deleteQuestionnaireQuestionChange :: String -> [String] -> AppContextM (Maybe AppError)
-deleteQuestionnaireQuestionChange qtnUuid qPath =
-  hmFindQuestionnaireMigratorStateByQuestionnaireId qtnUuid $ \mState -> do
-    let flags = mState ^. questionnaire ^. questionFlags
-    hmCheckQuestionnaireHasFlag qPath flags $ do
-      let updatedFlags = filter notHavingPath flags
-          updatedState = mState & questionnaire . questionFlags .~ updatedFlags
-      updateQuestionnareMigratorStateByQuestionnaireId updatedState
-      return Nothing
-      where notHavingPath flag = flag ^. questionPath /= qPath
 -- --------------------------------
 -- HELPERS
 -- --------------------------------
@@ -143,22 +133,3 @@ hmFindQuestionnaireMigratorStateByQuestionnaireId qtnUuid callback = do
   case state of
     Left error  -> return . Just $ error
     Right state -> callback state
-
-hmCheckQuestionnaireHasFlag :: [String] -> [QuestionFlag] -> AppContextM (Maybe AppError) -> AppContextM (Maybe AppError)
-hmCheckQuestionnaireHasFlag path flags callback = do
-  if flagsContainsFlagAtPath path flags then
-    callback
-  else
-    return . Just . NotExistsError $ "Flag at path '" ++ (intercalate "." path) ++ "' does not exist."
-
-hmCheckIfQuestionWasAlreadyFlagged :: [String] -> [QuestionFlag] -> AppContextM (Maybe AppError) -> AppContextM (Maybe AppError)
-hmCheckIfQuestionWasAlreadyFlagged path flags callback =
-  if flagsContainsFlagAtPath path flags then
-    return . Just . MigratorError $ "Flag at path '" ++ (intercalate "." path) ++ "' already exist."
-  else
-    callback
-
-flagsContainsFlagAtPath :: [String] -> [QuestionFlag] -> Bool
-flagsContainsFlagAtPath path flags =
-  any containsFlag flags
-  where containsFlag flag = flag ^. questionPath == path

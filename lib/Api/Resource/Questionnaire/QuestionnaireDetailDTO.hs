@@ -23,7 +23,7 @@ data QuestionnaireDetailDTO = QuestionnaireDetailDTO
   , _questionnaireDetailDTOOwnerUuid :: Maybe U.UUID
   , _questionnaireDetailDTOCreatedAt :: UTCTime
   , _questionnaireDetailDTOUpdatedAt :: UTCTime
-  , _questionnaireDetailDTOQuestionFlags :: [QuestionFlagDTO]
+  , _questionnaireDetailDTOQuestionFlags :: [QuestionFlagsDTO]
   } deriving (Show)
 
 instance Eq QuestionnaireDetailDTO where

@@ -7,8 +7,8 @@ data QuestionFlagType
   | MigrationResolved
   deriving (Generic, Show, Eq)
 
-data QuestionFlag = QuestionFlag
-  { _questionFlagQuestionPath :: [String]
-  , _questionFlagFlagType :: QuestionFlagType
+data QuestionFlags = QuestionFlags
+  { _questionFlagsQuestionPath :: [String]
+  , _questionFlagsFlagTypes :: [QuestionFlagType]
   }
   deriving (Show, Eq)

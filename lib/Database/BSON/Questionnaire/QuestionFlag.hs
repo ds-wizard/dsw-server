@@ -7,20 +7,20 @@ import Data.Bson.Generic
 import LensesConfig
 import Model.Questionnaire.QuestionFlag
 
-instance ToBSON QuestionFlag where
+instance ToBSON QuestionFlags where
   toBSON model =
     [ "questionPath" BSON.=: (model ^. questionPath)
-    , "flagType" BSON.=: model ^. flagType
+    , "flagTypes" BSON.=: model ^. flagTypes
     ]
 
-instance FromBSON QuestionFlag where
+instance FromBSON QuestionFlags where
   fromBSON doc = do
     questionPath <- BSON.lookup "questionPath" doc
-    flagType <- BSON.lookup "flagType" doc
+    flagTypes <- BSON.lookup "flagTypes" doc
     return
-     QuestionFlag
-      { _questionFlagQuestionPath = questionPath
-      , _questionFlagFlagType = flagType
+     QuestionFlags
+      { _questionFlagsQuestionPath = questionPath
+      , _questionFlagsFlagTypes = flagTypes
       }
 
 instance ToBSON QuestionFlagType

@@ -9,16 +9,16 @@ instance FromJSON QuestionFlagTypeDTO
 
 instance ToJSON QuestionFlagTypeDTO
 
-instance FromJSON QuestionFlagDTO where
+instance FromJSON QuestionFlagsDTO where
   parseJSON (Object o) = do
-    _questionFlagDTOQuestionPath <- o .: "questionPath"
-    _questionFlagDTOFlagType <- o .: "flagType"
-    return QuestionFlagDTO {..}
+    _questionFlagsDTOQuestionPath <- o .: "questionPath"
+    _questionFlagsDTOFlagTypes <- o .: "flagTypes"
+    return QuestionFlagsDTO {..}
   parseJSON _ = mzero
 
-instance ToJSON QuestionFlagDTO where
-  toJSON QuestionFlagDTO {..} =
+instance ToJSON QuestionFlagsDTO where
+  toJSON QuestionFlagsDTO {..} =
     object
-      [ "questionPath" .= _questionFlagDTOQuestionPath
-      , "flagType" .= _questionFlagDTOFlagType
+      [ "questionPath" .= _questionFlagsDTOQuestionPath
+      , "flagTypes" .= _questionFlagsDTOFlagTypes
       ]

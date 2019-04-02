@@ -45,27 +45,12 @@ deleteQuestionnaireMigrationsCurrentA =
         Nothing    -> status noContent204
         Just error -> sendError error
 
-deleteQuestionnaireMigrationQuestionFlagA :: Endpoint
-deleteQuestionnaireMigrationQuestionFlagA =
-  checkPermission "QTN_PERM" $
-    getAuthServiceExecutor $ \runInAuthService -> do
-      qtnUuid <- param "qtnUuid"
-      questionPathString <- param "questionPath"
-      result <- runInAuthService $ deleteQuestionnaireQuestionChange qtnUuid (splitOn "." questionPathString)
-      case result of
-        Nothing -> status noContent204
-        Just error -> sendError error
-
-splitOn :: String -> String -> [String]
-splitOn delimiter text =
-  map (T.unpack) $ T.splitOn (T.pack delimiter) (T.pack text)
-
 -- --------------
 -- Question Flags
 -- --------------
 
-postQuestionnaireMigrationsQuestionFlagA :: Endpoint
-postQuestionnaireMigrationsQuestionFlagA =
+putQuestionnaireMigrationsQuestionFlagA :: Endpoint
+putQuestionnaireMigrationsQuestionFlagA =
   checkPermission "QTN_PERM" $
   getAuthServiceExecutor $ \runInAuthService ->
     getReqDto $ \flagDto -> do
