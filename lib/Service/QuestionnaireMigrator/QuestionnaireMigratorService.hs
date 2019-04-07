@@ -6,9 +6,11 @@ module Service.QuestionnaireMigrator.QuestionnaireMigratorService
   , getQuestionnaireState
   , heGetQuestionnaireState
   , resolveQuestionnaireQuestionChange
+  , completeQuestionnairemigration
   ) where
 
 import Control.Lens ((^.), (&), (.~))
+import Control.Monad.Reader (liftIO)
 import Data.List (intercalate)
 
 import LensesConfig
@@ -17,6 +19,8 @@ import Model.Context.AppContext
 import Model.QuestionnaireMigrator.QuestionnaireMigratorState
 import Model.Questionnaire.QuestionnaireState
 import Model.Questionnaire.QuestionFlag
+import Model.Questionnaire.Questionnaire
+import Model.Questionnaire.QuestionnaireReply (Reply)
 import Api.Resource.QuestionnaireMigrator.QuestionnaireMigratorStateCreateDTO
 import Api.Resource.QuestionnaireMigrator.QuestionnaireMigratorStateDTO
 import Api.Resource.Questionnaire.QuestionFlagDTO
@@ -28,6 +32,7 @@ import Service.KnowledgeModelDiff.KnowledgeModelDiffService
 import Service.Package.PackageService
 import Service.Questionnaire.QuestionFlagMapper
 import qualified Service.QuestionnaireMigrator.QuestionnaireMigratorMapper as QM
+import Util.Uuid
 
 -- Creates new questionnaire migration from questionnaire id and target package id.
 createQuestionnaireMigration :: String -> QuestionnaireMigratorStateCreateDTO -> AppContextM (Either AppError QuestionnaireMigratorStateDTO)
@@ -73,9 +78,39 @@ cancelQuestionnaireMigration qtnUuid =
 -- Determines current questionnaire state based on questionnaire and package id.
 getQuestionnaireState :: String -> String -> AppContextM (Either AppError QuestionnaireState)
 getQuestionnaireState qtnUuid pkgId =
-  heIsQuestionnaireStateIsMigrating qtnUuid $ \_ ->
-    heQuestionnaireStateIsOutdated pkgId $ \_ ->
+  heIsQuestionnaireStateIsMigrating qtnUuid $
+    heQuestionnaireStateIsOutdated pkgId $
       return . Right $ QSDefault
+
+-- Completes the migration of questionnaire from old version of knowledge model to new version
+completeQuestionnairemigration :: String -> AppContextM (Maybe AppError)
+completeQuestionnairemigration qtnUuid =
+  hmFindQuestionnaireMigratorStateByQuestionnaireId qtnUuid $ \state ->
+    hmGetAllPreviousEventsSincePackageId (state ^. targetPackageId) $ \events -> do
+      let oldQuestionnaire = state ^. questionnaire
+          newReplies = migrateQuestionnaireReplies $ oldQuestionnaire ^. replies
+          newQuestionFlags = migrateQuestionnaireQuestionFlags $ oldQuestionnaire ^. questionFlags
+          newPackageId = state ^. targetPackageId
+      newUuid <- liftIO generateUuid
+      insertQuestionnaire Questionnaire
+        { _questionnaireUuid = newUuid
+        , _questionnaireName = oldQuestionnaire ^. name
+        , _questionnaireLevel = oldQuestionnaire ^. level
+        , _questionnairePrivate = oldQuestionnaire ^. private
+        , _questionnairePackageId = newPackageId
+        , _questionnaireSelectedTagUuids = oldQuestionnaire ^. selectedTagUuids
+        , _questionnaireOwnerUuid = oldQuestionnaire ^. ownerUuid
+        , _questionnaireReplies = newReplies
+        , _questionnaireCreatedAt = oldQuestionnaire ^. createdAt
+        , _questionnaireUpdatedAt = oldQuestionnaire ^. updatedAt
+        , _questionnaireQuestionFlags = newQuestionFlags
+        }
+      deleteQuestionnaireMigratorStateByQuestionnaireId qtnUuid
+      return Nothing
+
+-- --------------------------------
+-- Flags
+-- --------------------------------
 
 resolveQuestionnaireQuestionChange :: String -> QuestionFlagsDTO -> AppContextM (Maybe AppError)
 resolveQuestionnaireQuestionChange qtnUuid qtnFlag =
@@ -102,22 +137,22 @@ heGetQuestionnaireState qtnUuid pkgId callback = do
     Right state -> callback state
 
 -- Checks whether the questionnaire state is currently migrating. Calls callback otherwise.
-heIsQuestionnaireStateIsMigrating :: String -> (() -> AppContextM (Either AppError QuestionnaireState)) -> AppContextM (Either AppError QuestionnaireState)
+heIsQuestionnaireStateIsMigrating :: String -> AppContextM (Either AppError QuestionnaireState) -> AppContextM (Either AppError QuestionnaireState)
 heIsQuestionnaireStateIsMigrating qtnUuid elseCallback = do
   eMigrationState <- findQuestionnaireMigratorStateByQuestionnaireId qtnUuid
   case eMigrationState of
-    Left (NotExistsError _) -> elseCallback ()
+    Left (NotExistsError _) -> elseCallback
     Left error              -> return . Left $ error
     otherwise               -> return . Right $ QSMigrating
 
 -- Checks whether the questionnaire state is currently outdated based on package id. Calls callback otherwise.
-heQuestionnaireStateIsOutdated :: String -> (() -> AppContextM (Either AppError QuestionnaireState)) -> AppContextM (Either AppError QuestionnaireState)
+heQuestionnaireStateIsOutdated :: String -> AppContextM (Either AppError QuestionnaireState) -> AppContextM (Either AppError QuestionnaireState)
 heQuestionnaireStateIsOutdated pkgId elseCallback = do
   eNewerPackages <- getNewerPackages $ pkgId
   case eNewerPackages of
     Left error -> return . Left $ error
     Right pkgs -> case Prelude.length pkgs of
-      0         -> elseCallback ()
+      0         -> elseCallback
       otherwise -> return . Right $ QSOutdated
 
 heFindQuestionnaireMigratorStateByQuestionnaireId :: String -> (QuestionnaireMigratorState -> AppContextM (Either AppError a)) -> AppContextM (Either AppError a)
@@ -133,3 +168,9 @@ hmFindQuestionnaireMigratorStateByQuestionnaireId qtnUuid callback = do
   case state of
     Left error  -> return . Just $ error
     Right state -> callback state
+
+migrateQuestionnaireReplies :: [Reply] -> [Reply]
+migrateQuestionnaireReplies = id
+
+migrateQuestionnaireQuestionFlags :: [QuestionFlags] -> [QuestionFlags]
+migrateQuestionnaireQuestionFlags = id

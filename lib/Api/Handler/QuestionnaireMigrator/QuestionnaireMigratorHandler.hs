@@ -45,6 +45,16 @@ deleteQuestionnaireMigrationsCurrentA =
         Nothing    -> status noContent204
         Just error -> sendError error
 
+putQuestionnaireMigrationsCurrentA :: Endpoint
+putQuestionnaireMigrationsCurrentA =
+  checkPermission "QTN_PERM" $
+    getAuthServiceExecutor $ \runInAuthService -> do
+      qtnUuid <- param "qtnUuid"
+      result <- runInAuthService $ completeQuestionnairemigration qtnUuid
+      case result of
+        Nothing    -> status noContent204
+        Just error -> sendError error
+
 -- --------------
 -- Question Flags
 -- --------------
