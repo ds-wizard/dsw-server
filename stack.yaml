@@ -54,6 +54,10 @@ extra-deps:
   - github-0.21
   - http-api-data-0.3.10
   - jwt-0.9.0
+  - github: MarekSuchanek/mime-mail
+    commit: "35038f5"
+    subdirs:
+    - mime-mail
 
 # Override default flag values for local packages and extra-deps
 # flags: {}
