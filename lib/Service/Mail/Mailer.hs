@@ -42,7 +42,7 @@ sendRegistrationConfirmationMail user hash = do
       activationLink = clientAddress ++ "/signup-confirmation/" ++ U.toString (user ^. uuid) ++ "/" ++ hash
       mailName = dswConfig ^. mail . name
       subject = TL.pack $ mailName ++ ": Confirmation Email"
-      additionals = [("activationLink", (Aeson.String $ T.pack activationLink))]
+      additionals = [("activationLink", Aeson.String $ T.pack activationLink)]
       context = makeMailContext mailName clientAddress user additionals
       to = [user ^. email]
   composeAndSendEmail to subject _MAIL_REGISTRATION_REGISTRATION_CONFIRMATION context
