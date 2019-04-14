@@ -33,8 +33,7 @@ install:
   # 1. Download, unpack, and check the stack executable
   - mkdir -p ~/.local/bin
   - export PATH=$HOME/.local/bin:$PATH
-  - travis_retry curl -L https://get.haskellstack.org/stable/linux-x86_64.tar.gz | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'
-  - stack --version
+  - travis_retry curl -L https://github.com/commercialhaskell/stack/releases/download/v1.9.3/stack-1.9.3-linux-x86_64.tar.gz | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'
   # 2. Init Application Config
   - cp config/app-config.cfg.example config/app-config.cfg
   - cp config/app-config-test.cfg.example config/app-config-test.cfg
@@ -49,7 +48,7 @@ jobs:
   include:
     - stage: build
       script:
-        # 1. Init & check testing Mongo Database
+        # 1. Init and check testing Mongo Database
         - mongo dsw-server-test --eval 'db.collection.find()'
         # 2. Create build info inside application
         - cd scripts
