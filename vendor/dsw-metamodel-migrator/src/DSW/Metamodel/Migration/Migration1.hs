@@ -1,4 +1,4 @@
-module DSW.Metamodel.Migration.Version1 where
+module DSW.Metamodel.Migration.Migration1 where
 
 import Data.Aeson
 import Data.Either
