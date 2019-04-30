@@ -33,3 +33,4 @@ library:
     - TypeSynonymInstances
     - FlexibleInstances
     - ScopedTypeVariables
+    - MultiParamTypeClasses

@@ -10,35 +10,41 @@ result2Either :: Result a -> Either String a
 result2Either (Error msg) = Left msg
 result2Either (Success x) = Right x
 
-migrateEventFieldDTO :: V1.EventFieldDTO a -> V2.EventFieldDTO a
-migrateEventFieldDTO V1.NothingChangedDTO = V2.NothingChangedDTO
-migrateEventFieldDTO (V1.ChangedValueDTO x) = (V2.ChangedValueDTO x)
+class (ToJSON f, FromJSON t) => Upgradeable f t where
+  upgrade :: f -> Either String t
 
-migrateEventPathDTO :: V1.EventPathDTO -> Either String V2.EventPathDTO
-migrateEventPathDTO = result2Either . fromJSON . toJSON
+instance Upgradeable V1.EventPathDTO V2.EventPathDTO where
+  upgrade = result2Either . fromJSON . toJSON
 
-migrateEditKnowledgeModelEventDTO :: V1.EditKnowledgeModelEventDTO -> Either String V2.EditKnowledgeModelEventDTO
-migrateEditKnowledgeModelEventDTO (V1.EditKnowledgeModelEventDTO {..}) = do
-  newPath <- migrateEventPathDTO _editKnowledgeModelEventDTOPath
-  return
-    V2.EditKnowledgeModelEventDTO
-    { V2._editKnowledgeModelEventDTOUuid = _editKnowledgeModelEventDTOUuid
-    , V2._editKnowledgeModelEventDTOPath = newPath
-    , V2._editKnowledgeModelEventDTOKmUuid = _editKnowledgeModelEventDTOKmUuid
-    , V2._editKnowledgeModelEventDTOName = migrateEventFieldDTO _editKnowledgeModelEventDTOName
-    , V2._editKnowledgeModelEventDTOChapterUuids = migrateEventFieldDTO _editKnowledgeModelEventDTOChapterUuids
-    , V2._editKnowledgeModelEventDTOTagUuids = migrateEventFieldDTO _editKnowledgeModelEventDTOTagUuids
-    , V2._editKnowledgeModelEventDTOIntegrationUuids = V2.NothingChangedDTO
-    }
+instance (FromJSON a, ToJSON a) => Upgradeable (V1.EventFieldDTO a) (V2.EventFieldDTO a) where
+  upgrade V1.NothingChangedDTO = Right V2.NothingChangedDTO
+  upgrade (V1.ChangedValueDTO x) = Right (V2.ChangedValueDTO x)
 
-migrateEvent :: V1.EventDTO -> Either String V2.EventDTO
-migrateEvent (V1.EditKnowledgeModelEventDTO' oldEvent) = do
-  newEvent <- migrateEditKnowledgeModelEventDTO oldEvent
-  return $ V2.EditKnowledgeModelEventDTO' newEvent
-migrateEvent x = result2Either . fromJSON . toJSON $ x
+instance Upgradeable V1.EditKnowledgeModelEventDTO V2.EditKnowledgeModelEventDTO where
+  upgrade (V1.EditKnowledgeModelEventDTO {..}) = do
+    newPath <- upgrade _editKnowledgeModelEventDTOPath
+    newName <- upgrade _editKnowledgeModelEventDTOName
+    newChapterUuids <- upgrade _editKnowledgeModelEventDTOChapterUuids
+    newTagUuids <- upgrade _editKnowledgeModelEventDTOTagUuids
+    return
+      V2.EditKnowledgeModelEventDTO
+      { V2._editKnowledgeModelEventDTOUuid = _editKnowledgeModelEventDTOUuid
+      , V2._editKnowledgeModelEventDTOPath = newPath
+      , V2._editKnowledgeModelEventDTOKmUuid = _editKnowledgeModelEventDTOKmUuid
+      , V2._editKnowledgeModelEventDTOName = newName
+      , V2._editKnowledgeModelEventDTOChapterUuids = newChapterUuids
+      , V2._editKnowledgeModelEventDTOTagUuids = newTagUuids
+      , V2._editKnowledgeModelEventDTOIntegrationUuids = V2.NothingChangedDTO
+      }
+
+instance Upgradeable V1.EventDTO V2.EventDTO where
+  upgrade (V1.EditKnowledgeModelEventDTO' oldEvent) = do
+    newEvent <- upgrade oldEvent
+    return $ V2.EditKnowledgeModelEventDTO' newEvent
+  upgrade x = result2Either . fromJSON . toJSON $ x
 
 migrateEventValue :: Value -> Either String Value
 migrateEventValue input = do
   oldEvent <- result2Either (fromJSON input)
-  newEvent <- migrateEvent oldEvent
-  return $ toJSON newEvent
+  newEvent <- upgrade (oldEvent :: V1.EventDTO)
+  return $ toJSON (newEvent :: V2.EventDTO)
