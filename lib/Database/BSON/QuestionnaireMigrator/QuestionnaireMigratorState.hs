@@ -4,16 +4,14 @@ import Control.Lens ((^.))
 import qualified Data.Bson as BSON
 import Data.Bson.Generic
 
-import LensesConfig
-import Database.BSON.Questionnaire.Questionnaire ()
 import Database.BSON.Event.Common
+import Database.BSON.Questionnaire.Questionnaire ()
+import LensesConfig
 import Model.QuestionnaireMigrator.QuestionnaireMigratorState
 
 instance ToBSON QuestionnaireMigratorState where
   toBSON state =
-    [ "questionnaire" BSON.=: (state ^. questionnaire)
-    , "targetPackageId" BSON.=: (state ^. targetPackageId)
-    ]
+    ["questionnaire" BSON.=: (state ^. questionnaire), "targetPackageId" BSON.=: (state ^. targetPackageId)]
 
 instance FromBSON QuestionnaireMigratorState where
   fromBSON doc = do

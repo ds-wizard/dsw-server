@@ -146,7 +146,6 @@ createEndpoints context
   delete "/questionnaires/:qtnUuid/migrations" deleteQuestionnaireMigrationsCurrentA
   put "/questionnaires/:qtnUuid/migrations" putQuestionnaireMigrationsCurrentA
   put "/questionnaires/:qtnUuid/migrations/resolveQuestionEvent" putQuestionnaireMigrationsQuestionFlagA
-
    --------------------
    -- TYPEHINTS
    --------------------

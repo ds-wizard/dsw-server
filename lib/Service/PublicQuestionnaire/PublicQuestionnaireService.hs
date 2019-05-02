@@ -1,11 +1,11 @@
 module Service.PublicQuestionnaire.PublicQuestionnaireService where
 
+import Api.Resource.Questionnaire.QuestionnaireDetailDTO
 import Control.Lens ((^.))
 import Control.Monad.Reader (liftIO)
 import Data.Maybe (fromJust)
 import Data.Time
 import qualified Data.UUID as U
-import Api.Resource.Questionnaire.QuestionnaireDetailDTO
 import Database.DAO.PublicPackage.PublicPackageDAO
 import LensesConfig
 import Localization

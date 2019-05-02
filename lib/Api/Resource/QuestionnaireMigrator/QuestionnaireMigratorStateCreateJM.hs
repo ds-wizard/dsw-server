@@ -13,6 +13,4 @@ instance FromJSON QuestionnaireMigratorStateCreateDTO where
 
 instance ToJSON QuestionnaireMigratorStateCreateDTO where
   toJSON QuestionnaireMigratorStateCreateDTO {..} =
-    object
-      [ "targetPackageId" .= _questionnaireMigratorStateCreateDTOTargetPackageId
-      ]
+    object ["targetPackageId" .= _questionnaireMigratorStateCreateDTOTargetPackageId]

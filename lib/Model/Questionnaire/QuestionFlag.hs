@@ -10,5 +10,4 @@ data QuestionFlagType
 data QuestionFlags = QuestionFlags
   { _questionFlagsQuestionPath :: [String]
   , _questionFlagsFlagTypes :: [QuestionFlagType]
-  }
-  deriving (Show, Eq)
+  } deriving (Show, Eq)

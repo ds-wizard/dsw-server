@@ -25,19 +25,19 @@ import Api.Resource.Migration.MigratorConflictDTO
 import Api.Resource.Migration.MigratorStateCreateDTO
 import Api.Resource.Migration.MigratorStateDTO
 import Api.Resource.Migration.MigratorStateDetailDTO
-import Api.Resource.QuestionnaireMigrator.QuestionnaireMigratorStateCreateDTO
-import Api.Resource.QuestionnaireMigrator.QuestionnaireMigratorStateDTO
 import Api.Resource.Organization.OrganizationChangeDTO
 import Api.Resource.Organization.OrganizationDTO
 import Api.Resource.Package.PackageDTO
 import Api.Resource.Package.PackageSimpleDTO
 import Api.Resource.Package.PackageWithEventsDTO
+import Api.Resource.Questionnaire.QuestionFlagDTO
 import Api.Resource.Questionnaire.QuestionnaireChangeDTO
 import Api.Resource.Questionnaire.QuestionnaireCreateDTO
 import Api.Resource.Questionnaire.QuestionnaireDTO
 import Api.Resource.Questionnaire.QuestionnaireDetailDTO
 import Api.Resource.Questionnaire.QuestionnaireReplyDTO
-import Api.Resource.Questionnaire.QuestionFlagDTO
+import Api.Resource.QuestionnaireMigrator.QuestionnaireMigratorStateCreateDTO
+import Api.Resource.QuestionnaireMigrator.QuestionnaireMigratorStateDTO
 import Api.Resource.Report.ReportDTO
 import Api.Resource.Template.TemplateDTO
 import Api.Resource.Token.TokenCreateDTO
@@ -80,12 +80,12 @@ import Model.KnowledgeModelBundle.KnowledgeModelBundle
 import Model.KnowledgeModelDiff.KnowledgeModelDiff
 import Model.Level.Level
 import Model.Migrator.MigratorState
-import Model.QuestionnaireMigrator.QuestionnaireMigratorState
 import Model.Organization.Organization
 import Model.Package.Package
+import Model.Questionnaire.QuestionFlag
 import Model.Questionnaire.Questionnaire
 import Model.Questionnaire.QuestionnaireReply
-import Model.Questionnaire.QuestionFlag
+import Model.QuestionnaireMigrator.QuestionnaireMigratorState
 import Model.Report.Report
 import Model.User.User
 

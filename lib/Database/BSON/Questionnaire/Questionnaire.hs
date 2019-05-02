@@ -6,8 +6,8 @@ import Data.Bson.Generic
 import Data.Maybe ()
 
 import Database.BSON.Common
-import Database.BSON.Questionnaire.QuestionnaireReply ()
 import Database.BSON.Questionnaire.QuestionFlag ()
+import Database.BSON.Questionnaire.QuestionnaireReply ()
 import LensesConfig
 import Model.Questionnaire.Questionnaire
 

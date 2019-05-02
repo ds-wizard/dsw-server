@@ -3,16 +3,16 @@ module Service.KnowledgeModelDiff.KnowledgeModelDiffService
   , heDiffKnowledgeModelsById
   ) where
 
-import Model.Error.Error
 import Model.Context.AppContext
+import Model.Error.Error
 import Model.Event.Event
 import Model.KnowledgeModelDiff.KnowledgeModelDiff
-import Service.Package.PackageService
-  ( heGetAllPreviousEventsSincePackageId
-  , heGetAllPreviousEventsSincePackageIdAndUntilPackageId
-  )
-import Service.KnowledgeModel.KnowledgeModelService (heCompileKnowledgeModel)
+import Service.KnowledgeModel.KnowledgeModelService
+       (heCompileKnowledgeModel)
 import Service.Migration.KnowledgeModel.Applicator.Applicator
+import Service.Package.PackageService
+       (heGetAllPreviousEventsSincePackageId,
+        heGetAllPreviousEventsSincePackageIdAndUntilPackageId)
 
 -- Creates new knowledgemodel-like diff tree and diff events between
 -- an old knowledgemodel and a new knowledgemodel.
@@ -23,7 +23,9 @@ diffKnowledgeModelsById prevKmId newKmId =
       heGetAllPreviousEventsSincePackageIdAndUntilPackageId newKmId prevKmId $ \newKmEvents ->
         case runDiffApplicator (Just prevKm) newKmEvents of
           Left error -> return . Left $ error
-          Right km   -> return . Right $ KnowledgeModelDiff
+          Right km ->
+            return . Right $
+            KnowledgeModelDiff
             { _knowledgeModelDiffDiffKnowledgeModel = km
             , _knowledgeModelDiffDiffEvents = cleanUpDiffEvents newKmEvents
             , _knowledgeModelDiffPreviousKnowledgeModel = prevKm
@@ -36,12 +38,12 @@ cleanUpDiffEvents = id
 -- --------------------------------
 -- HELPERS
 -- --------------------------------
-
 -- Helper knowledgemodel diffing function. Creates diff between old knowledgemodel
 -- and new knowledgemodel. Calls given callback on success.
-heDiffKnowledgeModelsById :: String -> String -> (KnowledgeModelDiff -> AppContextM (Either AppError a)) -> AppContextM (Either AppError a)
+heDiffKnowledgeModelsById ::
+     String -> String -> (KnowledgeModelDiff -> AppContextM (Either AppError a)) -> AppContextM (Either AppError a)
 heDiffKnowledgeModelsById oldKmId newKmId callback = do
   eitherDiff <- diffKnowledgeModelsById oldKmId newKmId
   case eitherDiff of
-    Left error   -> return . Left $ error
+    Left error -> return . Left $ error
     Right kmDiff -> callback kmDiff

@@ -5,7 +5,7 @@ import GHC.Generics
 data QuestionFlagTypeDTO
   = NeedsReview
   | MigrationResolved
-    deriving (Generic, Show, Eq)
+  deriving (Generic, Show, Eq)
 
 data QuestionFlagsDTO = QuestionFlagsDTO
   { _questionFlagsDTOQuestionPath :: [String]

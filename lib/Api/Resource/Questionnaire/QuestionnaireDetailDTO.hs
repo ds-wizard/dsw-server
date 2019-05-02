@@ -5,10 +5,10 @@ import qualified Data.UUID as U
 
 import Api.Resource.KnowledgeModel.KnowledgeModelDTO
 import Api.Resource.Package.PackageDTO
-import Api.Resource.Questionnaire.QuestionnaireStateDTO
-import Api.Resource.Questionnaire.QuestionnaireReplyDTO
 import Api.Resource.Questionnaire.QuestionFlagDTO
+import Api.Resource.Questionnaire.QuestionnaireReplyDTO
 import Api.Resource.Questionnaire.QuestionnaireReplyJS ()
+import Api.Resource.Questionnaire.QuestionnaireStateDTO
 
 data QuestionnaireDetailDTO = QuestionnaireDetailDTO
   { _questionnaireDetailDTOUuid :: U.UUID

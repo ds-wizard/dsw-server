@@ -3,10 +3,10 @@ module Api.Resource.Questionnaire.QuestionnaireDetailJM where
 import Control.Monad
 import Data.Aeson
 
+import Api.Resource.Questionnaire.QuestionFlagJM ()
 import Api.Resource.Questionnaire.QuestionnaireDetailDTO
 import Api.Resource.Questionnaire.QuestionnaireReplyJS ()
 import Api.Resource.Questionnaire.QuestionnaireStateJM ()
-import Api.Resource.Questionnaire.QuestionFlagJM ()
 
 instance FromJSON QuestionnaireDetailDTO where
   parseJSON (Object o) = do

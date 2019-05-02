@@ -18,7 +18,4 @@ instance FromJSON QuestionFlagsDTO where
 
 instance ToJSON QuestionFlagsDTO where
   toJSON QuestionFlagsDTO {..} =
-    object
-      [ "questionPath" .= _questionFlagsDTOQuestionPath
-      , "flagTypes" .= _questionFlagsDTOFlagTypes
-      ]
+    object ["questionPath" .= _questionFlagsDTOQuestionPath, "flagTypes" .= _questionFlagsDTOFlagTypes]

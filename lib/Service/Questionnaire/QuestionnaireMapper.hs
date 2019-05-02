@@ -4,7 +4,8 @@ import Control.Lens ((^.))
 import Data.Time
 import Data.UUID (UUID)
 
-import qualified Api.Resource.Questionnaire.QuestionnaireStateDTO as QSD
+import qualified Api.Resource.Questionnaire.QuestionnaireStateDTO
+       as QSD
 import qualified Model.Questionnaire.QuestionnaireState as QS
 
 import Api.Resource.Package.PackageDTO
@@ -21,8 +22,8 @@ import Model.Questionnaire.Questionnaire
 import Model.Questionnaire.QuestionnaireReply
 import Model.Questionnaire.QuestionnaireState
 import Service.KnowledgeModel.KnowledgeModelMapper
-import Service.Questionnaire.QuestionFlagMapper
 import Service.Package.PackageMapper
+import Service.Questionnaire.QuestionFlagMapper
 
 toDTO :: Questionnaire -> Package -> QuestionnaireState -> QuestionnaireDTO
 toDTO questionnaire package state =
@@ -68,7 +69,8 @@ toIntegrationReplyValueDTO IntegrationValue {..} =
   IntegrationValueDTO
   {_integrationValueDTOIntId = _integrationValueIntId, _integrationValueDTOIntValue = _integrationValueIntValue}
 
-toDetailWithPackageWithEventsDTO :: Questionnaire -> PackageWithEvents -> KnowledgeModel -> QuestionnaireState -> QuestionnaireDetailDTO
+toDetailWithPackageWithEventsDTO ::
+     Questionnaire -> PackageWithEvents -> KnowledgeModel -> QuestionnaireState -> QuestionnaireDetailDTO
 toDetailWithPackageWithEventsDTO questionnaire package knowledgeModel state =
   QuestionnaireDetailDTO
   { _questionnaireDetailDTOUuid = questionnaire ^. uuid

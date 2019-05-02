@@ -71,8 +71,9 @@ createQuestionnaire questionnaireCreateDto = do
 createQuestionnaireWithGivenUuid :: U.UUID -> QuestionnaireCreateDTO -> AppContextM (Either AppError QuestionnaireDTO)
 createQuestionnaireWithGivenUuid qtnUuid reqDto =
   heGetCurrentUser $ \currentUser ->
-    heFindPackageWithEventsById (reqDto ^. packageId) $ \package ->
+    heFindPackageWithEventsById (reqDto ^. packageId) $ \package
       -- Find questionnaire state (either outdated or default)
+     ->
       heGetQuestionnaireState (U.toString qtnUuid) (reqDto ^. packageId) $ \qtnState -> do
         now <- liftIO getCurrentTime
         let qtn = fromQuestionnaireCreateDTO reqDto qtnUuid (currentUser ^. uuid) now now
@@ -82,19 +83,19 @@ createQuestionnaireWithGivenUuid qtnUuid reqDto =
 getQuestionnaireById :: String -> AppContextM (Either AppError QuestionnaireDTO)
 getQuestionnaireById qtnUuid =
   heFindQuestionnaireById qtnUuid $ \qtn ->
-    checkPermissionToQtn qtn $ heFindPackageById (qtn ^. packageId) $ \package ->
-      heGetQuestionnaireState qtnUuid (package ^. pId) $ \state ->
-        return . Right $ toDTO qtn package state
+    checkPermissionToQtn qtn $
+    heFindPackageById (qtn ^. packageId) $ \package ->
+      heGetQuestionnaireState qtnUuid (package ^. pId) $ \state -> return . Right $ toDTO qtn package state
 
 getQuestionnaireDetailById :: String -> AppContextM (Either AppError QuestionnaireDetailDTO)
 getQuestionnaireDetailById qtnUuid =
   heFindQuestionnaireById qtnUuid $ \qtn ->
     checkPermissionToQtn qtn $
-      heFindPackageWithEventsById (qtn ^. packageId) $ \package ->
-        heCompileKnowledgeModel [] (Just $ qtn ^. packageId) (qtn ^. selectedTagUuids) $ \knowledgeModel -> do
-          let pkgId = package ^. pId
-          heGetQuestionnaireState qtnUuid pkgId $ \state ->
-            return . Right $ toDetailWithPackageWithEventsDTO qtn package knowledgeModel state
+    heFindPackageWithEventsById (qtn ^. packageId) $ \package ->
+      heCompileKnowledgeModel [] (Just $ qtn ^. packageId) (qtn ^. selectedTagUuids) $ \knowledgeModel -> do
+        let pkgId = package ^. pId
+        heGetQuestionnaireState qtnUuid pkgId $ \state ->
+          return . Right $ toDetailWithPackageWithEventsDTO qtn package knowledgeModel state
 
 modifyQuestionnaire :: String -> QuestionnaireChangeDTO -> AppContextM (Either AppError QuestionnaireDetailDTO)
 modifyQuestionnaire qtnUuid reqDto =

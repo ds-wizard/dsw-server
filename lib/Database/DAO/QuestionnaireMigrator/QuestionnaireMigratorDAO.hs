@@ -5,15 +5,16 @@ module Database.DAO.QuestionnaireMigrator.QuestionnaireMigratorDAO
   , updateQuestionnareMigratorStateByQuestionnaireId
   ) where
 
+import Control.Lens ((^.))
 import Data.Bson
 import Data.Bson.Generic
 import Database.MongoDB
-       ((=:), delete, findOne, insert, select, save, merge, fetch)
-import Control.Lens ((^.))
+       ((=:), delete, fetch, findOne, insert, merge, save, select)
 
-import LensesConfig
-import Database.BSON.QuestionnaireMigrator.QuestionnaireMigratorState ()
+import Database.BSON.QuestionnaireMigrator.QuestionnaireMigratorState
+       ()
 import Database.DAO.Common
+import LensesConfig
 import Model.Context.AppContext
 import Model.Error.Error
 import Model.QuestionnaireMigrator.QuestionnaireMigratorState

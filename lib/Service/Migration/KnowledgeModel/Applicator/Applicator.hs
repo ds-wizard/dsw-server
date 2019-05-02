@@ -47,10 +47,11 @@ runApplicator mKM events =
 -- Event applicator allowing creating new knowledgemodel ignoring delete events.
 runDiffApplicator :: Maybe KnowledgeModel -> [Event] -> Either AppError KnowledgeModel
 runDiffApplicator km events = runApplicator km editedEvents
-  where editedEvents = filter isNotDeleteEvent events
-        isNotDeleteEvent (DeleteChapterEvent' _)   = False
-        isNotDeleteEvent (DeleteQuestionEvent' _ ) = False
-        isNotDeleteEvent (DeleteAnswerEvent' _)    = False
-        isNotDeleteEvent (DeleteExpertEvent' _)    = False
-        isNotDeleteEvent (DeleteReferenceEvent' _) = False
-        isNotDeleteEvent _                         = True
+  where
+    editedEvents = filter isNotDeleteEvent events
+    isNotDeleteEvent (DeleteChapterEvent' _) = False
+    isNotDeleteEvent (DeleteQuestionEvent' _) = False
+    isNotDeleteEvent (DeleteAnswerEvent' _) = False
+    isNotDeleteEvent (DeleteExpertEvent' _) = False
+    isNotDeleteEvent (DeleteReferenceEvent' _) = False
+    isNotDeleteEvent _ = True

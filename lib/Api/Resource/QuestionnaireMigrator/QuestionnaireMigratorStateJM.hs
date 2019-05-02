@@ -12,7 +12,7 @@ instance FromJSON QuestionnaireMigratorStateDTO where
     _questionnaireMigratorStateDTODiffKnowledgeModel <- o .: "diffKnowledgeModel"
     _questionnaireMigratorStateDTOPreviousKnowledgeModel <- o .: "previousKnowledgeModel"
     _questionnaireMigratorStateDTODiffEvents <- o .: "diffEvents"
-    _questionnaireMigratorStateDTOTargetPackageId <- o.: "targetPackageId"
+    _questionnaireMigratorStateDTOTargetPackageId <- o .: "targetPackageId"
     return QuestionnaireMigratorStateDTO {..}
   parseJSON _ = mzero
 

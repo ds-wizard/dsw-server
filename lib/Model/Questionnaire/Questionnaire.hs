@@ -4,8 +4,8 @@ import Data.Time
 import qualified Data.UUID as U
 import GHC.Generics
 
-import Model.Questionnaire.QuestionnaireReply
 import Model.Questionnaire.QuestionFlag
+import Model.Questionnaire.QuestionnaireReply
 
 -- TODO: Add migration
 data Questionnaire = Questionnaire
@@ -31,5 +31,4 @@ instance Eq Questionnaire where
     _questionnairePackageId a == _questionnairePackageId b &&
     _questionnaireSelectedTagUuids a == _questionnaireSelectedTagUuids b &&
     _questionnaireOwnerUuid a == _questionnaireOwnerUuid b &&
-    _questionnaireReplies a == _questionnaireReplies b &&
-    _questionnaireQuestionFlags a == _questionnaireQuestionFlags b
+    _questionnaireReplies a == _questionnaireReplies b && _questionnaireQuestionFlags a == _questionnaireQuestionFlags b
