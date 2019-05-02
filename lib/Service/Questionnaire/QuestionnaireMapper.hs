@@ -141,8 +141,7 @@ fromChangeDTO qtn dto currentUserUuid now =
         else Nothing
   , _questionnaireCreatedAt = qtn ^. createdAt
   , _questionnaireUpdatedAt = now
-  -- TODO: Add actual value
-  , _questionnaireQuestionFlags = []
+  , _questionnaireQuestionFlags = fromQuestionFlagDTO <$> qtn ^. questionFlags
   }
 
 fromQuestionnaireCreateDTO :: QuestionnaireCreateDTO -> UUID -> UUID -> UTCTime -> UTCTime -> Questionnaire

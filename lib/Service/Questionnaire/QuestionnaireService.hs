@@ -71,12 +71,13 @@ createQuestionnaire questionnaireCreateDto = do
 createQuestionnaireWithGivenUuid :: U.UUID -> QuestionnaireCreateDTO -> AppContextM (Either AppError QuestionnaireDTO)
 createQuestionnaireWithGivenUuid qtnUuid reqDto =
   heGetCurrentUser $ \currentUser ->
-    heFindPackageWithEventsById (reqDto ^. packageId) $ \package -> do
-      now <- liftIO getCurrentTime
-      let qtn = fromQuestionnaireCreateDTO reqDto qtnUuid (currentUser ^. uuid) now now
-      insertQuestionnaire qtn
-      -- TODO: Find the actual questionnaire state
-      return . Right $ toSimpleDTO qtn package QSDefault
+    heFindPackageWithEventsById (reqDto ^. packageId) $ \package ->
+      -- Find questionnaire state (either outdated or default)
+      heGetQuestionnaireState (U.toString qtnUuid) (reqDto ^. packageId) $ \qtnState -> do
+        now <- liftIO getCurrentTime
+        let qtn = fromQuestionnaireCreateDTO reqDto qtnUuid (currentUser ^. uuid) now now
+        insertQuestionnaire qtn
+        return . Right $ toSimpleDTO qtn package qtnState
 
 getQuestionnaireById :: String -> AppContextM (Either AppError QuestionnaireDTO)
 getQuestionnaireById qtnUuid =

@@ -37,19 +37,19 @@ import Util.Uuid
 -- Creates new questionnaire migration from questionnaire id and target package id.
 createQuestionnaireMigration :: String -> QuestionnaireMigratorStateCreateDTO -> AppContextM (Either AppError QuestionnaireMigratorStateDTO)
 createQuestionnaireMigration qId qDto =
-  -- TODO: Ensure there is no previous migration
-  heFindQuestionnaireById qId $ \questionnaire ->
-    heDiffKnowledgeModelsById (questionnaire ^. packageId) (qDto ^. targetPackageId) $ \kmDiff ->
-      heFindPackageById (questionnaire ^. packageId) $ \package ->
-        heCompileKnowledgeModel [] (Just $ questionnaire ^. packageId) (questionnaire ^. selectedTagUuids) $ \compiledKm ->
-          heGetQuestionnaireState qId (qDto ^. targetPackageId) $ \qtnState -> do
+  validateIfTargetPackageVersionIsHigher
+  heGuardQuestionnaireMigrationNotExist qId $
+    heFindQuestionnaireById qId $ \questionnaire ->
+      heDiffKnowledgeModelsById (questionnaire ^. packageId) (qDto ^. targetPackageId) $ \kmDiff ->
+        heFindPackageById (questionnaire ^. packageId) $ \package ->
+          heCompileKnowledgeModel [] (Just $ questionnaire ^. packageId) (questionnaire ^. selectedTagUuids) $ \compiledKm -> do
             let state =
                   QuestionnaireMigratorState
                     { _questionnaireMigratorStateQuestionnaire = questionnaire
                     , _questionnaireMigratorStateTargetPackageId = qDto ^. targetPackageId
                     }
             createQuestionnaireMigratorState state
-            return . Right $ QM.toDTO state kmDiff package compiledKm qtnState
+            return . Right $ QM.toDTO state kmDiff package compiledKm QSMigrating
 
 -- Creates backup for old questionnaire and moves migrated questionnaire to its place.
 finishQuestionnaireMigration :: String -> Either AppError QuestionnaireMigratorStateDTO
@@ -107,6 +107,14 @@ completeQuestionnairemigration qtnUuid =
         }
       deleteQuestionnaireMigratorStateByQuestionnaireId qtnUuid
       return Nothing
+
+heGuardQuestionnaireMigrationNotExist :: String -> AppContextM (Either AppError a) -> AppContextM (Either AppError a)
+heGuardQuestionnaireMigrationNotExist qtnUuid callback = do
+  state <- findQuestionnaireMigratorStateByQuestionnaireId qtnUuid
+  case state of
+    Left (NotExistsError _) -> callback
+    Left error              -> return . Left $ error
+    otherwise               -> return . Left $ MigratorError "Questionnaire is already being migrated."
 
 -- --------------------------------
 -- Flags

@@ -18,7 +18,6 @@ import Service.Migration.KnowledgeModel.Applicator.Applicator
 -- an old knowledgemodel and a new knowledgemodel.
 diffKnowledgeModelsById :: String -> String -> AppContextM (Either AppError KnowledgeModelDiff)
 diffKnowledgeModelsById prevKmId newKmId =
-  -- TODO: Validate input data here
   heGetAllPreviousEventsSincePackageId prevKmId $ \prevKmEvents ->
     heCompileKnowledgeModel prevKmEvents Nothing [] $ \prevKm ->
       heGetAllPreviousEventsSincePackageIdAndUntilPackageId newKmId prevKmId $ \newKmEvents ->
