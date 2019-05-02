@@ -18,7 +18,7 @@ import Model.Error.Error
 import Model.Context.AppContext
 import Model.QuestionnaireMigrator.QuestionnaireMigratorState
 import Model.Questionnaire.QuestionnaireState
-import Model.Questionnaire.QuestionFlag
+import Model.Questionnaire.QuestionFlag as QF
 import Model.Questionnaire.Questionnaire
 import Model.Questionnaire.QuestionnaireReply (Reply)
 import Api.Resource.QuestionnaireMigrator.QuestionnaireMigratorStateCreateDTO
@@ -37,7 +37,6 @@ import Util.Uuid
 -- Creates new questionnaire migration from questionnaire id and target package id.
 createQuestionnaireMigration :: String -> QuestionnaireMigratorStateCreateDTO -> AppContextM (Either AppError QuestionnaireMigratorStateDTO)
 createQuestionnaireMigration qId qDto =
-  validateIfTargetPackageVersionIsHigher
   heGuardQuestionnaireMigrationNotExist qId $
     heFindQuestionnaireById qId $ \questionnaire ->
       heDiffKnowledgeModelsById (questionnaire ^. packageId) (qDto ^. targetPackageId) $ \kmDiff ->
@@ -129,7 +128,7 @@ resolveQuestionnaireQuestionChange qtnUuid qtnFlag =
         updatedState = mState & questionnaire . questionFlags .~ updatedFlags
     updateQuestionnareMigratorStateByQuestionnaireId updatedState
     return Nothing
-    where ignoreFlagsAtPath :: [String] -> QuestionFlags -> Bool
+    where ignoreFlagsAtPath :: [String] -> QF.QuestionFlags -> Bool
           ignoreFlagsAtPath path flags = path /= flags ^. questionPath
 
 -- --------------------------------
@@ -180,5 +179,11 @@ hmFindQuestionnaireMigratorStateByQuestionnaireId qtnUuid callback = do
 migrateQuestionnaireReplies :: [Reply] -> [Reply]
 migrateQuestionnaireReplies = id
 
-migrateQuestionnaireQuestionFlags :: [QuestionFlags] -> [QuestionFlags]
-migrateQuestionnaireQuestionFlags = id
+migrateQuestionnaireQuestionFlags :: [QF.QuestionFlags] -> [QF.QuestionFlags]
+migrateQuestionnaireQuestionFlags =
+  map removeResolvedFlags
+  where removeResolvedFlags :: QF.QuestionFlags -> QF.QuestionFlags
+        removeResolvedFlags fs = fs & flagTypes .~ (filter notResolvedType (fs ^. flagTypes))
+        notResolvedType QF.MigrationResolved = False
+        notResolvedType _ = True
+
