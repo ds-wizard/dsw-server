@@ -39,7 +39,6 @@ data OptionsQuestionDTO = OptionsQuestionDTO
   , _optionsQuestionDTOText :: Maybe String
   , _optionsQuestionDTORequiredLevel :: Maybe Int
   , _optionsQuestionDTOTagUuids :: [U.UUID]
-  , _optionsQuestionDTONote :: Maybe NoteDTO
   , _optionsQuestionDTOExperts :: [ExpertDTO]
   , _optionsQuestionDTOReferences :: [ReferenceDTO]
   , _optionsQuestionDTOAnswers :: [AnswerDTO]
@@ -51,7 +50,6 @@ data ListQuestionDTO = ListQuestionDTO
   , _listQuestionDTOText :: Maybe String
   , _listQuestionDTORequiredLevel :: Maybe Int
   , _listQuestionDTOTagUuids :: [U.UUID]
-  , _listQuestionDTONote :: Maybe NoteDTO
   , _listQuestionDTOExperts :: [ExpertDTO]
   , _listQuestionDTOReferences :: [ReferenceDTO]
   , _listQuestionDTOItemTemplateTitle :: String
@@ -64,7 +62,6 @@ data ValueQuestionDTO = ValueQuestionDTO
   , _valueQuestionDTOText :: Maybe String
   , _valueQuestionDTORequiredLevel :: Maybe Int
   , _valueQuestionDTOTagUuids :: [U.UUID]
-  , _valueQuestionDTONote :: Maybe Note
   , _valueQuestionDTOExperts :: [ExpertDTO]
   , _valueQuestionDTOReferences :: [ReferenceDTO]
   , _valueQuestionDTOValueType :: QuestionValueType
@@ -90,9 +87,6 @@ data AnswerDTO = AnswerDTO
   , _answerDTOFollowUps :: [QuestionDTO]
   , _answerDTOMetricMeasures :: [MetricMeasureDTO]
   } deriving (Show, Eq)
-
--- --------------------------------------------------------------------
-type NoteDTO = String
 
 -- --------------------------------------------------------------------
 data ExpertDTO = ExpertDTO
@@ -212,7 +206,6 @@ instance ToJSON OptionsQuestionDTO where
       , "text" .= _optionsQuestionDTOText
       , "requiredLevel" .= _optionsQuestionDTORequiredLevel
       , "tagUuids" .= _optionsQuestionDTOTagUuids
-      , "note" .= _optionsQuestionDTONote
       , "references" .= _optionsQuestionDTOReferences
       , "experts" .= _optionsQuestionDTOExperts
       , "answers" .= _optionsQuestionDTOAnswers
@@ -227,7 +220,6 @@ instance ToJSON ListQuestionDTO where
       , "text" .= _listQuestionDTOText
       , "requiredLevel" .= _listQuestionDTORequiredLevel
       , "tagUuids" .= _listQuestionDTOTagUuids
-      , "note" .= _listQuestionDTONote
       , "references" .= _listQuestionDTOReferences
       , "experts" .= _listQuestionDTOExperts
       , "itemTemplateTitle" .= _listQuestionDTOItemTemplateTitle
@@ -243,7 +235,6 @@ instance ToJSON ValueQuestionDTO where
       , "text" .= _valueQuestionDTOText
       , "requiredLevel" .= _valueQuestionDTORequiredLevel
       , "tagUuids" .= _valueQuestionDTOTagUuids
-      , "note" .= _valueQuestionDTONote
       , "references" .= _valueQuestionDTOReferences
       , "experts" .= _valueQuestionDTOExperts
       , "valueType" .= serializeQuestionValueType _valueQuestionDTOValueType
@@ -397,7 +388,6 @@ instance FromJSON OptionsQuestionDTO where
     _optionsQuestionDTOText <- o .: "text"
     _optionsQuestionDTORequiredLevel <- o .: "requiredLevel"
     _optionsQuestionDTOTagUuids <- o .: "tagUuids"
-    _optionsQuestionDTONote <- o .: "note"
     _optionsQuestionDTOExperts <- o .: "experts"
     _optionsQuestionDTOReferences <- o .: "references"
     _optionsQuestionDTOAnswers <- o .: "answers"
@@ -411,7 +401,6 @@ instance FromJSON ListQuestionDTO where
     _listQuestionDTOText <- o .: "text"
     _listQuestionDTORequiredLevel <- o .: "requiredLevel"
     _listQuestionDTOTagUuids <- o .: "tagUuids"
-    _listQuestionDTONote <- o .: "note"
     _listQuestionDTOExperts <- o .: "experts"
     _listQuestionDTOReferences <- o .: "references"
     _listQuestionDTOItemTemplateTitle <- o .: "itemTemplateTitle"
@@ -426,7 +415,6 @@ instance FromJSON ValueQuestionDTO where
     _valueQuestionDTOText <- o .: "text"
     _valueQuestionDTORequiredLevel <- o .: "requiredLevel"
     _valueQuestionDTOTagUuids <- o .: "tagUuids"
-    _valueQuestionDTONote <- o .: "note"
     _valueQuestionDTOExperts <- o .: "experts"
     _valueQuestionDTOReferences <- o .: "references"
     valueType <- o .: "valueType"

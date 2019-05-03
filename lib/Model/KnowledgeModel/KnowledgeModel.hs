@@ -42,7 +42,6 @@ data OptionsQuestion = OptionsQuestion
   , _optionsQuestionText :: Maybe String
   , _optionsQuestionRequiredLevel :: Maybe Int
   , _optionsQuestionTagUuids :: [U.UUID]
-  , _optionsQuestionNote :: Maybe Note
   , _optionsQuestionExperts :: [Expert]
   , _optionsQuestionReferences :: [Reference]
   , _optionsQuestionAnswers :: [Answer]
@@ -54,7 +53,6 @@ data ListQuestion = ListQuestion
   , _listQuestionText :: Maybe String
   , _listQuestionRequiredLevel :: Maybe Int
   , _listQuestionTagUuids :: [U.UUID]
-  , _listQuestionNote :: Maybe Note
   , _listQuestionExperts :: [Expert]
   , _listQuestionReferences :: [Reference]
   , _listQuestionItemTemplateTitle :: String
@@ -67,7 +65,6 @@ data ValueQuestion = ValueQuestion
   , _valueQuestionText :: Maybe String
   , _valueQuestionRequiredLevel :: Maybe Int
   , _valueQuestionTagUuids :: [U.UUID]
-  , _valueQuestionNote :: Maybe Note
   , _valueQuestionExperts :: [Expert]
   , _valueQuestionReferences :: [Reference]
   , _valueQuestionValueType :: QuestionValueType
@@ -79,7 +76,6 @@ data IntegrationQuestion = IntegrationQuestion
   , _integrationQuestionText :: Maybe String
   , _integrationQuestionRequiredLevel :: Maybe Int
   , _integrationQuestionTagUuids :: [U.UUID]
-  , _integrationQuestionNote :: Maybe Note
   , _integrationQuestionExperts :: [Expert]
   , _integrationQuestionReferences :: [Reference]
   , _integrationQuestionIntegrationUuid :: U.UUID
@@ -94,9 +90,6 @@ data Answer = Answer
   , _answerFollowUps :: [Question]
   , _answerMetricMeasures :: [MetricMeasure]
   } deriving (Show, Eq, Generic)
-
--- ------------------------------------------------
-type Note = String
 
 -- ------------------------------------------------
 data Expert = Expert
