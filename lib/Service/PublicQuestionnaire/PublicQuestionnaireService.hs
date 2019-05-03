@@ -17,7 +17,6 @@ import Service.KnowledgeModel.KnowledgeModelMapper
 import Service.KnowledgeModel.KnowledgeModelService
 import Service.Package.PackageMapper
 import Service.Questionnaire.QuestionnaireMapper
-import Service.QuestionnaireMigrator.QuestionnaireMigratorService
 
 getPublicQuestionnaire :: AppContextM (Either AppError QuestionnaireDetailDTO)
 getPublicQuestionnaire =

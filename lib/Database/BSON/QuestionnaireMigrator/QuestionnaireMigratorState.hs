@@ -4,7 +4,7 @@ import Control.Lens ((^.))
 import qualified Data.Bson as BSON
 import Data.Bson.Generic
 
-import Database.BSON.Event.Common
+import Database.BSON.Event.Common ()
 import Database.BSON.Questionnaire.Questionnaire ()
 import LensesConfig
 import Model.QuestionnaireMigrator.QuestionnaireMigratorState

@@ -1,6 +1,5 @@
 module Api.Handler.QuestionnaireMigrator.QuestionnaireMigratorHandler where
 
-import qualified Data.Text as T
 import Network.HTTP.Types.Status (created201, noContent204)
 import Web.Scotty.Trans (json, param, status)
 

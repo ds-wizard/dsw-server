@@ -11,7 +11,6 @@ module Service.QuestionnaireMigrator.QuestionnaireMigratorService
 
 import Control.Lens ((&), (.~), (^.))
 import Control.Monad.Reader (liftIO)
-import Data.List (intercalate)
 
 import Api.Resource.Questionnaire.QuestionFlagDTO
 import Api.Resource.QuestionnaireMigrator.QuestionnaireMigratorStateCreateDTO

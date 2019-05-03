@@ -23,8 +23,6 @@ import Service.Questionnaire.QuestionnaireMapper
 import Service.QuestionnaireMigrator.QuestionnaireMigratorService
 import Util.Uuid
 
-import Model.Questionnaire.QuestionnaireState
-
 getQuestionnaires :: AppContextM (Either AppError [QuestionnaireDTO])
 getQuestionnaires =
   heFindQuestionnaires $ \questionnaires -> do
