@@ -21,6 +21,7 @@ import qualified Database.Migration.Development.User.UserMigration
        as U
 import LensesConfig
 import Model.Context.AppContext
+import Model.Questionnaire.QuestionnaireState
 import Service.Questionnaire.QuestionnaireMapper
 
 import Specs.API.Common
@@ -56,7 +57,7 @@ test_200 appContext = do
    do
     let expStatus = 200
     let expHeaders = [resCtHeader] ++ resCorsHeaders
-    let expDto = [toSimpleDTO questionnaire1 germanyPackage]
+    let expDto = [toSimpleDTO questionnaire1 germanyPackage QSDefault]
     let expBody = encode expDto
      -- AND: Run migrations
     runInContextIO QTN.runMigration appContext

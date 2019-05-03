@@ -23,6 +23,7 @@ import LensesConfig
 import Localization
 import Model.Context.AppContext
 import Model.Error.Error
+import Model.Questionnaire.QuestionnaireState
 import Service.Questionnaire.QuestionnaireMapper
 
 import Specs.API.Common
@@ -59,7 +60,7 @@ test_200 appContext = do
    do
     let expStatus = 200
     let expHeaders = [resCtHeader] ++ resCorsHeaders
-    let expDto = toDetailWithPackageWithEventsDTO questionnaire1 germanyPackage km1WithQ4
+    let expDto = toDetailWithPackageWithEventsDTO questionnaire1 germanyPackage km1WithQ4 QSDefault
     let expBody = encode expDto
      -- AND: Run migrations
     runInContextIO QTN.runMigration appContext
