@@ -80,6 +80,7 @@ test_200 appContext =
     let (SResponse (Status status _) headers body) = response
     liftIO $ status `shouldBe` expStatus
     liftIO $ (expHeaders `elems` headers) `shouldBe` True
+    liftIO $ print body
     -- AND: Compare body
     let (Right resBody) = eitherDecode body :: Either String QuestionnaireDTO
     liftIO $ (resBody ^. uuid) `shouldBe` expDto ^. uuid
