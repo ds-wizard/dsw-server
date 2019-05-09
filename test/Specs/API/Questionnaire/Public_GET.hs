@@ -23,8 +23,10 @@ import qualified
 import Localization
 import Model.Context.AppContext
 import Model.Error.Error
+import Model.Questionnaire.QuestionnaireState
 import Service.KnowledgeModel.KnowledgeModelMapper
 import Service.Package.PackageMapper
+import Service.Questionnaire.QuestionnaireMapper (toStateDTO)
 
 import Specs.API.Common
 import Specs.API.Questionnaire.Common
@@ -65,6 +67,7 @@ test_200 appContext =
           , _questionnaireDetailDTOName = "Public Questionnaire"
           , _questionnaireDetailDTOLevel = 2
           , _questionnaireDetailDTOPrivate = False
+          , _questionnaireDetailDTOState = toStateDTO QSDefault
           , _questionnaireDetailDTOPackage = packageWithEventsToDTO publicPackage
           , _questionnaireDetailDTOSelectedTagUuids = []
           , _questionnaireDetailDTOKnowledgeModel = toKnowledgeModelDTO km1WithQ4
@@ -72,6 +75,7 @@ test_200 appContext =
           , _questionnaireDetailDTOOwnerUuid = Nothing
           , _questionnaireDetailDTOCreatedAt = UTCTime (fromJust $ fromGregorianValid 2018 1 20) 0
           , _questionnaireDetailDTOUpdatedAt = UTCTime (fromJust $ fromGregorianValid 2018 1 20) 0
+          , _questionnaireDetailDTOQuestionFlags = []
           }
     let expBody = encode expDto
      -- AND: Run migrations
