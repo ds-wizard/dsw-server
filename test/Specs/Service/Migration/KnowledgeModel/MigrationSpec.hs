@@ -1,8 +1,11 @@
 module Specs.Service.Migration.KnowledgeModel.MigrationSpec where
 
 import Control.Lens
+import Control.Monad.Reader
 import Test.Hspec hiding (shouldBe, shouldNotBe)
 import Test.Hspec.Expectations.Pretty
+import Text.Pretty.Simple
+
 
 import Database.Migration.Development.Event.Data.Events
 import LensesConfig
@@ -11,7 +14,7 @@ import Model.Event.EventAccessors
 import Model.Event.EventField
 import Model.Event.Question.QuestionEvent
 import Model.Migration.KnowledgeModel.MigratorState
-import Service.Migration.KnowledgeModel.Applicator.Applicator
+import Service.KnowledgeModel.Compilator.Compilator
 import Service.Migration.KnowledgeModel.Migrator
 
 import Specs.Service.Migration.KnowledgeModel.Common
@@ -211,8 +214,8 @@ migratorSpec =
         resState <- migrate reqState
         -- Then:
         let (ConflictState (CorrectorConflict (EditChapterEvent' resEvent))) = resState ^. migrationState
-        let expEventQuestionUuids = ChangedValue [a_km1_ch1_q2 ^. questionUuid]
-        let expEvent = (e_km1_ch1 & uuid .~ (resEvent ^. uuid)) & questionUuids .~ expEventQuestionUuids
+        let expEventEntityUuids = ChangedValue [a_km1_ch1_q2 ^. entityUuid]
+        let expEvent = (e_km1_ch1 & uuid .~ (resEvent ^. uuid)) & questionUuids .~ expEventEntityUuids
         let expState = reqState & migrationState .~ ConflictState (CorrectorConflict (EditChapterEvent' expEvent))
         resState `shouldBe` expState
       -- -------------------------------------------------------------

@@ -1,12 +1,14 @@
 module Service.Migration.KnowledgeModel.CleanerMethod where
 
 import Control.Lens
+import Data.Maybe (isNothing)
+import qualified Data.Map.Strict as M
 
 import LensesConfig
 import Model.Event.Event
 import Model.Event.EventAccessors
 import Model.KnowledgeModel.KnowledgeModel
-import Model.KnowledgeModel.KnowledgeModelAccessors
+import Model.KnowledgeModel.KnowledgeModelLenses
 import Model.Migration.KnowledgeModel.MigratorState
 
 isCleanerMethod :: MigratorState -> Event -> Bool
@@ -21,41 +23,26 @@ doIsCleanerMethod :: KnowledgeModel -> Event -> Bool
 doIsCleanerMethod km (AddKnowledgeModelEvent' event) = False
 doIsCleanerMethod km (EditKnowledgeModelEvent' event) = False
 doIsCleanerMethod km (AddChapterEvent' event) = False
-doIsCleanerMethod km (EditChapterEvent' event) = not $ isThereAnyChapterWithGivenUuid km (event ^. chapterUuid)
-doIsCleanerMethod km (DeleteChapterEvent' event) = not $ isThereAnyChapterWithGivenUuid km (event ^. chapterUuid)
-doIsCleanerMethod km (AddQuestionEvent' event) =
-  if not . null $ getPath event
-    then not $ isThereAnyChapterWithGivenUuid km ((last (getPath event)) ^. uuid)
-    else False
-doIsCleanerMethod km (EditQuestionEvent' event) = not $ isThereAnyQuestionWithGivenUuid km (getEventQuestionUuid event)
-doIsCleanerMethod km (DeleteQuestionEvent' event) =
-  not $ isThereAnyQuestionWithGivenUuid km (getEventQuestionUuid event)
-doIsCleanerMethod km (AddAnswerEvent' event) =
-  if not . null $ getPath event
-    then not $ isThereAnyQuestionWithGivenUuid km ((last (getPath event)) ^. uuid)
-    else False
-doIsCleanerMethod km (EditAnswerEvent' event) = not $ isThereAnyAnswerWithGivenUuid km (event ^. answerUuid)
-doIsCleanerMethod km (DeleteAnswerEvent' event) = not $ isThereAnyAnswerWithGivenUuid km (event ^. answerUuid)
-doIsCleanerMethod km (AddExpertEvent' event) =
-  if not . null $ getPath event
-    then not $ isThereAnyQuestionWithGivenUuid km ((last (getPath event)) ^. uuid)
-    else False
-doIsCleanerMethod km (EditExpertEvent' event) = not $ isThereAnyExpertWithGivenUuid km (event ^. expertUuid)
-doIsCleanerMethod km (DeleteExpertEvent' event) = not $ isThereAnyExpertWithGivenUuid km (event ^. expertUuid)
-doIsCleanerMethod km (AddReferenceEvent' event) =
-  if not . null . getPath $ event
-    then not $ isThereAnyQuestionWithGivenUuid km ((last (getPath event)) ^. uuid)
-    else False
-doIsCleanerMethod km (EditReferenceEvent' event) = not $ isThereAnyReferenceWithGivenUuid km (getEventNodeUuid event)
-doIsCleanerMethod km (DeleteReferenceEvent' event) = not $ isThereAnyReferenceWithGivenUuid km (getEventNodeUuid event)
+doIsCleanerMethod km (EditChapterEvent' event) = isNothing $ M.lookup (getEventNodeUuid event) (km ^. chaptersM)
+doIsCleanerMethod km (DeleteChapterEvent' event) = isNothing $ M.lookup (getEventNodeUuid event) (km ^. chaptersM)
+doIsCleanerMethod km (AddQuestionEvent' event) = isNothing $ M.lookup (getEventParentUuid event) (km ^. chaptersM)
+doIsCleanerMethod km (EditQuestionEvent' event) = isNothing $ M.lookup (getEventNodeUuid event) (km ^. questionsM)
+doIsCleanerMethod km (DeleteQuestionEvent' event) = isNothing $ M.lookup (getEventNodeUuid event) (km ^. questionsM)
+doIsCleanerMethod km (AddAnswerEvent' event) = isNothing $ M.lookup (getEventParentUuid event) (km ^. questionsM)
+doIsCleanerMethod km (EditAnswerEvent' event) = isNothing $ M.lookup (getEventNodeUuid event) (km ^. answersM)
+doIsCleanerMethod km (DeleteAnswerEvent' event) = isNothing $ M.lookup (getEventNodeUuid event) (km ^. answersM)
+doIsCleanerMethod km (AddExpertEvent' event) = isNothing $ M.lookup (getEventParentUuid event) (km ^. questionsM)
+doIsCleanerMethod km (EditExpertEvent' event) = isNothing $ M.lookup (getEventNodeUuid event) (km ^. expertsM)
+doIsCleanerMethod km (DeleteExpertEvent' event) = isNothing $ M.lookup (getEventNodeUuid event) (km ^. expertsM)
+doIsCleanerMethod km (AddReferenceEvent' event) = isNothing $ M.lookup (getEventParentUuid event) (km ^. questionsM)
+doIsCleanerMethod km (EditReferenceEvent' event) = isNothing $ M.lookup (getEventNodeUuid event) (km ^. referencesM)
+doIsCleanerMethod km (DeleteReferenceEvent' event) = isNothing $ M.lookup (getEventNodeUuid event) (km ^. referencesM)
 doIsCleanerMethod km (AddTagEvent' event) = False
-doIsCleanerMethod km (EditTagEvent' event) = not $ isThereAnyTagWithGivenUuid km (event ^. tagUuid)
-doIsCleanerMethod km (DeleteTagEvent' event) = not $ isThereAnyTagWithGivenUuid km (event ^. tagUuid)
+doIsCleanerMethod km (EditTagEvent' event) = isNothing $ M.lookup (getEventNodeUuid event) (km ^. tagsM)
+doIsCleanerMethod km (DeleteTagEvent' event) = isNothing $ M.lookup (getEventNodeUuid event) (km ^. tagsM)
 doIsCleanerMethod km (AddIntegrationEvent' event) = False
-doIsCleanerMethod km (EditIntegrationEvent' event) =
-  not $ isThereAnyIntegrationWithGivenUuid km (event ^. integrationUuid)
-doIsCleanerMethod km (DeleteIntegrationEvent' event) =
-  not $ isThereAnyIntegrationWithGivenUuid km (event ^. integrationUuid)
+doIsCleanerMethod km (EditIntegrationEvent' event) = isNothing $ M.lookup (getEventNodeUuid event) (km ^. integrationsM)
+doIsCleanerMethod km (DeleteIntegrationEvent' event) = isNothing $ M.lookup (getEventNodeUuid event) (km ^. integrationsM)
 
 runCleanerMethod :: MigratorState -> Event -> IO MigratorState
 runCleanerMethod state event =

@@ -4,16 +4,18 @@ import Control.Lens hiding (find)
 import Data.List
 import Data.Maybe
 import qualified Data.UUID as U
+import qualified Data.Map.Strict as M
 
 import LensesConfig
 import Model.Event.Answer.AnswerEvent
 import Model.Event.Chapter.ChapterEvent
 import Model.Event.EventAccessors
 import Model.Event.EventField
+import Model.Event.EventLenses
 import Model.Event.KnowledgeModel.KnowledgeModelEvent
 import Model.Event.Question.QuestionEvent
 import Model.KnowledgeModel.KnowledgeModel
-import Model.KnowledgeModel.KnowledgeModelAccessors
+import Model.KnowledgeModel.KnowledgeModelOldAccessors
 import Model.KnowledgeModel.KnowledgeModelLenses
 import Model.Migration.KnowledgeModel.MigratorState
 import Util.List
@@ -44,7 +46,7 @@ instance Sanitizator EditKnowledgeModelEvent where
               NothingChanged -> return event
               ChangedValue uuids -> callback uuids
           childUuidsFromKM :: KnowledgeModel -> [U.UUID]
-          childUuidsFromKM km = _chapterUuid <$> getAllChapters km
+          childUuidsFromKM km = M.keys $ km ^. chaptersM
           isInChildUuids :: KnowledgeModel -> U.UUID -> Bool
           isInChildUuids km uuid = isJust $ find (== uuid) (childUuidsFromKM km)
           resultUuids :: KnowledgeModel -> [U.UUID] -> [U.UUID]
@@ -62,7 +64,7 @@ instance Sanitizator EditKnowledgeModelEvent where
               NothingChanged -> return event
               ChangedValue uuids -> callback uuids
           childUuidsFromKM :: KnowledgeModel -> [U.UUID]
-          childUuidsFromKM km = _tagUuid <$> getAllTags km
+          childUuidsFromKM km = M.keys $ km ^. tagsM
           isInChildUuids :: KnowledgeModel -> U.UUID -> Bool
           isInChildUuids km uuid = isJust $ find (== uuid) (childUuidsFromKM km)
           resultUuids :: KnowledgeModel -> [U.UUID] -> [U.UUID]
@@ -80,7 +82,7 @@ instance Sanitizator EditKnowledgeModelEvent where
               NothingChanged -> return event
               ChangedValue uuids -> callback uuids
           childUuidsFromKM :: KnowledgeModel -> [U.UUID]
-          childUuidsFromKM km = _integrationUuid <$> getAllIntegrations km
+          childUuidsFromKM km = M.keys $ km ^. integrationsM
           isInChildUuids :: KnowledgeModel -> U.UUID -> Bool
           isInChildUuids km uuid = isJust $ find (== uuid) (childUuidsFromKM km)
           resultUuids :: KnowledgeModel -> [U.UUID] -> [U.UUID]
@@ -99,7 +101,7 @@ instance Sanitizator EditChapterEvent where
           NothingChanged -> return event
           ChangedValue uuids -> callback uuids
       childUuidsFromKM :: KnowledgeModel -> [U.UUID]
-      childUuidsFromKM km = getQuestionUuid <$> getAllQuestionsForChapterUuid km (event ^. chapterUuid)
+      childUuidsFromKM km = getAllQuestionUuidsForChapterUuid km (event ^. entityUuid)
       isInChildUuids :: KnowledgeModel -> U.UUID -> Bool
       isInChildUuids km uuid = isJust $ find (== uuid) (childUuidsFromKM km)
       resultUuids :: KnowledgeModel -> [U.UUID] -> [U.UUID]
@@ -114,7 +116,7 @@ instance Sanitizator EditQuestionEvent where
       event2 <- applyReferenceChange km event1
       event3 <- applyAnswerChange km event2
       event4 <- applyItemTemplateQuestionChange km event3
-      changeEventUuid eqChangeEventUuid event4
+      changeEventUuid eUuid' event4
       -- ------------------------
       -- Answer Item Template
       -- ------------------------
@@ -129,8 +131,7 @@ instance Sanitizator EditQuestionEvent where
               NothingChanged -> return . EditListQuestionEvent' $ event
               ChangedValue itqUuids -> callback itqUuids
           childUuidsFromKM :: KnowledgeModel -> [U.UUID]
-          childUuidsFromKM km =
-            getQuestionUuid <$> getAllItemTemplateQuestionsForQuestionUuid km (event ^. questionUuid)
+          childUuidsFromKM km = getAllItemTemplateQuestionUuidsForQuestionUuid km (event ^. entityUuid)
           isInChildUuids :: KnowledgeModel -> U.UUID -> Bool
           isInChildUuids km uuid = isJust $ find (== uuid) (childUuidsFromKM km)
           resultUuids :: KnowledgeModel -> [U.UUID] -> [U.UUID]
@@ -150,7 +151,7 @@ instance Sanitizator EditQuestionEvent where
               NothingChanged -> return . EditOptionsQuestionEvent' $ event
               ChangedValue uuids -> callback uuids
           childUuidsFromKM :: KnowledgeModel -> [U.UUID]
-          childUuidsFromKM km = _answerUuid <$> getAllAnswersForQuestionUuid km (event ^. questionUuid)
+          childUuidsFromKM km = getAllAnswerUuidsForQuestionUuid km (event ^. entityUuid)
           isInChildUuids :: KnowledgeModel -> U.UUID -> Bool
           isInChildUuids km uuid = isJust $ find (== uuid) (childUuidsFromKM km)
           resultUuids :: KnowledgeModel -> [U.UUID] -> [U.UUID]
@@ -162,14 +163,14 @@ instance Sanitizator EditQuestionEvent where
       -- ------------------------
       applyReferenceChange km event =
         unwrapEventChildUuids $ \childUuidsFromEvent ->
-          return $ event & eqChangeReferenceUuids .~ (ChangedValue $ resultUuids km childUuidsFromEvent)
+          return $ event & eReferenceUuids' .~ (ChangedValue $ resultUuids km childUuidsFromEvent)
         where
           unwrapEventChildUuids callback =
-            case getEventReferenceUuids event of
+            case event ^. eReferenceUuids' of
               NothingChanged -> return event
               ChangedValue uuids -> callback uuids
           childUuidsFromKM :: KnowledgeModel -> [U.UUID]
-          childUuidsFromKM km = getReferenceUuid <$> getAllReferencesForQuestionUuid km (getEventQuestionUuid event)
+          childUuidsFromKM km = getAllReferenceUuidsForQuestionUuid km (getEventNodeUuid event)
           isInChildUuids :: KnowledgeModel -> U.UUID -> Bool
           isInChildUuids km uuid = isJust $ find (== uuid) (childUuidsFromKM km)
           resultUuids :: KnowledgeModel -> [U.UUID] -> [U.UUID]
@@ -180,14 +181,14 @@ instance Sanitizator EditQuestionEvent where
       -- ------------------------
       applyExpertChange km event =
         unwrapEventChildUuids $ \childUuidsFromEvent ->
-          return $ event & eqChangeExpertUuids .~ (ChangedValue $ resultUuids km childUuidsFromEvent)
+          return $ event & eExpertUuids' .~ (ChangedValue $ resultUuids km childUuidsFromEvent)
         where
           unwrapEventChildUuids callback =
-            case getEventExpertUuids event of
+            case event ^. eExpertUuids' of
               NothingChanged -> return event
               ChangedValue uuids -> callback uuids
           childUuidsFromKM :: KnowledgeModel -> [U.UUID]
-          childUuidsFromKM km = _expertUuid <$> getAllExpertsForQuestionUuid km (getEventQuestionUuid event)
+          childUuidsFromKM km = getAllExpertUuidsForQuestionUuid km (getEventNodeUuid event)
           isInChildUuids :: KnowledgeModel -> U.UUID -> Bool
           isInChildUuids km uuid = isJust $ find (== uuid) (childUuidsFromKM km)
           resultUuids :: KnowledgeModel -> [U.UUID] -> [U.UUID]
@@ -206,7 +207,7 @@ instance Sanitizator EditAnswerEvent where
           NothingChanged -> return event
           ChangedValue uuids -> callback uuids
       childUuidsFromKM :: KnowledgeModel -> [U.UUID]
-      childUuidsFromKM km = getQuestionUuid <$> getAllQuestionsForAnswerUuid km (event ^. answerUuid)
+      childUuidsFromKM km = getAllQuestionUuidsForAnswerUuid km (event ^. entityUuid)
       isInChildUuids :: KnowledgeModel -> U.UUID -> Bool
       isInChildUuids km uuid = isJust $ find (== uuid) (childUuidsFromKM km)
       resultUuids :: KnowledgeModel -> [U.UUID] -> [U.UUID]

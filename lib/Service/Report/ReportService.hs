@@ -23,8 +23,7 @@ getReportByQuestionnaireUuid qtnUuid =
   heGetQuestionnaireDetailById qtnUuid $ \qtnDto ->
     heCompileKnowledgeModel [] (Just $ qtnDto ^. package . pId) (qtnDto ^. selectedTagUuids) $ \knowledgeModel ->
       heFindMetrics $ \metrics -> do
-        let filledKM = createFilledKM knowledgeModel (fromReplyDTO <$> qtnDto ^. replies)
-        report <- generateReport (qtnDto ^. level) metrics filledKM
+        report <- generateReport (qtnDto ^. level) metrics knowledgeModel (fromReplyDTO <$> qtnDto ^. replies)
         return . Right . toReportDTO $ report
 
 getPreviewOfReportByQuestionnaireUuid :: String -> QuestionnaireChangeDTO -> AppContextM (Either AppError ReportDTO)
@@ -36,6 +35,5 @@ getPreviewOfReportByQuestionnaireUuid qtnUuid reqDto =
           now <- liftIO getCurrentTime
           accessibility <- extractAccessibility reqDto
           let updatedQtn = fromChangeDTO qtnDto reqDto accessibility (currentUser ^. uuid) now
-          let filledKM = createFilledKM knowledgeModel (updatedQtn ^. replies)
-          report <- generateReport (reqDto ^. level) metrics filledKM
+          report <- generateReport (reqDto ^. level) metrics knowledgeModel (updatedQtn ^. replies)
           return . Right . toReportDTO $ report

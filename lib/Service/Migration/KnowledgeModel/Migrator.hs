@@ -9,7 +9,7 @@ import LensesConfig
 import Model.Event.Event
 import Model.Migration.KnowledgeModel.MigratorState
 import Service.Event.EventMapper
-import Service.Migration.KnowledgeModel.Applicator.Applicator
+import Service.KnowledgeModel.Compilator.Compilator
 import Service.Migration.KnowledgeModel.CleanerMethod
 import Service.Migration.KnowledgeModel.CorrectorMethod
 

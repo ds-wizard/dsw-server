@@ -145,14 +145,14 @@ sanitizatorSpec =
               resState ^. migrationState
         resEvent ^. uuid `shouldNotBe` e_km1_ch1_q2 ^. uuid
         resEvent ^. answerUuids `shouldBe` (ChangedValue $ [q2_answerYes ^. uuid, q2_answerNo ^. uuid])
-        resEvent ^. referenceUuids `shouldBe` ChangedValue [referenceCh2 ^. uuid, referenceCh1 ^. uuid]
-        resEvent ^. expertUuids `shouldBe` ChangedValue [expertNikola ^. uuid, expertAlbert ^. uuid]
+        resEvent ^. referenceUuids `shouldBe` ChangedValue [km1_ch1_q2_r2 ^. uuid, km1_ch1_q2_r1 ^. uuid]
+        resEvent ^. expertUuids `shouldBe` ChangedValue [km1_ch1_q2_eNikola ^. uuid, km1_ch1_q2_eAlbert ^. uuid]
       it "QType - QuestionTypeOptions: Event - some KM uuids missing, no new added in event" $
         -- Given:
        do
         let qAnswerUuids = [q2_answerYes ^. uuid]
-        let qReferenceUuids = [referenceCh2 ^. uuid]
-        let qExpertUuids = [expertNikola ^. uuid]
+        let qReferenceUuids = [km1_ch1_q2_r2 ^. uuid]
+        let qExpertUuids = [km1_ch1_q2_eNikola ^. uuid]
         let edited_1_e_km1_ch1_q2 = e_km1_ch1_q2 & answerUuids .~ ChangedValue qAnswerUuids
         let edited_2_e_km1_ch1_q2 = edited_1_e_km1_ch1_q2 & referenceUuids .~ ChangedValue qReferenceUuids
         let edited_3_e_km1_ch1_q2 = edited_2_e_km1_ch1_q2 & expertUuids .~ ChangedValue qExpertUuids
@@ -168,8 +168,8 @@ sanitizatorSpec =
               resState ^. migrationState
         resEvent ^. uuid `shouldNotBe` e_km1_ch1_q2 ^. uuid
         resEvent ^. answerUuids `shouldBe` (ChangedValue $ [q2_answerYes ^. uuid, q2_answerNo ^. uuid])
-        resEvent ^. referenceUuids `shouldBe` ChangedValue [referenceCh2 ^. uuid, referenceCh1 ^. uuid]
-        resEvent ^. expertUuids `shouldBe` ChangedValue [expertNikola ^. uuid, expertAlbert ^. uuid]
+        resEvent ^. referenceUuids `shouldBe` ChangedValue [km1_ch1_q2_r2 ^. uuid, km1_ch1_q2_r1 ^. uuid]
+        resEvent ^. expertUuids `shouldBe` ChangedValue [km1_ch1_q2_eNikola ^. uuid, km1_ch1_q2_eAlbert ^. uuid]
       it "QType - QuestionTypeOptions: Event - all KM uuids exists, new added in event but without existing in KM" $
           -- Given:
        do
@@ -177,11 +177,11 @@ sanitizatorSpec =
               [q2_answerYes ^. uuid] ++
               [fromJust . U.fromString $ "54992efb-4738-4f00-9c69-979d28cee5ff"] ++ [q2_answerNo ^. uuid]
         let qReferenceUuids =
-              [referenceCh2 ^. uuid] ++
-              [fromJust . U.fromString $ "bdbd95fd-8ea5-485d-9486-ef452b0a661e"] ++ [referenceCh1 ^. uuid]
+              [km1_ch1_q2_r2 ^. uuid] ++
+              [fromJust . U.fromString $ "bdbd95fd-8ea5-485d-9486-ef452b0a661e"] ++ [km1_ch1_q2_r1 ^. uuid]
         let qExpertUuids =
-              [expertNikola ^. uuid] ++
-              [fromJust . U.fromString $ "e47df67f-7e6d-4e0f-950d-5035a48087a0"] ++ [expertAlbert ^. uuid]
+              [km1_ch1_q2_eNikola ^. uuid] ++
+              [fromJust . U.fromString $ "e47df67f-7e6d-4e0f-950d-5035a48087a0"] ++ [km1_ch1_q2_eAlbert ^. uuid]
         let edited_1_e_km1_ch1_q2 = e_km1_ch1_q2 & answerUuids .~ ChangedValue qAnswerUuids
         let edited_2_e_km1_ch1_q2 = edited_1_e_km1_ch1_q2 & referenceUuids .~ ChangedValue qReferenceUuids
         let edited_3_e_km1_ch1_q2 = edited_2_e_km1_ch1_q2 & expertUuids .~ ChangedValue qExpertUuids
@@ -197,8 +197,8 @@ sanitizatorSpec =
               resState ^. migrationState
         resEvent ^. uuid `shouldNotBe` e_km1_ch1_q2 ^. uuid
         resEvent ^. answerUuids `shouldBe` (ChangedValue $ [q2_answerYes ^. uuid, q2_answerNo ^. uuid])
-        resEvent ^. referenceUuids `shouldBe` ChangedValue [referenceCh2 ^. uuid, referenceCh1 ^. uuid]
-        resEvent ^. expertUuids `shouldBe` ChangedValue [expertNikola ^. uuid, expertAlbert ^. uuid]
+        resEvent ^. referenceUuids `shouldBe` ChangedValue [km1_ch1_q2_r2 ^. uuid, km1_ch1_q2_r1 ^. uuid]
+        resEvent ^. expertUuids `shouldBe` ChangedValue [km1_ch1_q2_eNikola ^. uuid, km1_ch1_q2_eAlbert ^. uuid]
       -- -------------------------------------------------------------
       it "QType - QuestionTypeList: Event - all KM uuids exists, no new added in event" $
         -- Given:
@@ -318,8 +318,8 @@ sanitizatorSpec =
         -- Given:
        do
         let qAnswerUuids = [q2_aYes_fuq1_aYes_fuq2_answerYes ^. uuid]
-        let qReferenceUuids = [referenceCh2 ^. uuid]
-        let qExpertUuids = [expertNikola ^. uuid]
+        let qReferenceUuids = [km1_ch1_ansYes1_fuq1_ansYes3_fuq2_2_r2 ^. uuid]
+        let qExpertUuids = [km1_ch1_ansYes1_fuq1_ansYes3_fuq2_2_eNikola ^. uuid]
         let edited_1_event = e_km1_ch1_ansYes1_fuq1_ansYes3_fuq2_2 & answerUuids .~ ChangedValue qAnswerUuids
         let edited_2_event = edited_1_event & referenceUuids .~ ChangedValue qReferenceUuids
         let edited_3_event = edited_2_event & expertUuids .~ ChangedValue qExpertUuids
@@ -346,11 +346,11 @@ sanitizatorSpec =
               [fromJust . U.fromString $ "54992efb-4738-4f00-9c69-979d28cee5ff"] ++
               [q2_aYes_fuq1_aYes_fuq2_answerNo ^. uuid]
         let qReferenceUuids =
-              [referenceCh2 ^. uuid] ++
-              [fromJust . U.fromString $ "bdbd95fd-8ea5-485d-9486-ef452b0a661e"] ++ [referenceCh1 ^. uuid]
+              [km1_ch1_ansYes1_fuq1_ansYes3_fuq2_2_r2 ^. uuid] ++
+              [fromJust . U.fromString $ "bdbd95fd-8ea5-485d-9486-ef452b0a661e"] ++ [km1_ch1_ansYes1_fuq1_ansYes3_fuq2_2_r1 ^. uuid]
         let qExpertUuids =
-              [expertNikola ^. uuid] ++
-              [fromJust . U.fromString $ "e47df67f-7e6d-4e0f-950d-5035a48087a0"] ++ [expertAlbert ^. uuid]
+              [km1_ch1_ansYes1_fuq1_ansYes3_fuq2_2_eNikola ^. uuid] ++
+              [fromJust . U.fromString $ "e47df67f-7e6d-4e0f-950d-5035a48087a0"] ++ [km1_ch1_ansYes1_fuq1_ansYes3_fuq2_2_eAlbert ^. uuid]
         let edited_1_event = e_km1_ch1_ansYes1_fuq1_ansYes3_fuq2_2 & answerUuids .~ ChangedValue qAnswerUuids
         let edited_2_event = edited_1_event & referenceUuids .~ ChangedValue qReferenceUuids
         let edited_3_event = edited_2_event & expertUuids .~ ChangedValue qExpertUuids
@@ -441,14 +441,14 @@ sanitizatorSpec =
               resState ^. migrationState
         resEvent ^. uuid `shouldNotBe` e_km1_ch2_q4_it1_q6 ^. uuid
         resEvent ^. answerUuids `shouldBe` (ChangedValue $ [q4_it1_q6_answerYes ^. uuid, q4_it1_q6_answerNo ^. uuid])
-        resEvent ^. referenceUuids `shouldBe` ChangedValue [referenceCh2 ^. uuid, referenceCh1 ^. uuid]
-        resEvent ^. expertUuids `shouldBe` ChangedValue [expertNikola ^. uuid, expertAlbert ^. uuid]
+        resEvent ^. referenceUuids `shouldBe` ChangedValue [km1_ch2_q6_r2 ^. uuid, km1_ch2_q6_r1 ^. uuid]
+        resEvent ^. expertUuids `shouldBe` ChangedValue [km1_ch2_q6_eNikola ^. uuid, km1_ch2_q6_eAlbert ^. uuid]
       it "QType - QuestionTypeOptions: Event - some KM uuids missing, no new added in event" $
         -- Given:
        do
         let qAnswerUuids = [q4_it1_q6_answerYes ^. uuid]
-        let qReferenceUuids = [referenceCh2 ^. uuid]
-        let qExpertUuids = [expertNikola ^. uuid]
+        let qReferenceUuids = [km1_ch2_q6_r2 ^. uuid]
+        let qExpertUuids = [km1_ch2_q6_eNikola ^. uuid]
         let edited_1_event = e_km1_ch2_q4_it1_q6 & answerUuids .~ ChangedValue qAnswerUuids
         let edited_2_event = edited_1_event & referenceUuids .~ ChangedValue qReferenceUuids
         let edited_3_event = edited_2_event & expertUuids .~ ChangedValue qExpertUuids
@@ -464,8 +464,8 @@ sanitizatorSpec =
               resState ^. migrationState
         resEvent ^. uuid `shouldNotBe` e_km1_ch2_q4_it1_q6 ^. uuid
         resEvent ^. answerUuids `shouldBe` (ChangedValue $ [q4_it1_q6_answerYes ^. uuid, q4_it1_q6_answerNo ^. uuid])
-        resEvent ^. referenceUuids `shouldBe` ChangedValue [referenceCh2 ^. uuid, referenceCh1 ^. uuid]
-        resEvent ^. expertUuids `shouldBe` ChangedValue [expertNikola ^. uuid, expertAlbert ^. uuid]
+        resEvent ^. referenceUuids `shouldBe` ChangedValue [km1_ch2_q6_r2 ^. uuid, km1_ch2_q6_r1 ^. uuid]
+        resEvent ^. expertUuids `shouldBe` ChangedValue [km1_ch2_q6_eNikola ^. uuid, km1_ch2_q6_eAlbert ^. uuid]
       it "QType - QuestionTypeOptions: Event - all KM uuids exists, new added in event but without existing in KM" $
         -- Given:
        do
@@ -474,11 +474,11 @@ sanitizatorSpec =
               [fromJust . U.fromString $ "54992efb-4738-4f00-9c69-979d28cee5ff"] ++
               [q2_aYes_fuq1_aYes_fuq2_answerNo ^. uuid]
         let qReferenceUuids =
-              [referenceCh2 ^. uuid] ++
-              [fromJust . U.fromString $ "bdbd95fd-8ea5-485d-9486-ef452b0a661e"] ++ [referenceCh1 ^. uuid]
+              [km1_ch2_q6_r2 ^. uuid] ++
+              [fromJust . U.fromString $ "bdbd95fd-8ea5-485d-9486-ef452b0a661e"] ++ [km1_ch2_q6_r1 ^. uuid]
         let qExpertUuids =
-              [expertNikola ^. uuid] ++
-              [fromJust . U.fromString $ "e47df67f-7e6d-4e0f-950d-5035a48087a0"] ++ [expertAlbert ^. uuid]
+              [km1_ch2_q6_eNikola ^. uuid] ++
+              [fromJust . U.fromString $ "e47df67f-7e6d-4e0f-950d-5035a48087a0"] ++ [km1_ch2_q6_eAlbert ^. uuid]
         let edited_1_event = e_km1_ch2_q4_it1_q6 & answerUuids .~ ChangedValue qAnswerUuids
         let edited_2_event = edited_1_event & referenceUuids .~ ChangedValue qReferenceUuids
         let edited_3_event = edited_2_event & expertUuids .~ ChangedValue qExpertUuids
@@ -494,8 +494,8 @@ sanitizatorSpec =
               resState ^. migrationState
         resEvent ^. uuid `shouldNotBe` e_km1_ch2_q4_it1_q6 ^. uuid
         resEvent ^. answerUuids `shouldBe` (ChangedValue $ [q4_it1_q6_answerYes ^. uuid, q4_it1_q6_answerNo ^. uuid])
-        resEvent ^. referenceUuids `shouldBe` ChangedValue [referenceCh2 ^. uuid, referenceCh1 ^. uuid]
-        resEvent ^. expertUuids `shouldBe` ChangedValue [expertNikola ^. uuid, expertAlbert ^. uuid]
+        resEvent ^. referenceUuids `shouldBe` ChangedValue [km1_ch2_q6_r2 ^. uuid, km1_ch2_q6_r1 ^. uuid]
+        resEvent ^. expertUuids `shouldBe` ChangedValue [km1_ch2_q6_eNikola ^. uuid, km1_ch2_q6_eAlbert ^. uuid]
       -- -------------------------------------------------------------
       it "QType - QuestionTypeList: Event - all KM uuids exists, no new added in event" $
         -- Given:
