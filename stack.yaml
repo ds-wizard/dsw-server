@@ -3,6 +3,7 @@ resolver: lts-13.12
 packages:
 - dsw-server
 - dsw-metamodel-migrator
+- dsw-shacl2events
 
 extra-deps:
   - vendor/bson-generic

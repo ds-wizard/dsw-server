@@ -10,6 +10,12 @@ RUN apt-get update && apt-get -qq -y install libmemcached-dev ca-certificates ne
 RUN wget https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.trusty_amd64.deb && gdebi -n wkhtmltox_0.12.5-1.trusty_amd64.deb
 RUN wget https://github.com/jgm/pandoc/releases/download/2.7.2/pandoc-2.7.2-1-amd64.deb && gdebi -n pandoc-2.7.2-1-amd64.deb
 
+# Install pip and Python dependencies for dsw-shacl2events
+RUN apt-get -qq -y install python3-setuptools
+RUN easy_install3 pip
+RUN python3 -m pip install click rdflib
+ADD python /dsw/python
+
 # Add built exectutable binary
 ADD dsw-server-bin /dsw/dsw-server
 
@@ -20,5 +26,9 @@ ADD templates /dsw/templates
 ADD config/application.yml /dsw/config/application.yml
 ADD config/integration.yml /dsw/config/integration.yml
 ADD config/build-info.yml /dsw/config/build-info.yml
+
+# Locales ENV variables
+ENV LC_ALL C.UTF-8
+ENV LANG C.UTF-8
 
 CMD ["./dsw-server"]

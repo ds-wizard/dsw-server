@@ -25,6 +25,7 @@ cache:
   - vendor/bson-generic/.stack-work
   - vendor/mongoDB-migration/.stack-work
   - dsw-metamodel-migrator/.stack-work
+  - dsw-shacl2events/.stack-work
   - dsw-server/.stack-work
 
 install:
@@ -37,6 +38,8 @@ install:
   - cp dsw-server/config/application-test.yml.example dsw-server/config/application-test.yml
   - cp dsw-server/config/integration.yml.example dsw-server/config/integration.yml
   - cp dsw-server/config/integration-test.yml.example dsw-server/config/integration-test.yml
+  # Copy python for dsw-shacl2events
+  - cp -r dsw-shacl2events/python dsw-server/python
   # 3. Update file timestamps
   - ./scripts/update-file-timestamps.sh
   # 3. Install app dependencies

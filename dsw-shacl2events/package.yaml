@@ -1,0 +1,30 @@
+name:                dsw-shacl2events
+version:             1.10.0.0
+github:              "githubuser/dsw-shacl2events"
+license:             Apache-2.0
+author:              "Marek Suchánek"
+maintainer:          "suchama4@fit.cvut.cz"
+copyright:           "2019 Marek Suchánek"
+
+extra-source-files:
+- python/requirements.txt
+- python/shacl2events.py
+
+description: Library to transform SHACL into DSW events
+
+dependencies:
+- base >= 4.7 && < 5
+- bytestring
+- process-extras
+- utf8-string
+
+executables:
+  dsw-shacl2events:
+    main: Main.hs
+    source-dirs: app
+    dependencies:
+    - base
+    - dsw-shacl2events
+  
+library:
+  source-dirs: src
