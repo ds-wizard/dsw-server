@@ -18,6 +18,8 @@ dependencies:
 - process-extras
 - utf8-string
 
+ghc-options: -j +RTS -A256m -n4m -RTS -j8 -O2 -fwarn-unused-imports -fno-warn-warnings-deprecations
+
 executables:
   dsw-shacl2events:
     main: Main.hs
@@ -25,6 +27,6 @@ executables:
     dependencies:
     - base
     - dsw-shacl2events
-  
+
 library:
   source-dirs: src

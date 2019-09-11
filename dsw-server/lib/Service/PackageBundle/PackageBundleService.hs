@@ -2,16 +2,21 @@ module Service.PackageBundle.PackageBundleService
   ( exportPackageBundle
   , pullPackageBundleFromRegistry
   , importPackageBundleFromFile
+  , importShaclFromFile
   , importAndConvertPackageBundle
   , importPackageBundle
   ) where
 
 import Control.Lens ((^.))
-import Control.Monad.Reader (asks)
+import Control.Monad.Reader (asks, liftIO)
 import Data.Aeson
 import qualified Data.ByteString.Lazy.Char8 as BS
 import Data.List (find)
+import Data.Time
 
+import DSW.SHACL.Transformation (shaclToEvents)
+
+import Api.Resource.Event.EventJM ()
 import Api.Resource.Package.PackageDTO
 import Api.Resource.Package.PackageJM ()
 import Api.Resource.Package.PackageSimpleDTO
@@ -35,6 +40,7 @@ import Service.Package.PackageValidation
 import Service.PackageBundle.PackageBundleMapper
 import Util.List (foldMaybesInContext)
 import Util.Logger (logWarnU, msg)
+import Util.String (replace)
 
 exportPackageBundle :: String -> AppContextM (Either AppError PackageBundleDTO)
 exportPackageBundle pbId =
@@ -69,6 +75,25 @@ pullPackageBundleFromRegistry pkgId = do
 
 importPackageBundleFromFile :: BS.ByteString -> AppContextM (Either AppError [PackageSimpleDTO])
 importPackageBundleFromFile = importAndConvertPackageBundle
+
+importShaclFromFile :: String -> BS.ByteString -> AppContextM (Either AppError [PackageSimpleDTO])
+importShaclFromFile fileName shacl = do
+  let pId = replace "_" ":" fileName
+  heValidatePackageId pId $ do
+    eEventsS <- liftIO $ shaclToEvents shacl
+    case eEventsS of
+      Right eventsS ->
+        case eitherDecode eventsS of
+          Right events -> do
+            now <- liftIO getCurrentTime
+            let pb = fromShacl pId events now
+            importPackageBundle pb
+          Left error -> do
+            logWarnU $ msg _CMP_SERVICE ("Couln't deserialize events from Shacl convertor (" ++ (show error) ++ ")")
+            return . Left . UserError $ _ERROR_API_COMMON__CANT_DESERIALIZE_OBJ
+      Left error -> do
+        logWarnU $ msg _CMP_SERVICE ("Couln't convert shacl to events (" ++ (show error) ++ ")")
+        return . Left . UserError $ _ERROR_API_COMMON__CANT_DESERIALIZE_OBJ
 
 importAndConvertPackageBundle :: BS.ByteString -> AppContextM (Either AppError [PackageSimpleDTO])
 importAndConvertPackageBundle content =

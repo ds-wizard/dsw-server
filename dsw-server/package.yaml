@@ -33,6 +33,7 @@ library:
   - data-default
   - directory
   - dsw-metamodel-migrator
+  - dsw-shacl2events
   - exceptions
   - filepath
   - fromhtml

@@ -25,7 +25,10 @@ _ERROR_VALIDATION__INVALID_ORG_ID_FORMAT =
   LocaleRecord "error.validation.invalid_org_id_format" "OrganizationId is not in the valid format" []
 
 _ERROR_VALIDATION__INVALID_PKG_VERSION_FORMAT =
-  LocaleRecord "error.validation.invalid_pkg_id_format" "Version is not in the valid format" []
+  LocaleRecord "error.validation.invalid_pkg_version_format" "Version is not in the valid format" []
+
+_ERROR_VALIDATION__INVALID_PKG_ID =
+  LocaleRecord "error.validation.invalid_pkg_id_format" "Package ID is not in the valid format" []
 
 _ERROR_VALIDATION__UNSUPPORTED_DMP_FORMAT format =
   LocaleRecord "error.validation.unsupported_dmp_format" "This Document format (%s) is not currently supported" [format]
@@ -44,6 +47,8 @@ _ERROR_VALIDATION__USER_EMAIL_UNIQUENESS email =
   LocaleRecord "error.validation.user_email_uniqueness" "User (email: '%s') already exists" [email]
 
 -- Absence
+_ERROR_VALIDATION__FILE_ABSENCE = LocaleRecord "error.validation.file_absence" "Server requires a file" []
+
 _ERROR_VALIDATION__BRANCH_PREVIOUS_PKG_ABSENCE =
   LocaleRecord "error.validation.branch_previous_pkg_absence" "Branch has to be based on a package" []
 

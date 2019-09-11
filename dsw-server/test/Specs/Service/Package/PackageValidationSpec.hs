@@ -7,6 +7,12 @@ import Service.Package.PackageValidation
 
 packageValidationSpec =
   describe "Package Validation" $ do
+    it "validatePackageId" $ do
+      isNothing (validatePackageId "com:dsw:1.0.0") `shouldBe` True
+      isJust (validatePackageId "") `shouldBe` True
+      isJust (validatePackageId ":dsw:1.0.0") `shouldBe` True
+      isJust (validatePackageId "com::1.0.0") `shouldBe` True
+      isJust (validatePackageId "com:dsw:") `shouldBe` True
     it "validateVersionFormat" $ do
       isNothing (validateVersionFormat "0.0.0") `shouldBe` True
       isNothing (validateVersionFormat "1.2.0") `shouldBe` True

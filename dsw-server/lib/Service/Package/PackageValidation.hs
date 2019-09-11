@@ -1,5 +1,6 @@
 module Service.Package.PackageValidation
-  ( validateVersionFormat
+  ( validatePackageId
+  , validateVersionFormat
   , validateIsVersionHigher
   , validatePackageIdWithCoordinates
   , validatePackageIdUniqueness
@@ -9,6 +10,7 @@ module Service.Package.PackageValidation
   , validateUsageBySomeBranch
   , validateUsageBySomeQuestionnaire
   -- Helpers
+  , heValidatePackageId
   , heValidateVersionFormat
   , heValidateIsVersionHigher
   , heValidatePackageIdWithCoordinates
@@ -28,7 +30,25 @@ import Database.DAO.Questionnaire.QuestionnaireDAO
 import Localization.Messages.Public
 import Model.Context.AppContext
 import Model.Error.Error
+import Service.Branch.BranchValidation
+import Service.Organization.OrganizationValidation
 import Service.Package.PackageUtils
+
+validatePackageId :: String -> Maybe AppError
+validatePackageId pId =
+  let splitted = splitPackageId pId
+  in if length splitted /= 3
+       then Just $ UserError _ERROR_VALIDATION__INVALID_PKG_ID
+       else case validateOrgId of
+              Nothing ->
+                case validateKmId of
+                  Nothing -> validateVersion
+                  error -> error
+              error -> error
+  where
+    validateOrgId = isValidOrganizationId . getOrgIdFromPkgId $ pId
+    validateKmId = isValidKmId . getKmIdFromPkgId $ pId
+    validateVersion = validateVersionFormat . getVersionFromPkgId $ pId
 
 validateVersionFormat :: String -> Maybe AppError
 validateVersionFormat pkgVersion =
@@ -130,6 +150,12 @@ validateUsageBySomeQuestionnaire pkgId = do
 -- --------------------------------
 -- HELPERS
 -- --------------------------------
+heValidatePackageId pId callback =
+  case validatePackageId pId of
+    Nothing -> callback
+    Just error -> return . Left $ error
+
+-- -----------------------------------------------------
 heValidateVersionFormat pkgVersion callback =
   case validateVersionFormat pkgVersion of
     Nothing -> callback

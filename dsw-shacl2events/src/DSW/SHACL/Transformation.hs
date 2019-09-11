@@ -3,19 +3,19 @@ module DSW.SHACL.Transformation
   ) where
 
 import Control.Exception
-import Data.ByteString as B
-import Data.ByteString.UTF8 (fromString, toString)
+import qualified Data.ByteString.Lazy.Char8 as BS
+import Data.ByteString.UTF8 (toString)
 import GHC.IO.Encoding
 import System.Exit
 import System.Process.ByteString
 
-shaclToEvents :: String -> IO (Either String String)
+shaclToEvents :: BS.ByteString -> IO (Either String BS.ByteString)
 shaclToEvents = perform "python3" ["python/shacl2events.py"]
 
 -- ----------------------------------------------------
 -- PRIVATE
 -- ----------------------------------------------------
-type Command = String -> IO (Either String String)
+type Command = BS.ByteString -> IO (Either String BS.ByteString)
 
 perform :: String -> [String] -> Command
 perform cmd args input =
@@ -28,7 +28,7 @@ perform cmd args input =
 performUnsafe :: String -> [String] -> Command
 performUnsafe cmd args input = do
   setLocaleEncoding utf8
-  (exitCode, stdout, stderr) <- readProcessWithExitCode cmd args (fromString input)
+  (exitCode, stdout, stderr) <- readProcessWithExitCode cmd args (BS.toStrict input)
   case exitCode of
-    ExitSuccess -> return . Right . toString $ stdout
+    ExitSuccess -> return . Right . BS.fromStrict $ stdout
     _ -> return . Left $ (show exitCode) <> ": " <> toString stderr
