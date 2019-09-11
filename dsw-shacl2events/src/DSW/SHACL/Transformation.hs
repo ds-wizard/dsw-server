@@ -10,7 +10,7 @@ import System.Exit
 import System.Process.ByteString
 
 shaclToEvents :: BS.ByteString -> IO (Either String BS.ByteString)
-shaclToEvents = perform "python3" ["python/shacl2events.py"]
+shaclToEvents = perform "python3" ["python/shacl2events.py", "-"]
 
 -- ----------------------------------------------------
 -- PRIVATE
