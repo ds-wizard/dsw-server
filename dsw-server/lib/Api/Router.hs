@@ -25,6 +25,7 @@ import Api.Handler.Organization.OrganizationHandler
 import Api.Handler.Package.PackageHandler
 import Api.Handler.PublicQuestionnaire.PublicQuestionnaireHandler
 import Api.Handler.Questionnaire.QuestionnaireHandler
+import Api.Handler.Shacl.ShaclHandler
 import Api.Handler.Template.TemplateHandler
 import Api.Handler.Token.TokenHandler
 import Api.Handler.Typehint.TypehintHandler
@@ -111,6 +112,8 @@ createEndpoints context
   put "/branches/:branchUuid/versions/:version" putVersionA
   -- Knowledge Model
   post "/knowledge-models/preview" postKnowledgeModelPreviewA
+  -- Shacl
+  post "/shacls/preview" postShaclsPreviewA
    --------------------
    -- PACKAGE
    --------------------
